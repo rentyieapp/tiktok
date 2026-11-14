@@ -1370,13 +1370,14 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const hillMode = this.game.key === 'hill';
     const grandPrix = this.game.key === 'grandprix';
     const animalMode = this.game.key === 'animal';
+    const crowdMode = this.game.key === 'crowd';
     this.baseCamera.set(0, 7.8, 14.5);
     this.lookTarget.set(0, 0.8, -2.5);
-    const sky = hillMode ? '#ecfdf5' : grandPrix ? '#fff1f2' : animalMode ? '#fefce8' : '#eef7ff';
+    const sky = hillMode ? '#ecfdf5' : grandPrix ? '#fff1f2' : animalMode ? '#fefce8' : crowdMode ? '#ecfeff' : '#eef7ff';
     this.scene.background = new THREE.Color(sky);
     this.scene.fog = new THREE.Fog(new THREE.Color(sky), 26, 52);
 
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat(hillMode || animalMode ? '#bbf7d0' : grandPrix ? '#fecdd3' : '#dcebdc'));
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat(hillMode || animalMode ? '#bbf7d0' : grandPrix ? '#fecdd3' : crowdMode ? '#cffafe' : '#dcebdc'));
     ground.rotation.x = -Math.PI / 2;
     ground.position.z = -4;
     ground.receiveShadow = true;
@@ -1386,7 +1387,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const road = new THREE.Mesh(
       new THREE.PlaneGeometry(13, 27),
       new THREE.MeshStandardMaterial({
-        color: hillMode ? 0x9a6b3f : animalMode ? 0x8b6b3f : grandPrix ? 0x2b2b33 : 0x3d3d4a,
+        color: hillMode ? 0x9a6b3f : animalMode ? 0x8b6b3f : grandPrix ? 0x2b2b33 : crowdMode ? 0x475569 : 0x3d3d4a,
         roughness: 0.88,
       }),
     );
@@ -2774,6 +2775,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const hillMode = this.game.key === 'hill';
     const grandPrix = this.game.key === 'grandprix';
     const animalMode = this.game.key === 'animal';
+    const crowdMode = this.game.key === 'crowd';
     const group = new THREE.Group();
     const shadow = shadowMesh(0.55);
     group.add(shadow);
@@ -2784,11 +2786,13 @@ class Arcade3DRenderer implements Arcade3DHandle {
           ? new THREE.BoxGeometry(0.9, 0.3, 1.85)
           : animalMode
             ? new THREE.CapsuleGeometry(0.34, 0.85, 6, 10)
-            : new THREE.BoxGeometry(1.15, 0.46, 1.6),
+            : crowdMode
+              ? new THREE.CapsuleGeometry(0.3, 0.7, 6, 10)
+              : new THREE.BoxGeometry(1.15, 0.46, 1.6),
       new THREE.MeshStandardMaterial({ color: player.color, roughness: 0.35, metalness: 0.15 }),
     );
-    body.position.y = animalMode ? 0.72 : hillMode ? 0.5 : grandPrix ? 0.38 : 0.45;
-    if (animalMode) body.rotation.z = Math.PI / 2;
+    body.position.y = animalMode ? 0.72 : crowdMode ? 0.82 : hillMode ? 0.5 : grandPrix ? 0.38 : 0.45;
+    if (animalMode || crowdMode) body.rotation.z = Math.PI / 2;
     body.castShadow = true;
     group.add(body);
     const cabin = new THREE.Mesh(
@@ -2798,10 +2802,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
           ? new THREE.BoxGeometry(0.48, 0.25, 0.5)
           : animalMode
             ? new THREE.SphereGeometry(0.34, 14, 10)
-            : new THREE.BoxGeometry(0.68, 0.38, 0.68),
+            : crowdMode
+              ? new THREE.SphereGeometry(0.28, 14, 10)
+              : new THREE.BoxGeometry(0.68, 0.38, 0.68),
       new THREE.MeshStandardMaterial({ color: animalMode ? player.color : hillMode ? player.color : 0xf8fafc, roughness: 0.25 }),
     );
-    cabin.position.set(0, animalMode ? 0.9 : hillMode ? 0.84 : grandPrix ? 0.56 : 0.7, animalMode ? -0.8 : 0.12);
+    cabin.position.set(0, animalMode ? 0.9 : crowdMode ? 1.28 : hillMode ? 0.84 : grandPrix ? 0.56 : 0.7, animalMode ? -0.8 : crowdMode ? -0.62 : 0.12);
     group.add(cabin);
     if (animalMode) {
       for (const [x, z] of [[-0.45, 0.45], [0.45, 0.45], [-0.45, -0.45], [0.45, -0.45]] as const) {
@@ -2812,6 +2818,17 @@ class Arcade3DRenderer implements Arcade3DHandle {
       const ear = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 8), mat(player.color));
       ear.position.set(0, 1.35, -0.9);
       group.add(ear);
+    }
+    if (crowdMode) {
+      for (const x of [-0.32, 0.32]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.7, 8), mat(0x1f2937));
+        leg.position.set(x, 0.35, 0);
+        group.add(leg);
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.55, 8), mat(player.color));
+        arm.position.set(x * 1.8, 1.0, 0);
+        arm.rotation.z = x > 0 ? -0.65 : 0.65;
+        group.add(arm);
+      }
     }
     if (grandPrix) {
       const wing = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.07, 0.32), new THREE.MeshStandardMaterial({ color: 0x2b2b33 }));

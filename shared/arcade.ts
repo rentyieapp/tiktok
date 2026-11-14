@@ -31,6 +31,7 @@ export const ARCADE_KEYS = [
   'gold',
   'animal',
   'clash',
+  'crowd',
 ] as const;
 
 export type ArcadeKey = (typeof ARCADE_KEYS)[number];
@@ -645,6 +646,26 @@ export const ARCADE_GAMES: Record<ArcadeKey, ArcadeGameDef> = {
     durationSec: 80,
     maxPlayers: 60,
   },
+  crowd: {
+    key: 'crowd',
+    slug: 'kalabalik-kosusu',
+    name: 'Kalabalık Koşusu',
+    shortName: 'Kalabalık',
+    category: 'Yarış',
+    mode: 'race',
+    symbol: '🏃',
+    accent: '#0d9488',
+    soft: '#f0fdfa',
+    ink: '#042f2e',
+    tagline: 'Kalabalığın içinden öne fırla.',
+    description: 'İzleyiciler kendi koşucularıyla şehir sokaklarında yarışır. Beğeni hız, hediye jetpack etkisi verir; bitişe ilk ulaşan kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile koş.', 'Hediye ile jetpack al.', 'Bitişe ilk gelen kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 70,
+    maxPlayers: 50,
+  },
 };
 
 export interface HorseRacer {
@@ -1119,7 +1140,7 @@ function rankPlayers(state: ArcadeState): void {
     if (state.key === 'gladiator' || state.key === 'stick') {
       if (b.hp !== a.hp) return b.hp - a.hp;
     }
-    if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) return b.progress - a.progress;
+    if (['kart', 'hill', 'grandprix', 'animal', 'crowd'].includes(state.key)) return b.progress - a.progress;
     return b.score - a.score;
   });
   sorted.forEach((player, index) => {
@@ -1343,7 +1364,7 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
   let winner: ArcadePlayer | undefined;
   if (state.key === 'gladiator' || state.key === 'stick') {
     winner = alive.length === 1 ? alive[0] : [...state.players].sort((a, b) => b.hp - a.hp)[0];
-  } else if (['kart', 'hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+  } else if (['kart', 'hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) {
     winner = [...state.players].sort((a, b) => b.progress - a.progress)[0];
   } else if (state.key === 'melon' || state.key === 'gold') {
     winner = [...state.players].sort((a, b) => b.score - a.score)[0];
@@ -1405,6 +1426,8 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
                       ? 'Pistin şampiyonu'
                       : state.key === 'animal'
                         ? 'Ormanın hızırı'
+                        : state.key === 'crowd'
+                          ? 'Sokağın hızırı'
                         : state.key === 'town'
                           ? 'Kasabanın mimarı'
                           : state.key === 'melon'
@@ -1607,7 +1630,7 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
     return;
   }
 
-  if (['kart', 'hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+  if (['kart', 'hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) {
     for (const player of state.players) {
       if (player.eliminated) continue;
       const base = state.key === 'town' ? 0.5 : state.key === 'grandprix' ? 0.7 : 0.62;
@@ -1703,7 +1726,7 @@ export function arcadeAction(
     else if (state.key === 'tug' && state.tug) addTugPull(state, player, 1.2);
     else if (['versus', 'clash'].includes(state.key) && state.wall) addWallPush(state, player, 0.5);
     else if (state.key === 'horse') pushHorse(state, player, 1);
-    else if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 1.2);
+    else if (['hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 1.2);
     else if (state.key === 'melon' && state.melon) { state.melon.tension = Math.min(100, state.melon.tension + 1); player.score += 1; }
     else if (state.key === 'gold' && state.gold) { state.gold.pulled = Math.min(100, state.gold.pulled + 1); player.score += 1; }
     else player.score += state.key === 'quiz' || state.key === 'word' ? 0 : 1.5;
@@ -1723,7 +1746,7 @@ export function arcadeAction(
   }
 
   if (action === 'gift') {
-    if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) player.progress = Math.min(100, player.progress + 7);
+    if (['kart', 'hill', 'grandprix', 'animal', 'crowd'].includes(state.key)) player.progress = Math.min(100, player.progress + 7);
     if (state.key === 'gladiator' || state.key === 'stick') {
       player.hp = Math.min(player.maxHp, player.hp + 16);
     }
@@ -1731,7 +1754,7 @@ export function arcadeAction(
     else if (state.key === 'tug' && state.tug) addTugPull(state, player, 13);
     else if (['versus', 'clash'].includes(state.key) && state.wall) addWallPush(state, player, 8);
     else if (state.key === 'horse') pushHorse(state, player, 10);
-    else if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 12);
+    else if (['hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 12);
     else if (state.key === 'melon' && state.melon) { state.melon.tension = Math.min(100, state.melon.tension + 10); player.score += 10; }
     else if (state.key === 'gold' && state.gold) { state.gold.pulled = Math.min(100, state.gold.pulled + 10); player.score += 10; }
     else player.score += state.key === 'quiz' || state.key === 'word' ? 0 : 12;
@@ -1751,7 +1774,7 @@ export function arcadeAction(
   }
 
   // comment
-  if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+  if (['hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) {
     player.progress = Math.min(100, player.progress + 0.5);
     feed(state, `${player.name} tempoyu artırdı.`, 'answer', now);
     return { ok: true };
@@ -1898,7 +1921,7 @@ export function arcadeRunBots(state: ArcadeState, now = Date.now()): void {
       pushHorse(state, player, roll < 0.75 ? 1 : 6);
       continue;
     }
-    if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+    if (['hill', 'grandprix', 'animal', 'crowd', 'town'].includes(state.key)) {
       player.progress = Math.min(100, player.progress + (roll < 0.75 ? 1 : 6));
       continue;
     }
@@ -1930,7 +1953,7 @@ export function arcadeRunBots(state: ArcadeState, now = Date.now()): void {
       player.score += 100;
       continue;
     }
-  if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) {
+  if (['kart', 'hill', 'grandprix', 'animal', 'crowd'].includes(state.key)) {
       player.progress = Math.min(100, player.progress + 2);
       continue;
     }

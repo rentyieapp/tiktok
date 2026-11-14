@@ -205,12 +205,12 @@ describe('arcade motoru', () => {
 });
 
 describe('arcade API ve WebSocket', () => {
-  it('yirmi dört oyunu listeler ve odaya katılımı kabul eder', async () => {
+  it('yirmi beş oyunu listeler ve odaya katılımı kabul eder', async () => {
     built = await makeApp();
     const { app: server } = built;
     const games = await server.inject({ method: 'GET', url: '/api/arcade/games' });
     expect(games.statusCode).toBe(200);
-    expect(games.json().games).toHaveLength(24);
+    expect(games.json().games).toHaveLength(25);
     expect(games.json().games[0].slug).toBe('sahne-90');
 
     const port = await listen(server);

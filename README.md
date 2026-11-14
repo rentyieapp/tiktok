@@ -4,10 +4,10 @@
 takımları, komutları ve kalıcı OBS bağlantılarıyla çalışır; izleyiciler yorum, beğeni ve
 hediyelerle oyuna katılır.
 
-Platformda **24 oynanabilir 3D tarayıcı oyunu** vardır: Sahne 90, Profil Matbaası, Halka,
+Platformda **25 oynanabilir 3D tarayıcı oyunu** vardır: Sahne 90, Profil Matbaası, Halka,
 Bilgi Arenası, Harf Şehir, Arena Ustaları, Çubuk Hayatta Kalma, Piksel Yarış, Çarkıfelek, Halat Çekme, Kızlar vs Erkekler, At Yarışı, Horon & Halay, Sıra Gecesi, Noche Latina, Live Concert, Ramwong Fair,
 Tepe Fırlaması, Grand Prix, İzleyici Kasabası, Karpuz Patlatma, Altın Mıknatısı,
-Animal Run ve Team Clash. Her oyun
+Animal Run, Team Clash ve Kalabalık Koşusu. Her oyun
 Three.js ile ışıklı, gölgeli ve animasyonlu bir sahne kullanır; WebGL yoksa 2D yedek sahne
 devreye girer. Mevcut 3D Taraftar Savaşı motoru yayıncı stüdyosunda korunur.
 
@@ -148,7 +148,7 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │   ├── languages.ts        # 5 dilde sistem komutları + arayüz metinleri
 │   ├── commands.ts         # Normalizasyon, parse, çakışma doğrulaması
 │   ├── battle.ts           # Otoriter savaş simülasyonu (sunucu + preview)
-│   ├── arcade.ts           # 24 oyun tanımı + ortak canlı oda simülasyonu
+│   ├── arcade.ts           # 25 oyun tanımı + ortak canlı oda simülasyonu
 │   └── defaults.ts         # Varsayılan ayarlar, hazır takım paleti, slug
 ├── server/
 │   └── src/
@@ -159,13 +159,13 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │       ├── payments/       # PaymentProvider arayüzü + test/Stripe adapter
 │       ├── live/           # LiveEventProvider (imzalı webhook)
 │       ├── game/           # 3D savaş servisi, runtime, mapper'lar
-│       ├── arcade/         # 24 oyun runtime'ı + yayıncı odaları/servisi
+│       ├── arcade/         # 25 oyun runtime'ı + yayıncı odaları/servisi
 │       ├── platforms/      # Twitch IRC, YouTube Data API, TikTok connector hub'ı
 │       └── routes/         # auth, billing, game, arcade, live, upload, websocket
 ├── web/
 │   ├── src/pages/          # Marketing, arcade, auth, ödeme, panel, canlı yayın
 │   ├── src/game/           # Taraftar Savaşı Three.js renderer + OBS overlay
-│   ├── src/arcade/         # 24 oyunun Three.js sahne renderer'ı
+│   ├── src/arcade/         # 25 oyunun Three.js sahne renderer'ı
 │   ├── src/components/     # Arcade3DStage, 2D fallback, GameArt, panel layout
 ├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (87)
 └── scripts/seed-demo.ts
@@ -469,7 +469,7 @@ npm test
 | `tests/live-flow.test.ts` | Gerçek WebSocket ile katılım, rate limit, takım değiştirme, imzalı canlı event + dedupe, maç durdurma, istatistik/geçmiş, otomatik lobi, devre dışı link, üretim komut politikası |
 | `tests/security-settings.test.ts` | scrypt hash, HttpOnly çerez, şifre değişimi, CSRF Origin, ayar sınırları, maç sırasında ayar erteleme, çapraz kiracı yazma denemesi |
 | `tests/admin-catalog.test.ts` | Süper admin yetkisi, fiyat/süre güncelleme, seed’in admin değişikliğini ezmemesi, katalog CRUD, tek canlı motor kuralı, manuel lisans, Shopier ayarları |
-| `tests/arcade.test.ts` | 24 oyun kataloğu, quiz/kelime/yarış/arena/çark/halat/duvar/at simülasyonu, cevap gizleme, WebSocket katılımı |
+| `tests/arcade.test.ts` | 25 oyun kataloğu, quiz/kelime/yarış/arena/çark/halat/duvar/at simülasyonu, cevap gizleme, WebSocket katılımı |
 | `tests/arcade-rooms.test.ts` | Yayıncıya özel oda, lisans kapısı, TikTok webhook, platform normalizasyonu, oda duraklatma |
 
 Ek olarak TypeScript kontrolü:
@@ -590,7 +590,7 @@ Admin bölümleri:
 | Bölüm | İşlev |
 | --- | --- |
 | Genel bakış | Ciro, yayıncı, aktif abonelik, katalog ve paket satış özeti |
-| Oyun kataloğu | 24 oyunlu 3D vitrin; içerik/görsel kod tabanlı |
+| Oyun kataloğu | 25 oyunlu 3D vitrin; içerik/görsel kod tabanlı |
 | Paketler ve fiyatlar | 3D stüdyo paketleri + oyun bazlı 1/30 günlük lisans teklifleri |
 | Ödemeler | Tüm sağlayıcıların ödeme geçmişi |
 | Yayıncılar | Yayıncı/oyun/lisans listesi + manuel lisans |
@@ -620,7 +620,7 @@ Arcade oyunları için varsayılan teklifler (`packages.game_key` dolu):
 | Aylık | ₺399 |
 | Yıllık | ₺2.999 |
 
-24 oyun × 2 süre = 48 oyun lisansı + 3 Tüm Oyunlar paketi seed edilir.
+25 oyun × 2 süre = 50 oyun lisansı + 3 Tüm Oyunlar paketi seed edilir.
 
 3D Taraftar Savaşı stüdyosu paketleri ayrıdır (`game_key` boş):
 
@@ -685,6 +685,7 @@ konfeti efektleri ortak renderer'dadır. WebGL yoksa 2D sahne yedeği kullanıl�
 | Altın Mıknatısı | Eğlence | Ortak altın kasası |
 | Animal Run | Yarış | Hayvan yarışçıları |
 | Team Clash | Arena | Kırmızı/mavi takım savaşı |
+| Kalabalık Koşusu | Yarış | Şehir sokaklarında kalabalık yarışı |
 
 ### Bilgi Arenası soruları
 
@@ -783,7 +784,7 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 
 ### Oda modeli
 
-Her yayıncı, yirmi dört oyunun her biri için **ayrı ve kalıcı** bir oda açabilir. Oda
+Her yayıncı, yirmi beş oyunun her biri için **ayrı ve kalıcı** bir oda açabilir. Oda
 oluşturmak için o oyunun **aktif lisansı** gerekir; lisans bitince public oda ve
 WebSocket erişimi kapanır. Aynı oyun için ikinci oda açılamaz; her oda farklı `public_slug` alır.
 

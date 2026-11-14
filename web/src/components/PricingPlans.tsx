@@ -63,7 +63,7 @@ export function PricingPlans({
             Günlük, haftalık veya aylık. Ne kadar yayın yaparsan o kadar.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-500 sm:text-base">
-            Yirmi dört oyun, tek yayıncı hesabı ve kalıcı OBS bağlantısı. Süre bitmeden yenilersen
+            Yirmi beş oyun, tek yayıncı hesabı ve kalıcı OBS bağlantısı. Süre bitmeden yenilersen
             kalan günlerin üzerine eklenir.
           </p>
         </div>

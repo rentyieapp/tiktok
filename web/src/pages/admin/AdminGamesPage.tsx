@@ -18,7 +18,7 @@ export function AdminGamesPage() {
       <PageHeader
         eyebrow="Süper admin"
         title="Oyun kataloğu"
-        description="Platformda yayında olan yirmi dört oyun. İçerikler ve görseller kod tabanlıdır; fiyat ve süreler Paketler ekranından yönetilir."
+        description="Platformda yayında olan yirmi beş oyun. İçerikler ve görseller kod tabanlıdır; fiyat ve süreler Paketler ekranından yönetilir."
         actions={
           <Link to="/oyunlar" target="_blank">
             <Button variant="secondary" icon={<ArrowUpRight size={15} />}>

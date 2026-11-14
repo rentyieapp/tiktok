@@ -408,6 +408,28 @@ function Gold({ game, id }: { game: ArcadeGameDef; id: string }) {
     </g>
   );
 }
+
+function Crowd({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#ecfeff" />
+      <rect x="0" y="300" width="640" height="100" fill="#94a3b8" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <g key={i} transform={`translate(${80 + i * 66} ${280 - (i % 3) * 28})`}>
+          <circle cx="0" cy="-36" r="15" fill="#f0c8ac" />
+          <rect x="-14" y="-20" width="28" height="48" rx="11" fill={['#e0558f', '#2563eb', '#0f8a72', '#d97706'][i % 4]} />
+          <path d="M-12 24 L-24 62 M12 24 L24 62" stroke="#1f2937" strokeWidth="9" strokeLinecap="round" />
+          <path d="M-14 -8 L-30 -26 M14 -8 L30 -26" stroke="#f0c8ac" strokeWidth="6" strokeLinecap="round" />
+        </g>
+      ))}
+      <g transform="translate(320 70)">
+        <rect x="-100" y="-22" width="200" height="42" rx="10" fill="#0d9488" />
+        <text x="0" y="6" textAnchor="middle" fontFamily="system-ui" fontSize="16" fontWeight="900" fill="#ecfeff">CROWD RACE</text>
+      </g>
+      <text x="320" y="370" textAnchor="middle" fontFamily="system-ui" fontSize="12" fontWeight="700" fill="#0f766e" opacity="0.7">KALABALIĞIN İÇİNDEN ÖNE FIRLA</text>
+    </g>
+  );
+}
 function Clash({ game, id }: { game: ArcadeGameDef; id: string }) {
   return (
     <g>

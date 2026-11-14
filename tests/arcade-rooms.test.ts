@@ -515,18 +515,18 @@ describe('yayıncıya özel arcade odaları', () => {
     });
     expect(paid.statusCode).toBe(200);
     const me = await server.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: user.cookie } });
-    expect(me.json().licenses).toHaveLength(24);
+    expect(me.json().licenses).toHaveLength(25);
   });
 
-  it('tüm oyunlar paketi 24 oyun lisansını birlikte açar', async () => {
+  it('tüm oyunlar paketi 25 oyun lisansını birlikte açar', async () => {
     built = await makeApp();
     const { app: server } = built;
     const user = await registerUser(server);
     await buyGame(server, user.cookie, 'offer_bundle_all_1d');
 
     const me = await server.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: user.cookie } });
-    expect(me.json().licenses).toHaveLength(24);
-    expect(new Set(me.json().licenses.map((license: any) => license.gameKey)).size).toBe(24);
+    expect(me.json().licenses).toHaveLength(25);
+    expect(new Set(me.json().licenses.map((license: any) => license.gameKey)).size).toBe(25);
 
     const room = await server.inject({
       method: 'POST',

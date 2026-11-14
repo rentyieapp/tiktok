@@ -1856,5 +1856,17 @@ export const EN_TEXT: Record<string, string> = {
   "24 oyun. Tek yayın bağlantısı.": "24 games. One broadcast link.",
   "24 arcade + 3D stüdyo": "24 arcade + 3D studio",
   "Yirmi dört oyunlu platform": "Twenty-four-game platform",
-  "Yirmi dört oyun, tek hesap": "Twenty-four games, one account"
+  "Yirmi dört oyun, tek hesap": "Twenty-four games, one account",
+  "Kalabalık Koşusu": "Crowd Race",
+  "Kalabalığın içinden öne fırla.": "Break out of the crowd.",
+  "İzleyiciler kendi koşucularıyla şehir sokaklarında yarışır. Beğeni hız, hediye jetpack etkisi verir; bitişe ilk ulaşan kazanır.": "Viewers race their own runners through city streets. Likes give speed, gifts give a jetpack; first to the finish wins.",
+  "Yoruma katıl.": "Join with a comment.",
+  "Beğeni ile koş.": "Run with likes.",
+  "Hediye ile jetpack al.": "Get a jetpack with gifts.",
+  "Bitişe ilk gelen kazanır.": "First to the finish wins.",
+  "yirmi beş oyun.": "twenty-five games.",
+  "25 oynanabilir oyun": "25 playable games",
+  "25 oyun. Tek yayın bağlantısı.": "25 games. One broadcast link.",
+  "25 arcade + 3D stüdyo": "25 arcade + 3D studio",
+  "Yirmi beş oyunlu platform": "Twenty-five-game platform"
 };
