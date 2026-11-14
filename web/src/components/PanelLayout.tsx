@@ -16,6 +16,8 @@ import {
   Shield,
   SlidersHorizontal,
   Sparkles,
+  ShoppingBag,
+  Play,
   X,
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
@@ -26,30 +28,31 @@ import { formatDate } from '../lib/format';
 
 const NAV_SECTIONS = [
   {
-    title: 'Stüdyo',
+    title: 'Portföy',
     items: [
       { to: '/panel', label: 'Genel bakış', icon: LayoutDashboard, end: true },
-      { to: '/panel/oyun', label: 'Taraftar Savaşı 3D', icon: Gamepad2 },
-      { to: '/panel/takimlar', label: 'Takım yönetimi', icon: Shield },
-      { to: '/panel/ayarlar', label: 'Oyun ayarları', icon: SlidersHorizontal },
-      { to: '/panel/komutlar', label: 'Dil ve komutlar', icon: Languages },
+      { to: '/panel/arcade', label: 'Oyunlarım', icon: Gamepad2 },
+      { to: '/satin-al', label: 'Oyun mağazası', icon: ShoppingBag },
     ],
   },
   {
-    title: 'Yayın',
+    title: 'Taraftar Savaşı 3D',
     items: [
-      { to: '/panel/arcade', label: 'Oyun odaları', icon: Gamepad2 },
-      { to: '/panel/baglantilar', label: 'Platform bağlantıları', icon: Radio },
+      { to: '/panel/3d', label: '3D oyun paneli', icon: Play, end: true },
+      { to: '/panel/takimlar', label: 'Takım yönetimi', icon: Shield },
+      { to: '/panel/ayarlar', label: 'Oyun ayarları', icon: SlidersHorizontal },
+      { to: '/panel/komutlar', label: 'Dil ve komutlar', icon: Languages },
       { to: '/panel/yayin', label: '3D yayın bağlantım', icon: Radio },
       { to: '/panel/onizleme', label: 'Oyun önizlemesi', icon: MonitorPlay },
       { to: '/panel/istatistikler', label: 'İstatistikler', icon: BarChart3 },
       { to: '/panel/gecmis', label: 'Oyun geçmişi', icon: History },
-      { to: '/oyunlar', label: 'Oyun platformu', icon: Gamepad2 },
+      { to: '/panel/oyun', label: '3D oyun kurulumu', icon: Settings, end: true },
     ],
   },
   {
-    title: 'Hesap',
+    title: 'Bağlantılar ve hesap',
     items: [
+      { to: '/panel/baglantilar', label: 'Platform bağlantıları', icon: Radio },
       { to: '/panel/odeme', label: 'Paketim ve ödemeler', icon: CreditCard },
       { to: '/panel/hesap', label: 'Hesap ayarları', icon: Settings },
     ],
@@ -62,6 +65,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [loggingOut, setLoggingOut] = useState(false);
+  const isArcadeGamePanel = /^\/panel\/oyun\/[^/]+$/.test(location.pathname);
+  const sections = isArcadeGamePanel
+    ? NAV_SECTIONS.filter((section) => section.title !== 'Taraftar Savaşı 3D')
+    : NAV_SECTIONS;
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -81,39 +88,29 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="px-3">
         <Link
-          to={game ? '/panel/oyun' : '/panel/oyun'}
+          to="/panel"
           onClick={onNavigate}
           className="block rounded-2xl border border-ink-100 bg-gradient-to-br from-ink-50 to-white p-3.5 transition hover:border-ink-200 hover:shadow-sm"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-400">
-              Oyunun
+              Oyun portföyü
             </span>
-            {game ? (
-              live?.phase === 'running' ? (
-                <span className="badge-live">
-                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" /> CANLI
-                </span>
-              ) : game.liveEnabled ? (
-                <span className="badge-ok">Yayına hazır</span>
-              ) : (
-                <span className="badge-neutral">Bağlantı kapalı</span>
-              )
-            ) : null}
+            <span className="badge-ok text-[9px]">{me?.licenses.length ?? 0} arcade</span>
           </div>
-          <p className="mt-1.5 truncate text-sm font-semibold text-ink-900">
-            {game?.gameName ?? 'Oyununu oluştur'}
+          <p className="mt-1.5 text-sm font-semibold text-ink-900">
+            {game ? 'Taraftar Savaşı 3D + oyunlar' : 'Oyunlarını keşfet'}
           </p>
-          <p className="mt-0.5 truncate text-[11px] text-ink-500">
+          <p className="mt-0.5 text-[11px] text-ink-500">
             {game
-              ? `${game.teamCount} takım · ${game.language.toUpperCase()} · v${game.configVersion}`
-              : 'Sihirbazla 2 dakikada hazırla'}
+              ? `${game.teamCount} takım · 3D stüdyo`
+              : 'Oyun seç, lisans al ve yayına başla'}
           </p>
         </Link>
       </div>
 
       <nav className="mt-4 flex-1 space-y-5 overflow-y-auto px-3 pb-4">
-        {NAV_SECTIONS.map((section) => (
+        {sections.map((section) => (
           <div key={section.title}>
             <p className="section-title px-3 pb-1.5">{section.title}</p>
             <div className="space-y-0.5">
@@ -246,23 +243,22 @@ function StudioGate() {
   const { game, loading, error } = useStudio();
   const location = useLocation();
   const { me } = useAuth();
+  const path = location.pathname;
+  const isArcadePath =
+    path === '/panel' ||
+    path.startsWith('/panel/arcade') ||
+    path.startsWith('/panel/oyun/') ||
+    path === '/panel/baglantilar' ||
+    path === '/panel/odeme' ||
+    path === '/panel/hesap';
 
   if (loading) return <Spinner label="Stüdyon hazırlanıyor..." />;
-  if (error?.status === 402 || (me && !me.hasPanelAccess)) {
-    if (location.pathname === '/panel/odeme' || location.pathname === '/panel/hesap') {
-      return <Outlet />;
-    }
+  if (error?.status === 402 || (me && !me.hasPanelAccess && (me.licenses.length ?? 0) === 0)) {
+    if (isArcadePath) return <Outlet />;
     return <NoAccessScreen />;
   }
-  if (!game) {
-    if (
-      location.pathname === '/panel/oyun' ||
-      location.pathname === '/panel/odeme' ||
-      location.pathname === '/panel/hesap'
-    ) {
-      return <Outlet />;
-    }
-    return <Navigate to="/panel/oyun" replace />;
+  if (!game && !isArcadePath) {
+    return <Navigate to="/panel" replace />;
   }
   return <Outlet />;
 }

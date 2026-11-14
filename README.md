@@ -100,9 +100,13 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 | --- | --- |
 | ![Soru editörü](docs/screenshots/quiz-editor.png) | ![Kategoriler](docs/screenshots/categories.png) |
 
-| Yayıncı paneli |
+| Yayıncı oyun portföyü | Oyun bazlı panel |
+| --- | --- |
+| ![Oyun portföyü](docs/screenshots/portfolio.png) | ![Sahne 90 paneli](docs/screenshots/panel-game.png) |
+
+| Taraftar Savaşı 3D paneli |
 | --- |
-| ![Panel genel bakış](docs/screenshots/panel-overview.png) |
+| ![3D panel](docs/screenshots/panel-3d.png) |
 
 | OBS canlı ekranı (3D motor) | 8 takımlı arena |
 | --- | --- |
@@ -253,6 +257,9 @@ Gerçek ödeme için `PAYMENT_PROVIDER=stripe`, `STRIPE_SECRET_KEY`,
 | Oyun önizlemesi | `/panel/onizleme` | 9:16 test sahnesi, destek simülasyonu |
 | İstatistikler | `/panel/istatistikler` | Takım/oyuncu/skor/maç metrikleri |
 | Oyun geçmişi | `/panel/gecmis` | Tamamlanan turlar ve kazananlar |
+| Genel bakış | `/panel` | Tüm oyunların portföy dashboard’u |
+| Oyun paneli | `/panel/oyun/:gameKey` | Her arcade oyunu için ayrı oda/OBS/ayar paneli |
+| 3D oyun paneli | `/panel/3d` | Taraftar Savaşı 3D stüdyosu |
 | Paketim ve ödemeler | `/panel/odeme` | Abonelik, paket yükseltme, ödeme geçmişi |
 | Hesap ayarları | `/panel/hesap` | Profil, şifre, oturum, abonelik özeti |
 

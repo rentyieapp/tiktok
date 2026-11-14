@@ -10,6 +10,8 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { TestPaymentPage } from './pages/billing/TestPaymentPage';
 import { PaymentSuccessPage } from './pages/billing/PaymentSuccessPage';
 import { OverviewPage } from './pages/panel/OverviewPage';
+import { PortfolioPage } from './pages/panel/PortfolioPage';
+import { ArcadeGamePanelPage } from './pages/panel/ArcadeGamePanelPage';
 import { GameWizardPage } from './pages/panel/GameWizardPage';
 import { TeamsPage } from './pages/panel/TeamsPage';
 import { SettingsPage } from './pages/panel/SettingsPage';
@@ -100,7 +102,9 @@ export default function App() {
                 </RequireAuth>
               }
             >
-              <Route index element={<OverviewPage />} />
+              <Route index element={<PortfolioPage />} />
+              <Route path="3d" element={<OverviewPage />} />
+              <Route path="oyun/:gameKey" element={<ArcadeGamePanelPage />} />
               <Route path="oyun" element={<GameWizardPage />} />
               <Route path="takimlar" element={<TeamsPage />} />
               <Route path="ayarlar" element={<SettingsPage />} />
