@@ -28,6 +28,13 @@ import {
 } from '../db/repo.js';
 import { nowIso } from '../db/index.js';
 import { randomId } from '../lib/tokens.js';
+import {
+  commandAppliesToGame,
+  matchArcadeCommand,
+  sanitizeArcadeRoomSettings,
+  type ArcadeCommandSettings,
+  type ArcadeLocale,
+} from '../../../shared/arcadeSettings.js';
 
 interface SocketMeta {
   playerId: string | null;
@@ -45,6 +52,8 @@ interface Room {
   idleTimer: NodeJS.Timeout | null;
   lastBroadcastAt: number;
   demo: boolean;
+  language: ArcadeLocale;
+  commands: ArcadeCommandSettings;
   roomId: string | null;
   userId: string | null;
   sessionId: string | null;
@@ -315,6 +324,8 @@ export class ArcadeRuntime {
       idleTimer: null,
       lastBroadcastAt: 0,
       demo: true,
+      language: 'tr',
+      commands: sanitizeArcadeRoomSettings({}).commands,
       roomId: null,
       userId: null,
       sessionId: null,
@@ -334,16 +345,19 @@ export class ArcadeRuntime {
     if (existing) return existing;
     const gameKey = roomRow.game_key as ArcadeKey;
     const state = createArcadeState(gameKey, Date.now());
+    let parsedSettings: Record<string, unknown> = {};
     try {
-      const settings = JSON.parse(roomRow.settings_json) as Record<string, unknown>;
-      const quizQuestions = sanitizeQuizQuestions(settings.quizQuestions);
-      if (quizQuestions.length > 0) {
-        state.quizPool = quizQuestions;
-        state.quizOrder = [];
-      }
+      const parsed = JSON.parse(roomRow.settings_json) as unknown;
+      if (parsed && typeof parsed === 'object') parsedSettings = parsed as Record<string, unknown>;
     } catch {
-      /* ayar yoksa varsayılan havuz */
+      parsedSettings = {};
     }
+    const quizQuestions = sanitizeQuizQuestions(parsedSettings.quizQuestions);
+    if (quizQuestions.length > 0) {
+      state.quizPool = quizQuestions;
+      state.quizOrder = [];
+    }
+    const arcadeSettings = sanitizeArcadeRoomSettings(parsedSettings);
     const room: Room = {
       key: roomKey,
       gameKey,
@@ -354,6 +368,8 @@ export class ArcadeRuntime {
       idleTimer: null,
       lastBroadcastAt: 0,
       demo: false,
+      language: arcadeSettings.language,
+      commands: arcadeSettings.commands,
       roomId: roomRow.id,
       userId: roomRow.user_id,
       sessionId: null,
@@ -365,6 +381,22 @@ export class ArcadeRuntime {
     this.rooms.set(roomKey, room);
     this.startTicker(room);
     return room;
+  }
+
+  applyRoomSettings(roomRow: ArcadeRoomRow): void {
+    const room = this.rooms.get(`room:${roomRow.id}`);
+    if (!room) return;
+    let parsed: Record<string, unknown> = {};
+    try {
+      const value = JSON.parse(roomRow.settings_json) as unknown;
+      if (value && typeof value === 'object') parsed = value as Record<string, unknown>;
+    } catch {
+      parsed = {};
+    }
+    const settings = sanitizeArcadeRoomSettings(parsed);
+    room.language = settings.language;
+    room.commands = settings.commands;
+    this.broadcast(room);
   }
 
   setQuizPool(roomId: string, questions: Array<unknown>): void {
@@ -494,6 +526,16 @@ export class ArcadeRuntime {
     }
   }
 
+  private pushRoomFeed(room: Room, text: string): void {
+    room.state.feed.unshift({
+      id: `sys_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      text,
+      kind: 'system',
+      at: Date.now(),
+    });
+    room.state.feed = room.state.feed.slice(0, 40);
+  }
+
   ingestPlatformEvent(
     roomRow: ArcadeRoomRow,
     event: NormalizedPlatformEvent,
@@ -514,6 +556,86 @@ export class ArcadeRuntime {
       return { accepted: false, reason: 'banned' };
     }
     const existing = room.state.players.find((player) => player.id === playerId);
+    const command =
+      event.kind === 'comment' ? matchArcadeCommand(event.text ?? '', room.commands) : null;
+    const validCommand =
+      command && commandAppliesToGame(command, room.state.key) ? command : null;
+
+    const sideForCommand =
+      validCommand === 'red'
+        ? 'red'
+        : validCommand === 'blue'
+          ? 'blue'
+          : validCommand === 'girls'
+            ? 'girls'
+            : validCommand === 'boys'
+              ? 'boys'
+              : undefined;
+
+    if (validCommand === 'leave') {
+      if (existing) {
+        room.state.players = room.state.players.filter((entry) => entry.id !== playerId);
+        this.pushRoomFeed(room, `${existing.name} odadan ayrıldı.`);
+        this.broadcast(room);
+      }
+      return { accepted: true, reason: 'left', playerId };
+    }
+
+    if (sideForCommand && room.state.key === 'tug' || sideForCommand && room.state.key === 'versus') {
+      let teamPlayer = existing;
+      if (!teamPlayer) {
+        teamPlayer = addArcadePlayer(room.state, {
+          id: playerId,
+          name: event.viewer.name || `${event.platform} izleyici`,
+          isBot: false,
+          platform: event.platform,
+          now: Date.now(),
+          avatar: event.viewer.avatar,
+          side: sideForCommand,
+        }) ?? undefined;
+      } else {
+        teamPlayer.side = sideForCommand;
+      }
+      if (!teamPlayer) return { accepted: false, reason: 'room_full' };
+      if (event.viewer.avatar) teamPlayer.avatar = event.viewer.avatar;
+      if (!room.demo && room.state.phase === 'lobby') this.startRound(room);
+      const teamLabel =
+        room.state.key === 'versus'
+          ? sideForCommand === 'girls'
+            ? 'kızlar'
+            : 'erkekler'
+          : sideForCommand === 'red'
+            ? 'kırmızı'
+            : 'mavi';
+      this.pushRoomFeed(room, `${teamPlayer.name} ${teamLabel} tarafa geçti.`);
+      this.broadcast(room);
+      return { accepted: true, reason: 'team_joined', playerId };
+    }
+
+    if (validCommand === 'join') {
+      let joined = existing;
+      if (!joined) {
+        joined = addArcadePlayer(room.state, {
+          id: playerId,
+          name: event.viewer.name || `${event.platform} izleyici`,
+          isBot: false,
+          platform: event.platform,
+          now: Date.now(),
+          avatar: event.viewer.avatar,
+        }) ?? undefined;
+      }
+      if (!joined) return { accepted: false, reason: 'room_full' };
+      if (event.viewer.avatar) joined.avatar = event.viewer.avatar;
+      if (!room.demo && room.state.phase === 'lobby') this.startRound(room);
+      this.pushRoomFeed(room, `${joined.name} oyuna katıldı.`);
+      this.broadcast(room);
+      return { accepted: true, reason: 'joined', playerId };
+    }
+
+    if (!existing && event.kind === 'comment' && room.commands.requireJoin) {
+      return { accepted: false, reason: 'join_required' };
+    }
+
     const player =
       existing ??
       addArcadePlayer(room.state, {

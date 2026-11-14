@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ArcadeGameDef, ArcadeStateView } from '@shared/arcade';
+import type { ArcadeLocale } from '@shared/arcadeSettings';
 import { createArcade3DRenderer, type Arcade3DHandle } from '../arcade/renderer3d';
 
 export function Arcade3DStage({
@@ -7,12 +8,14 @@ export function Arcade3DStage({
   state,
   fitHeight = false,
   demo = true,
+  locale = 'tr',
   onError,
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
   fitHeight?: boolean;
   demo?: boolean;
+  locale?: ArcadeLocale;
   onError?: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -62,6 +65,13 @@ export function Arcade3DStage({
   const ss = remaining % 60;
   const prompt = state?.prompt;
   const topPlayers = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  const copy = {
+    tr: { live: 'CANLI', demo: 'DEMO', broadcast: 'YAYIN', players: 'oyuncu', round: 'Tur', remaining: 'kalan süre', lobby: 'lobi', lobbyTitle: '{copy.lobbyTitle}', lobbySub: 'tur birazdan başlıyor', ready: '{copy.ready}', wait: '{copy.wait}', waitSub: '{copy.waitSub}', winner: 'yeni tur birazdan', score: 'puan' },
+    en: { live: 'LIVE', demo: 'DEMO', broadcast: 'LIVE', players: 'players', round: 'Round', remaining: 'time left', lobby: 'lobby', lobbyTitle: 'Stage is getting ready', lobbySub: 'round starts soon', ready: 'Ready to broadcast', wait: 'Wait for the first viewer', waitSub: 'Once chat is connected, the first comment, like or gift starts the round.', winner: 'next round soon', score: 'pts' },
+    es: { live: 'EN VIVO', demo: 'DEMO', broadcast: 'EN VIVO', players: 'jugadores', round: 'Ronda', remaining: 'tiempo', lobby: 'lobby', lobbyTitle: 'Preparando escena', lobbySub: 'la ronda empieza pronto', ready: 'Listo para emitir', wait: 'Esperando al primer espectador', waitSub: 'El primer comentario, like o regalo inicia la ronda.', winner: 'nueva ronda pronto', score: 'pts' },
+    de: { live: 'LIVE', demo: 'DEMO', broadcast: 'LIVE', players: 'Spieler', round: 'Runde', remaining: 'Zeit', lobby: 'Lobby', lobbyTitle: 'Bühne wird vorbereitet', lobbySub: 'Runde startet gleich', ready: 'Sendebereit', wait: 'Auf ersten Zuschauer warten', waitSub: 'Der erste Kommentar, Like oder Geschenk startet die Runde.', winner: 'nächste Runde gleich', score: 'Pkt' },
+    fr: { live: 'EN DIRECT', demo: 'DÉMO', broadcast: 'EN DIRECT', players: 'joueurs', round: 'Tour', remaining: 'temps', lobby: 'salon', lobbyTitle: 'La scène se prépare', lobbySub: 'le tour commence bientôt', ready: 'Prêt à diffuser', wait: 'En attente du premier spectateur', waitSub: 'Le premier commentaire, like ou cadeau lance le tour.', winner: 'prochain tour bientôt', score: 'pts' },
+  }[locale];
 
   return (
     <div
@@ -78,12 +88,12 @@ export function Arcade3DStage({
             className="rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-white"
             style={{ background: game.accent }}
           >
-            {state?.phase === 'running' ? 'CANLI' : demo ? 'DEMO' : 'YAYIN'}
+            {state?.phase === 'running' ? copy.live : demo ? copy.demo : copy.broadcast}
           </span>
           <div className="min-w-0">
             <p className="truncate text-[13px] font-bold leading-tight text-ink-950">{game.name}</p>
             <p className="text-[8px] font-medium text-ink-400">
-              {state?.players.length ?? 0} oyuncu · Tur {state?.round ?? 1}
+              {state?.players.length ?? 0} {copy.players} · {copy.round} {state?.round ?? 1}
             </p>
           </div>
         </div>
@@ -92,7 +102,7 @@ export function Arcade3DStage({
             {targetTime ? `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}` : '—:—'}
           </p>
           <p className="text-[7px] font-semibold uppercase tracking-wider text-ink-400">
-            {state?.phase === 'lobby' ? 'lobi' : 'kalan süre'}
+            {state?.phase === 'lobby' ? copy.lobby : copy.remaining}
           </p>
         </div>
       </div>
@@ -176,9 +186,9 @@ export function Arcade3DStage({
             <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: game.accent }}>
               Lobi
             </p>
-            <p className="mt-1 text-lg font-bold text-ink-950">Sahne hazırlanıyor</p>
+            <p className="mt-1 text-lg font-bold text-ink-950">{copy.lobbyTitle}</p>
             <p className="mt-1 text-[10px] text-ink-500">
-              {state.players.length} oyuncu · tur birazdan başlıyor
+              {state.players.length} {copy.players} · {copy.lobbySub}
             </p>
           </div>
         </div>
@@ -188,11 +198,11 @@ export function Arcade3DStage({
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div className="mx-6 rounded-3xl border border-white/80 bg-white/85 px-6 py-5 text-center shadow-float backdrop-blur-md">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: game.accent }}>
-              Yayın hazır
+              {copy.ready}
             </p>
-            <p className="mt-1 text-lg font-bold text-ink-950">İlk izleyiciyi bekle</p>
+            <p className="mt-1 text-lg font-bold text-ink-950">{copy.wait}</p>
             <p className="mt-1.5 max-w-[230px] text-[10px] leading-relaxed text-ink-500">
-              Platform sohbeti bağlıysa ilk yorum, beğeni veya hediye turu otomatik başlatır.
+              {copy.waitSub}
             </p>
           </div>
         </div>
@@ -208,7 +218,7 @@ export function Arcade3DStage({
               {state.winner.name}
             </p>
             <p className="mt-1 text-[11px] text-ink-500">
-              {Math.round(state.winner.score)} puan · yeni tur birazdan
+              {Math.round(state.winner.score)} {copy.score} · {copy.winner}
             </p>
             <div className="mt-4 text-3xl">🏆</div>
           </div>

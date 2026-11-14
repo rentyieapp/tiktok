@@ -24,6 +24,13 @@ import {
 } from 'lucide-react';
 import type { ArcadeRoomDTO, PackageDTO } from '@shared/types';
 import { findArcadeGameBySlug, ARCADE_GAME_LIST } from '@shared/arcade';
+import {
+  ARCADE_LOCALES,
+  DEFAULT_ARCADE_COMMANDS,
+  sanitizeArcadeRoomSettings,
+  type ArcadeCommandSettings,
+  type ArcadeLocale,
+} from '@shared/arcadeSettings';
 import { api, ApiError } from '../../lib/api';
 import { useToast } from '../../lib/toast';
 import { startCheckout } from '../../lib/checkout';
@@ -51,6 +58,8 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const [accent, setAccent] = useState(game.accent);
   const [overlayTheme, setOverlayTheme] = useState<'full' | 'minimal'>('full');
   const [tts, setTts] = useState(false);
+  const [language, setLanguage] = useState<ArcadeLocale>('tr');
+  const [commands, setCommands] = useState<ArcadeCommandSettings>(DEFAULT_ARCADE_COMMANDS.tr);
 
   const load = async () => {
     setLoading(true);
@@ -71,6 +80,9 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
         setAccent(String(foundRoom.settings.accent ?? game.accent));
         setOverlayTheme(foundRoom.settings.overlayTheme === 'minimal' ? 'minimal' : 'full');
         setTts(foundRoom.settings.ttsEnabled === true);
+        const parsed = sanitizeArcadeRoomSettings(foundRoom.settings);
+        setLanguage(parsed.language);
+        setCommands(parsed.commands);
       }
     } catch (caught) {
       toastError('Oyun paneli yüklenemedi', caught instanceof ApiError ? caught.message : 'Tekrar dene.');
@@ -116,7 +128,15 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
     try {
       await api.put(`/api/arcade/rooms/${room.id}`, {
         name,
-        settings: { ...room.settings, welcomeText: welcome, accent, overlayTheme, ttsEnabled: tts },
+        settings: {
+          ...room.settings,
+          welcomeText: welcome,
+          accent,
+          overlayTheme,
+          ttsEnabled: tts,
+          language,
+          commands: { ...commands, requireJoin: Boolean(commands.requireJoin) },
+        },
       });
       success('Oyun paneli güncellendi');
       await load();
@@ -338,6 +358,45 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                     <option value="minimal">Sade sahne</option>
                   </select>
                 </Field>
+              </div>
+              <div className="rounded-xl border border-ink-100 bg-[#fbf7f0] p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink-400">Oyun dili ve komutları</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <Field label="Dil">
+                    <select className="input" value={language} onChange={(event) => {
+                      const next = event.target.value as ArcadeLocale;
+                      setLanguage(next);
+                      setCommands((current) => ({ ...DEFAULT_ARCADE_COMMANDS[next], requireJoin: current.requireJoin }));
+                    }}>
+                      {ARCADE_LOCALES.map((locale) => (
+                        <option key={locale.code} value={locale.code}>{locale.flag} {locale.label}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Katılım komutu">
+                    <input className="input" value={commands.join} maxLength={24} onChange={(event) => setCommands((current) => ({ ...current, join: event.target.value }))} placeholder="katıl" />
+                  </Field>
+                  <Field label="Ayrılma komutu">
+                    <input className="input" value={commands.leave} maxLength={24} onChange={(event) => setCommands((current) => ({ ...current, leave: event.target.value }))} placeholder="ayrıl" />
+                  </Field>
+                  {game.mode === 'tug' || game.mode === 'versus' ? (
+                    <Field label={game.mode === 'tug' ? 'Kırmızı takım komutu' : 'Kızlar takım komutu'}>
+                      <input className="input" value={game.mode === 'tug' ? commands.red : commands.girls} maxLength={24} onChange={(event) => setCommands((current) => game.mode === 'tug' ? { ...current, red: event.target.value } : { ...current, girls: event.target.value })} />
+                    </Field>
+                  ) : null}
+                  {game.mode === 'tug' || game.mode === 'versus' ? (
+                    <Field label={game.mode === 'tug' ? 'Mavi takım komutu' : 'Erkekler takım komutu'}>
+                      <input className="input" value={game.mode === 'tug' ? commands.blue : commands.boys} maxLength={24} onChange={(event) => setCommands((current) => game.mode === 'tug' ? { ...current, blue: event.target.value } : { ...current, boys: event.target.value })} />
+                    </Field>
+                  ) : null}
+                </div>
+                <label className="mt-2 flex cursor-pointer items-start gap-2 text-[10px] text-ink-500">
+                  <input type="checkbox" checked={commands.requireJoin} onChange={(event) => setCommands((current) => ({ ...current, requireJoin: event.target.checked }))} className="mt-0.5 h-4 w-4 accent-emerald-600" />
+                  Sohbetten oynamak için önce katılım komutu yazılsın
+                </label>
+                <p className="mt-1 text-[9px] text-ink-400">
+                  Örnek: izleyici <strong>!{commands.join}</strong> yazar; takım oyunlarında <strong>!{commands.red || commands.girls}</strong> ile taraf seçer.
+                </p>
               </div>
               <label className="flex cursor-pointer items-center gap-2 text-[11px] text-ink-600">
                 <input type="checkbox" checked={tts} onChange={(event) => setTts(event.target.checked)} className="h-4 w-4 accent-emerald-600" />

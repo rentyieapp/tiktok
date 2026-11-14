@@ -59,7 +59,7 @@ npm run dev          # sunucu + Vite birlikte
 npm run dev:server   # yalnız Fastify + WebSocket (:8787)
 npm run dev:web      # yalnız Vite (:5173, /api ve /ws proxy)
 npm run seed:demo    # demo yayıncı/oyun/geçmiş verisi
-npm test             # 84 entegrasyon + birim testi
+npm test             # 85 entegrasyon + birim testi
 npm run typecheck    # tüm TS projesi
 npm run build        # web production build (web/dist)
 npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
@@ -99,6 +99,10 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 | Bilgi Arenası soru editörü | Ana sayfa kategorileri |
 | --- | --- |
 | ![Soru editörü](docs/screenshots/quiz-editor.png) | ![Kategoriler](docs/screenshots/categories.png) |
+
+| Arcade dil ve komut ayarları |
+| --- |
+| ![Dil ve komutlar](docs/screenshots/panel-language.png) |
 
 | Yayıncı oyun portföyü | Oyun bazlı panel |
 | --- | --- |
@@ -158,7 +162,7 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │   ├── src/game/           # Taraftar Savaşı Three.js renderer + OBS overlay
 │   ├── src/arcade/         # 12 oyunun Three.js sahne renderer'ı
 │   ├── src/components/     # Arcade3DStage, 2D fallback, GameArt, panel layout
-├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (84)
+├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (85)
 └── scripts/seed-demo.ts
 ```
 
@@ -450,7 +454,7 @@ Tüm sorgular `game_id` ile sınırlıdır. İki yayıncının verisi birbirine 
 npm test
 ```
 
-**84 test**, 8 dosya:
+**85 test**, 8 dosya:
 
 | Dosya | Kapsam |
 | --- | --- |
@@ -737,6 +741,17 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - **WhatsApp destek:** `VITE_SUPPORT_WHATSAPP` tanımlanınca site genelinde canlı destek butonu.
 - **Moderasyon:** canlı oyuncu listesi, odadan çıkarma ve **kalıcı ban/blocklist**;
   platform avatarları (YouTube/TikTok) varsa moderasyon ve top-3 HUD’ta gösterilir.
+
+### Arcade dil ve komutları
+
+- Her arcade odasında dil: **Türkçe, English, Español, Deutsch, Français**.
+- Varsayılan katılım komutu dile göre gelir; yayıncı panelden değiştirebilir:
+  - Katılım: `katıl` / `join` / `unirse` / `beitreten` / `rejoindre`
+  - Ayrılma: `ayrıl` / `leave` / ...
+  - Takım oyunlarında kırmızı/mavi veya kızlar/erkekler komutları.
+- “Önce katılım komutu yazılsın” seçeneği açılırsa normal yorumlar oyuncu oluşturmaz.
+- OBS HUD’undaki temel durum etiketleri seçilen dile göre çevrilir.
+- Quiz/kelime içeriği yayıncının girdiği dilde kalır; otomatik çeviri yapılmaz.
 
 ## 17. Yayıncıya özel odalar ve platform bağlantıları
 

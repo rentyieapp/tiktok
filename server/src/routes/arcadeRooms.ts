@@ -268,6 +268,8 @@ export async function arcadeRoomRoutes(app: FastifyInstance, ctx: AppContext): P
     const body = parseBody(roomUpdateSchema, request.body);
     const room = updatePublisherRoom(db, config, user.id, id, body);
     if (body.status === 'disabled') arcade.disconnectRoom(id);
+    const updatedRow = findArcadeRoomById(db, id);
+    if (updatedRow && body.status !== 'disabled') arcade.applyRoomSettings(updatedRow);
     return reply.send({ room });
   });
 

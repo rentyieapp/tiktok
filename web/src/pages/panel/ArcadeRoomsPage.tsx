@@ -659,6 +659,11 @@ export function ArcadeRoomsPage() {
               </span>
             </span>
           </label>
+          {editing ? (
+            <Link to={`/panel/oyun/${editing.gameKey}`} className="block rounded-lg bg-[#f7f2e9] px-3 py-2 text-[10px] font-semibold text-brand-700">
+              Dil, katılım komutu ve takım komutları için oyun panelini aç →
+            </Link>
+          ) : null}
 
           {editing?.isOwner ? (
             <div className="rounded-xl border border-[#e4dccf] bg-[#fffaf4] p-3">

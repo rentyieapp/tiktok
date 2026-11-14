@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ArcadeGameDef, ArcadeStateView } from '@shared/arcade';
+import type { ArcadeLocale } from '@shared/arcadeSettings';
 import { Arcade3DStage } from './Arcade3DStage';
 import { ArcadeStage } from './ArcadeStage';
 
@@ -11,11 +12,13 @@ export function ArcadeLiveStage({
   state,
   fitHeight = false,
   demo = true,
+  locale = 'tr',
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
   fitHeight?: boolean;
   demo?: boolean;
+  locale?: ArcadeLocale;
 }) {
   const [fallback, setFallback] = useState(false);
 
@@ -29,6 +32,7 @@ export function ArcadeLiveStage({
       state={state}
       fitHeight={fitHeight}
       demo={demo}
+      locale={locale}
       onError={() => setFallback(true)}
     />
   );

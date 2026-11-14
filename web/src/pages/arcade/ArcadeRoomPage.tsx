@@ -23,6 +23,7 @@ import { useArcadeSocket } from '../../lib/useArcadeSocket';
 import { ArcadeLiveStage } from '../../components/ArcadeLiveStage';
 import { ArcadeOverlay } from '../../components/ArcadeOverlay';
 import { useArcadeTTS } from '../../lib/useArcadeTTS';
+import { sanitizeArcadeRoomSettings } from '@shared/arcadeSettings';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
 import { Button } from '../../components/ui';
 
@@ -135,6 +136,9 @@ function RoomView({
   const accent = String(data.room.settings.accent ?? game.accent);
   const welcomeText = String(data.room.settings.welcomeText ?? '');
   const overlayTheme = data.room.settings.overlayTheme === 'minimal' ? 'minimal' : 'full';
+  const roomSettings = sanitizeArcadeRoomSettings(data.room.settings);
+  const locale = roomSettings.language;
+  const commandHints = roomSettings.commands;
   const ttsEnabled =
     data.room.settings.ttsEnabled === true ||
     new URLSearchParams(window.location.search).get('tts') === '1';
@@ -173,7 +177,7 @@ function RoomView({
     return (
       <div className="flex h-screen w-screen items-center justify-center overflow-hidden bg-[#fbf7f0]">
         <div className="relative h-full aspect-[9/16]">
-          <ArcadeLiveStage game={stageGame} state={state} fitHeight demo={false} />
+          <ArcadeLiveStage game={stageGame} state={state} fitHeight demo={false} locale={locale} />
           <ArcadeOverlay
             game={game}
             state={state}
@@ -224,7 +228,7 @@ function RoomView({
         <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,400px)_1fr] xl:grid-cols-[minmax(0,430px)_1fr]">
           <div className="mx-auto w-full max-w-[430px]">
             <div className="relative overflow-hidden rounded-[26px] border border-[#e5dccf] bg-white p-2 shadow-[0_25px_60px_-30px_rgba(48,38,25,0.35)]">
-              <ArcadeLiveStage game={stageGame} state={state} demo={false} />
+              <ArcadeLiveStage game={stageGame} state={state} demo={false} locale={locale} />
               <ArcadeOverlay
                 game={game}
                 state={state}
@@ -258,6 +262,14 @@ function RoomView({
                   {welcomeText ? (
                     <p className="mt-2 max-w-md text-[11px] leading-relaxed text-ink-500">{welcomeText}</p>
                   ) : null}
+                  <div className="mt-2 flex flex-wrap gap-1.5 text-[9px] text-ink-400">
+                    <span className="rounded-full bg-[#f7f2e9] px-2 py-1">Katılım: <strong className="text-ink-700">!{commandHints.join}</strong></span>
+                    {(game.mode === 'tug' || game.mode === 'versus') ? (
+                      <span className="rounded-full bg-[#f7f2e9] px-2 py-1">
+                        Takım: <strong className="text-ink-700">!{game.mode === 'versus' ? commandHints.girls : commandHints.red}</strong> / <strong className="text-ink-700">!{game.mode === 'versus' ? commandHints.boys : commandHints.blue}</strong>
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 <span className="badge" style={{ background: `${accent}18`, color: accent }}>
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent }} /> Yayında

@@ -252,6 +252,55 @@ describe('yayıncıya özel arcade odaları', () => {
     expect(kicked.json().players.some((player: any) => player.name === 'Mod Testi')).toBe(false);
   });
 
+  it('özel dil ve katılım komutu platform sohbetinde uygulanır', async () => {
+    built = await makeApp();
+    const { app: server } = built;
+    const owner = await registerUser(server);
+    await buyGame(server, owner.cookie, 'offer_dance_1d');
+    const created = await server.inject({
+      method: 'POST',
+      url: '/api/arcade/rooms',
+      headers: { cookie: owner.cookie },
+      payload: { gameKey: 'dance' },
+    });
+    const room = created.json().room;
+    const updated = await server.inject({
+      method: 'PUT',
+      url: `/api/arcade/rooms/${room.id}`,
+      headers: { cookie: owner.cookie },
+      payload: {
+        settings: {
+          language: 'en',
+          commands: { join: 'gel', leave: 'git', red: 'kirmizi', blue: 'mavi', girls: 'kizlar', boys: 'erkekler', requireJoin: true },
+        },
+      },
+    });
+    expect(updated.statusCode).toBe(200);
+    const connection = await server.inject({
+      method: 'POST',
+      url: `/api/platforms/rooms/${room.id}/connect`,
+      headers: { cookie: owner.cookie },
+      payload: { platform: 'tiktok', channel: 'command_test' },
+    });
+    const token = (connection.json().connection.connectorUrl as string).split('/').pop()!;
+    await server.inject({
+      method: 'POST',
+      url: `/api/webhooks/tiktok/${token}`,
+      payload: { event: 'comment', user: { uniqueId: 'cmd_1', nickname: 'Komut Bir' }, comment: 'gel' },
+    });
+    const afterJoin = await server.inject({ method: 'GET', url: `/api/arcade/rooms/${room.slug}/public` });
+    expect(afterJoin.json().activePlayers).toBeGreaterThanOrEqual(1);
+
+    await server.inject({
+      method: 'POST',
+      url: `/api/webhooks/tiktok/${token}`,
+      payload: { event: 'comment', user: { uniqueId: 'cmd_2', nickname: 'Komut İki' }, comment: 'selam' },
+    });
+    const afterIgnored = await server.inject({ method: 'GET', url: `/api/arcade/rooms/${room.slug}/public` });
+    expect(afterIgnored.json().activePlayers).toBe(afterJoin.json().activePlayers);
+    expect(afterIgnored.json().room.settings.commands.join).toBe('gel');
+  });
+
   it('yayıncı Bilgi Arenası için özel soru havuzu kaydeder', async () => {
     built = await makeApp();
     const { app: server } = built;
