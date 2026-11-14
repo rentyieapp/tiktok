@@ -437,10 +437,25 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private buildDance(): void {
     this.baseCamera.set(0, 6.4, 17.0);
     this.lookTarget.set(0, 2.7, 0);
+    const cultural = this.game.key === 'horon' || this.game.key === 'sira' || this.game.key === 'ramwong';
+    const darkStage = this.game.key === 'latina' || this.game.key === 'concert';
+    const backColor = this.game.key === 'horon'
+      ? 0xfff1e6
+      : this.game.key === 'sira'
+        ? 0xf5e6d3
+        : this.game.key === 'latina'
+          ? 0x1e1b4b
+          : this.game.key === 'concert'
+            ? 0x111827
+            : this.game.key === 'ramwong'
+              ? 0xfff7ed
+              : 0xf7dfe9;
+    const floorColor = cultural ? 0x6b3f2a : darkStage ? 0x251b2e : 0x322635;
+    const archColor = this.game.key === 'horon' ? '#fca5a5' : this.game.key === 'sira' ? '#e7c9a9' : this.game.key === 'ramwong' ? '#fdba74' : darkStage ? '#7c3aed' : '#f3b5cd';
 
     const back = new THREE.Mesh(
       new THREE.PlaneGeometry(24, 15),
-      new THREE.MeshBasicMaterial({ color: 0xf7dfe9 }),
+      new THREE.MeshBasicMaterial({ color: backColor }),
     );
     back.position.set(0, 6, -7);
     this.scene.add(back);
@@ -448,7 +463,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     for (let index = 0; index < 5; index += 1) {
       const arch = new THREE.Mesh(
         new THREE.TorusGeometry(4.0 + index * 0.2, 0.1, 8, 60, Math.PI),
-        mat(index % 2 === 0 ? '#f3b5cd' : '#ffd8e6', { roughness: 0.4 }),
+        mat(index % 2 === 0 ? archColor : '#ffffff', { roughness: 0.4 }),
       );
       arch.position.set(0, 4.4, -6.2 + index * 0.12);
       arch.rotation.z = Math.PI;
@@ -458,8 +473,8 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const floor = new THREE.Mesh(
       new THREE.CylinderGeometry(5.1, 5.3, 0.32, 64),
       new THREE.MeshPhysicalMaterial({
-        color: 0x322635,
-        roughness: 0.22,
+        color: floorColor,
+        roughness: darkStage ? 0.22 : 0.55,
         metalness: 0.35,
         clearcoat: 0.6,
       }),
@@ -542,16 +557,80 @@ class Arcade3DRenderer implements Arcade3DHandle {
     signCtx.fillStyle = '#ffffff';
     signCtx.font = '900 64px system-ui, sans-serif';
     signCtx.textAlign = 'center';
-    signCtx.fillText('SAHNE 90', 256, 100);
+    signCtx.fillText(this.game.shortName.toLocaleUpperCase('tr'), 256, 100);
     const signTexture = new THREE.CanvasTexture(signCanvas);
     signTexture.colorSpace = THREE.SRGBColorSpace;
     const sign = new THREE.Mesh(
       new THREE.PlaneGeometry(3.2, 1),
       new THREE.MeshBasicMaterial({ map: signTexture, fog: false, toneMapped: false }),
     );
-    sign.position.set(0, 2.6, 0.64);
-    booth.add(sign);
+    sign.position.set(0, 5.5, -5.8);
+    this.scene.add(sign);
     this.scene.add(booth);
+    if (cultural) {
+      booth.visible = false;
+    }
+
+    if (this.game.key === 'sira') {
+      const rug = new THREE.Mesh(
+        new THREE.PlaneGeometry(7.6, 4.2),
+        new THREE.MeshStandardMaterial({ color: 0x9f2d2d, roughness: 0.95 }),
+      );
+      rug.rotation.x = -Math.PI / 2;
+      rug.position.set(0, 0.08, 2.8);
+      this.scene.add(rug);
+      for (let index = 0; index < 7; index += 1) {
+        const lantern = new THREE.Mesh(
+          new THREE.SphereGeometry(0.16, 10, 8),
+          new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xf59e0b, emissiveIntensity: 1.2 }),
+        );
+        lantern.position.set(-3 + index, 5.8 - (index % 2) * 0.4, -1.5 + (index % 3) * 0.7);
+        this.scene.add(lantern);
+      }
+    }
+    if (this.game.key === 'ramwong' || this.game.key === 'horon') {
+      for (let index = 0; index < 9; index += 1) {
+        const lantern = new THREE.Mesh(
+          new THREE.SphereGeometry(0.2, 12, 8),
+          new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xfb923c, emissiveIntensity: 1.1 }),
+        );
+        lantern.position.set(-5 + index * 1.2, 6.4 + Math.sin(index) * 0.4, -2.4);
+        this.scene.add(lantern);
+      }
+    }
+    if (this.game.key === 'concert') {
+      for (let index = 0; index < 14; index += 1) {
+        const light = new THREE.Mesh(
+          new THREE.SphereGeometry(0.12, 8, 6),
+          new THREE.MeshBasicMaterial({ color: index % 2 ? 0x7c3aed : 0x22d3ee }),
+        );
+        light.position.set(-6.5 + index * 1, 8.2, -3.6);
+        this.scene.add(light);
+      }
+    }
+    if (this.game.key === 'sira') {
+      const saz = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 10), mat(0xb45309, { roughness: 0.5 }));
+      body.scale.set(1, 0.8, 0.6);
+      saz.add(body);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.075, 1.9, 8), mat(0x7c2d12, { roughness: 0.6 }));
+      neck.position.y = 1;
+      saz.add(neck);
+      saz.position.set(-3.4, 1.2, 2.4);
+      saz.rotation.z = 0.35;
+      this.scene.add(saz);
+    }
+    if (this.game.key === 'horon' || this.game.key === 'ramwong') {
+      for (const x of [-3.7, 3.7]) {
+        const drum = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.55, 0.55, 0.45, 18),
+          mat(0x9a3412, { roughness: 0.7 }),
+        );
+        drum.position.set(x, 0.7, 2.2);
+        drum.rotation.z = Math.PI / 2;
+        this.scene.add(drum);
+      }
+    }
 
     for (let index = 0; index < 6; index += 1) {
       const angle = (index / 6) * Math.PI * 2;
@@ -601,6 +680,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       ball.add(mirror);
     }
     this.scene.add(ball);
+    if (cultural) ball.visible = false;
     this.dynamic.push((_state, time) => {
       ball.rotation.y = time * 0.32;
       ball.rotation.z = Math.sin(time * 0.2) * 0.08;
@@ -2644,11 +2724,20 @@ class Arcade3DRenderer implements Arcade3DHandle {
       const actor = this.actors.get(player.id);
       if (!actor) return;
       if (mode === 'dance') {
-        const row = index % 2;
-        const rowIndex = Math.floor(index / 2);
-        const rowCount = row === 0 ? Math.ceil(players.length / 2) : Math.floor(players.length / 2);
-        const x = (rowIndex - (rowCount - 1) / 2) * 1.35;
-        const z = row === 0 ? 1.9 : 0.55;
+        const culturalDance = ['horon', 'sira', 'latina', 'concert', 'ramwong'].includes(this.game.key);
+        let x: number;
+        let z: number;
+        if (culturalDance) {
+          const angle = (index / Math.max(1, players.length)) * Math.PI * 2;
+          x = Math.cos(angle) * 2.25;
+          z = Math.sin(angle) * 1.75 + 1.1;
+        } else {
+          const row = index % 2;
+          const rowIndex = Math.floor(index / 2);
+          const rowCount = row === 0 ? Math.ceil(players.length / 2) : Math.floor(players.length / 2);
+          x = (rowIndex - (rowCount - 1) / 2) * 1.35;
+          z = row === 0 ? 1.9 : 0.55;
+        }
         actor.group.position.set(x, 0.1 + Math.abs(Math.sin(time * 2.1 + index)) * 0.18, z);
         actor.group.rotation.y = Math.sin(time * 0.9 + index) * 0.22;
         actor.leftArm.rotation.z = 1.15 + Math.sin(time * 4 + index) * 0.55;

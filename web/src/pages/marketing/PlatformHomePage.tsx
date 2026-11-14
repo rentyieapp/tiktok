@@ -124,7 +124,7 @@ export function PlatformHomePage() {
             <h1 className="mt-5 max-w-2xl text-balance font-display text-[42px] font-bold leading-[1.02] tracking-tight text-ink-950 sm:text-6xl">
               Sohbetin oynadığı
               <span className="relative mt-1 block w-fit text-brand-700">
-                on iki oyun.
+                on yedi oyun.
                 <svg viewBox="0 0 200 14" className="absolute -bottom-1 left-0 h-3 w-full" aria-hidden>
                   <path d="M3 10 Q60 2 100 7 T197 4" fill="none" stroke="#34b58b" strokeWidth="5" strokeLinecap="round" opacity="0.35" />
                 </svg>
@@ -148,7 +148,7 @@ export function PlatformHomePage() {
             </div>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-ink-400">
               <span className="inline-flex items-center gap-1.5">
-                <Check size={12} className="text-brand-600" /> 12 oynanabilir oyun
+                <Check size={12} className="text-brand-600" /> 17 oynanabilir oyun
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Check size={12} className="text-brand-600" /> Günde 30 dk ücretsiz deneme

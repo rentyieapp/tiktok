@@ -72,7 +72,7 @@ export function GameArt({ game, className = '' }: { game: ArcadeGameDef; classNa
 function Scene({ game, id }: { game: ArcadeGameDef; id: string }) {
   switch (game.mode) {
     case 'dance':
-      return <Dance game={game} id={id} />;
+      return game.key === 'horon' ? <Horon game={game} id={id} /> : game.key === 'sira' ? <Sira game={game} id={id} /> : game.key === 'latina' ? <Latina game={game} id={id} /> : game.key === 'concert' ? <Concert game={game} id={id} /> : game.key === 'ramwong' ? <Ramwong game={game} id={id} /> : <Dance game={game} id={id} />;
     case 'press':
       return <Press game={game} id={id} />;
     case 'circle':
@@ -189,6 +189,136 @@ function Dance({ game, id }: { game: ArcadeGameDef; id: string }) {
         <rect key={index} x={170 + index * 44} y={64 + (index % 3) * 22} width="7" height="3" rx="1.5" fill="#ffffff" opacity="0.7" transform={`rotate(${index * 23} ${170 + index * 44} ${64 + (index % 3) * 22})`} />
       ))}
       <text x="320" y="30" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#7a3d54" opacity="0.6">SAHNE 90</text>
+    </g>
+  );
+}
+
+
+function Horon({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <circle cx="320" cy="220" r="160" fill="#fff1e6" opacity="0.8" />
+      <ellipse cx="320" cy="330" rx="250" ry="35" fill="#6b3f2a" opacity="0.5" />
+      <path d="M120 320 Q320 250 520 320" stroke="#b45309" strokeWidth="8" fill="none" opacity="0.5" />
+      {[0, 1, 2, 3, 4].map((index) => (
+        <g key={index} transform={`translate(${180 + index * 70} ${250 - (index % 2) * 15})`}>
+          <circle cx="0" cy="-35" r="15" fill="#f0c8ac" />
+          <path d="M-18 -32 Q-12 -52 0 -50 Q14 -52 18 -32 Q8 -40 0 -40 Q-8 -40 -18 -32" fill="#3b2a25" />
+          <rect x="-16" y="-22" width="32" height="44" rx="12" fill={index % 2 ? '#dc2626' : '#b45309'} />
+          <path d="M-28 -8 L-40 -24 M16 -8 L42 -24" stroke="#f0c8ac" strokeWidth="7" strokeLinecap="round" />
+          <rect x="-13" y="20" width="9" height="32" rx="4" fill="#2f2a35" />
+          <rect x="4" y="20" width="9" height="32" rx="4" fill="#2f2a35" />
+        </g>
+      ))}
+      <g opacity="0.8">
+        {[0, 1, 2, 3, 4, 5].map((index) => (
+          <circle key={index} cx={100 + index * 88} cy={90 + (index % 2) * 28} r="9" fill="#fbbf24" />
+        ))}
+      </g>
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#7c2d12" opacity="0.6">HORON &amp; HALAY</text>
+    </g>
+  );
+}
+
+function Sira({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect x="70" y="80" width="500" height="250" rx="20" fill="#fef3c7" opacity="0.8" />
+      <ellipse cx="320" cy="320" rx="230" ry="34" fill="#9f2d2d" opacity="0.55" />
+      <rect x="140" y="280" width="360" height="34" rx="17" fill="#7c2d12" />
+      {[0, 1, 2, 3, 4].map((index) => (
+        <g key={index} transform={`translate(${205 + index * 56} ${250})`}>
+          <circle cx="0" cy="-22" r="14" fill="#f0c8ac" />
+          <path d="M-16 -20 Q-10 -38 0 -36 Q12 -38 16 -20 Q8 -27 0 -27 Q-8 -27 -16 -20" fill="#3b2a25" />
+          <rect x="-15" y="-10" width="30" height="40" rx="10" fill={index % 2 ? '#7c2d12' : '#b45309'} />
+        </g>
+      ))}
+      <g transform="translate(320 150)">
+        <rect x="-18" y="-8" width="36" height="70" rx="14" fill="#b45309" />
+        <circle cx="0" cy="-26" r="17" fill="#f0c8ac" />
+        <path d="M-18 -26 Q-12 -46 0 -44 Q14 -46 18 -26 Q8 -34 0 -34 Q-8 -34 -18 -26" fill="#3b2a25" />
+        <path d="M-40 55 L40 55" stroke="#7c2d12" strokeWidth="5" strokeLinecap="round" />
+      </g>
+      {[0, 1, 2, 3].map((index) => (
+        <circle key={index} cx={160 + index * 105} cy={105 + (index % 2) * 18} r="8" fill="#fbbf24" />
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#78350f" opacity="0.6">SIRA GECESİ</text>
+    </g>
+  );
+}
+
+function Latina({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect x="0" y="0" width="640" height="400" fill="#1e1b4b" />
+      <ellipse cx="320" cy="330" rx="260" ry="38" fill="#db2777" opacity="0.35" />
+      <circle cx="320" cy="210" r="150" fill="#7c3aed" opacity="0.25" />
+      {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+        <rect key={index} x={110 + index * 62} y={60 + (index % 2) * 14} width="8" height="120" rx="4" fill={index % 2 ? '#22d3ee' : '#f472b6'} opacity="0.7" />
+      ))}
+      <g transform="translate(260 250)">
+        <circle cx="0" cy="-28" r="17" fill="#f0c8ac" />
+        <rect x="-17" y="-12" width="34" height="45" rx="14" fill="#db2777" />
+        <path d="M-20 -2 L-44 -20 M18 -2 L42 -20" stroke="#f0c8ac" strokeWidth="7" strokeLinecap="round" />
+        <path d="M-8 30 L-24 64 M8 30 L24 64" stroke="#2f2a35" strokeWidth="8" strokeLinecap="round" />
+      </g>
+      <g transform="translate(390 265) scale(0.9)">
+        <circle cx="0" cy="-28" r="17" fill="#f0c8ac" />
+        <rect x="-17" y="-12" width="34" height="45" rx="14" fill="#f472b6" />
+        <path d="M-20 -2 L-44 -20 M18 -2 L42 -20" stroke="#f0c8ac" strokeWidth="7" strokeLinecap="round" />
+        <path d="M-8 30 L-24 64 M8 30 L24 64" stroke="#2f2a35" strokeWidth="8" strokeLinecap="round" />
+      </g>
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#f9a8d4" opacity="0.8">NOCHE LATINA</text>
+    </g>
+  );
+}
+
+function Concert({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#111827" />
+      <ellipse cx="320" cy="330" rx="280" ry="50" fill="#7c3aed" opacity="0.3" />
+      <path d="M80 0 L260 330 L200 330 L20 0 Z" fill="#22d3ee" opacity="0.16" />
+      <path d="M560 0 L380 330 L440 330 L620 0 Z" fill="#f472b6" opacity="0.16" />
+      <g transform="translate(320 220)">
+        <circle cx="0" cy="-28" r="18" fill="#f0c8ac" />
+        <path d="M-18 -30 Q-12 -52 0 -50 Q14 -52 18 -30 Q8 -40 0 -40 Q-8 -40 -18 -30" fill="#3b2a25" />
+        <rect x="-18" y="-10" width="36" height="52" rx="14" fill="#7c3aed" />
+        <path d="M-20 4 L-38 -20 M20 4 L38 -20" stroke="#f0c8ac" strokeWidth="7" strokeLinecap="round" />
+        <rect x="-5" y="-60" width="10" height="26" rx="5" fill="#e5e7eb" />
+        <circle cx="0" cy="-62" r="7" fill="#f472b6" />
+      </g>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+        <g key={index} transform={`translate(${90 + index * 68} ${320 - (index % 2) * 12})`}>
+          <circle cx="0" cy="-22" r="12" fill="#f0c8ac" />
+          <rect x="-12" y="-12" width="24" height="34" rx="8" fill={['#f472b6', '#22d3ee', '#fbbf24'][index % 3]} />
+          <path d="M-14 -2 L-28 -20 M12 -2 L28 -20" stroke="#f0c8ac" strokeWidth="5" strokeLinecap="round" />
+        </g>
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#e9d5ff" opacity="0.8">LIVE CONCERT</text>
+    </g>
+  );
+}
+
+function Ramwong({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <circle cx="320" cy="210" r="170" fill="#ffedd5" opacity="0.8" />
+      <ellipse cx="320" cy="330" rx="250" ry="38" fill="#ea580c" opacity="0.25" />
+      {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+        <g key={index} transform={`translate(${90 + index * 78} ${80 + (index % 2) * 22})`}>
+          <line x1="0" y1="-42" x2="0" y2="-8" stroke="#9a3412" strokeWidth="2" />
+          <circle cx="0" cy="4" r="11" fill="#f97316" />
+          <circle cx="0" cy="4" r="6" fill="#fbbf24" />
+        </g>
+      ))}
+      <g transform="translate(320 250)">
+        <circle cx="0" cy="-28" r="17" fill="#f0c8ac" />
+        <rect x="-18" y="-12" width="36" height="46" rx="14" fill="#ea580c" />
+        <path d="M-20 -2 L-46 -18 M18 -2 L46 -18" stroke="#f0c8ac" strokeWidth="7" strokeLinecap="round" />
+        <path d="M-8 30 L-24 64 M8 30 L24 64" stroke="#2f2a35" strokeWidth="8" strokeLinecap="round" />
+      </g>
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#9a3412" opacity="0.6">RAMWONG FAIR</text>
     </g>
   );
 }

@@ -19,6 +19,11 @@ export const ARCADE_KEYS = [
   'tug',
   'versus',
   'horse',
+  'horon',
+  'sira',
+  'latina',
+  'concert',
+  'ramwong',
 ] as const;
 
 export type ArcadeKey = (typeof ARCADE_KEYS)[number];
@@ -380,6 +385,111 @@ export const ARCADE_GAMES: Record<ArcadeKey, ArcadeGameDef> = {
       'Bitişe en önce ulaşan jokey kazanır.',
     ],
     controls: ['Katıl', 'Jokey seç', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 40,
+  },
+  horon: {
+    key: 'horon',
+    slug: 'horon-halay',
+    name: 'Horon & Halay',
+    shortName: 'Horon',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🕺',
+    accent: '#dc2626',
+    soft: '#fff1f0',
+    ink: '#450a0a',
+    tagline: 'Horon, halay ve düğün coşkusu.',
+    description:
+      'İzleyiciler yorumla meydana iner; horon, halay ve düğün danslarıyla tempoyu yükseltir. Beğeni ve hediyeler müziği hızlandırır, en coşkulu dansçı turu kazanır.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle tempoyu artır.', 'Hediye ile sahneye coşku ver.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 40,
+  },
+  sira: {
+    key: 'sira',
+    slug: 'sira-gecesi',
+    name: 'Sıra Gecesi',
+    shortName: 'Sıra',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🪕',
+    accent: '#b45309',
+    soft: '#fef7e7',
+    ink: '#451a03',
+    tagline: 'Saz, çay ve sohbet bir arada.',
+    description:
+      'Urfa sıra gecesi atmosferinde izleyiciler sıralara oturur. Saz ve türkü eşliğinde beğeni ve hediyelerle geceyi coşturur; en çok katkı veren geceyi kazanır.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle ritme katıl.', 'Hediye ile çalgıcıları coştur.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 40,
+  },
+  latina: {
+    key: 'latina',
+    slug: 'noche-latina',
+    name: 'Noche Latina',
+    shortName: 'Latina',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '💃',
+    accent: '#db2777',
+    soft: '#fdf2f8',
+    ink: '#500724',
+    tagline: 'Salsa, bachata, reggaetón.',
+    description:
+      'Latin dans kulübünde izleyiciler 3D dansçı olarak piste çıkar. Salsa, bachata ve reggaetón ritimleriyle yarışır; hediyeler DJ’i ve pisti coşturur.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle ritmi tut.', 'Hediye ile DJ’i coştur.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 40,
+  },
+  concert: {
+    key: 'concert',
+    slug: 'live-concert',
+    name: 'Live Concert',
+    shortName: 'Konser',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🎤',
+    accent: '#7c3aed',
+    soft: '#f5f3ff',
+    ink: '#2e1065',
+    tagline: 'Sahne, ışıklar ve kalabalık.',
+    description:
+      'İzleyiciler sahnenin önünde 3D hayranlar olarak konsere katılır. Ritimle zıplar, kalabalıkta sörf yapar; hediyeler ışık gösterisini ve enerjiyi yükseltir.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle enerji ver.', 'Hediye ile sahneyi patlat.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 50,
+  },
+  ramwong: {
+    key: 'ramwong',
+    slug: 'ramwong-fair',
+    name: 'Ramwong Fair',
+    shortName: 'Ramwong',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🏮',
+    accent: '#ea580c',
+    soft: '#fff7ed',
+    ink: '#431407',
+    tagline: 'Fenerler altında dans eden panayır.',
+    description:
+      'Tay tapınak panayırında izleyiciler fenerler altında Ramwong dansına katılır. Hediyeler sahneye fener, çiçek ve ritim getirir; en coşkulu dansçı kazanır.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle dans et.', 'Hediye ile fenerleri yak.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
     warnings: [GENERAL_WARNING],
     risk: 'normal',
     durationSec: 80,
@@ -1121,7 +1231,17 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
                 ? 'Matbaa ustası'
                 : state.key === 'circle'
                   ? 'Halkanın kalbi'
-                  : state.key === 'wheel'
+                  : state.key === 'horon'
+                    ? 'Meydanın yıldızı'
+                    : state.key === 'sira'
+                      ? 'Gecenin sesi'
+                      : state.key === 'latina'
+                        ? 'Pistin yıldızı'
+                        : state.key === 'concert'
+                          ? 'Sahnenin yıldızı'
+                          : state.key === 'ramwong'
+                            ? 'Panayırın yıldızı'
+                            : state.key === 'wheel'
                     ? 'Çarkın şanslısı'
                     : state.key === 'tug'
                       ? state.tug?.winningSide === 'red'
