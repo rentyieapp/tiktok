@@ -64,7 +64,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
       const foundRoom = roomResult.rooms.find((entry) => entry.gameKey === game.key) ?? null;
       setRoom(foundRoom);
       setLicense(roomResult.licenses.find((entry) => entry.gameKey === game.key) ?? null);
-      setOffers(offerResult.offers.filter((offer) => offer.gameKey === game.key && offer.isActive !== false));
+      setOffers(offerResult.offers.filter((offer) => offer.isActive !== false));
       if (foundRoom) {
         setName(foundRoom.name);
         setWelcome(String(foundRoom.settings.welcomeText ?? ''));
@@ -160,8 +160,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
     }
   };
 
-  const cheapest = useMemo(
-    () => [...offers].sort((a, b) => a.priceCents - b.priceCents)[0],
+  const gameOffers = useMemo(
+    () => offers.filter((offer) => offer.gameKey === game.key).sort((a, b) => a.durationDays - b.durationDays),
+    [offers, game.key],
+  );
+  const bundleOffers = useMemo(
+    () => offers.filter((offer) => offer.gameKey === '*').sort((a, b) => a.durationDays - b.durationDays),
     [offers],
   );
 
@@ -233,14 +237,49 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
             </div>
 
             {!license ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="brand" size="sm" icon={<Zap size={13} />} loading={working} onClick={() => void startTrial()}>
-                  Günde 30 dk ücretsiz dene
-                </Button>
-                {cheapest ? (
-                  <Button variant="secondary" size="sm" icon={<ShoppingBag size={13} />} onClick={() => void buy(cheapest)}>
-                    {formatPrice(cheapest.priceCents, cheapest.currency)} · Lisans al
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="brand" size="sm" icon={<Zap size={13} />} loading={working} onClick={() => void startTrial()}>
+                    Günde 30 dk ücretsiz dene
                   </Button>
+                </div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {gameOffers.map((offer) => (
+                    <button
+                      key={offer.id}
+                      type="button"
+                      disabled={working}
+                      onClick={() => void buy(offer)}
+                      className="flex items-center justify-between rounded-xl border border-[#e4dccf] bg-[#fffaf4] px-3 py-2.5 text-left transition hover:border-brand-300 hover:bg-brand-50/40 disabled:opacity-60"
+                    >
+                      <span>
+                        <span className="block text-[10px] font-bold text-ink-800">{offer.durationDays === 1 ? '1 Günlük' : `${offer.durationDays} Günlük`}</span>
+                        <span className="block text-[9px] text-ink-400">{game.name} lisansı</span>
+                      </span>
+                      <span className="text-[12px] font-bold text-brand-700">{formatPrice(offer.priceCents, offer.currency)}</span>
+                    </button>
+                  ))}
+                </div>
+                {bundleOffers.length > 0 ? (
+                  <div className="mt-4 rounded-xl border border-amber-200 bg-[#fffaf0] p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Tüm Oyunlar paketi</p>
+                    <div className="mt-2 grid gap-1.5 sm:grid-cols-3">
+                      {bundleOffers.map((offer) => (
+                        <button
+                          key={offer.id}
+                          type="button"
+                          disabled={working}
+                          onClick={() => void buy(offer)}
+                          className="flex items-center justify-between rounded-lg border border-amber-200 bg-white px-2.5 py-2 text-left disabled:opacity-60"
+                        >
+                          <span className="text-[9px] font-semibold text-ink-600">
+                            {offer.durationDays === 1 ? 'Günlük' : offer.durationDays === 30 ? 'Aylık' : 'Yıllık'}
+                          </span>
+                          <span className="text-[10px] font-bold text-amber-800">{formatPrice(offer.priceCents, offer.currency)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ) : null}
               </div>
             ) : !room ? (
