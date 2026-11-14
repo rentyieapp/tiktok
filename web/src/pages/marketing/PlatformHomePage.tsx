@@ -6,6 +6,10 @@ import {
   Heart,
   Layers,
   MessageCircle,
+  PartyPopper,
+  Swords,
+  Flag,
+  Brain,
   Play,
   Radio,
   Rocket,
@@ -70,6 +74,37 @@ const FAQ = [
   {
     q: 'TikTok ile resmî bağlantınız var mı?',
     a: 'Hayır. Bağımsız bir hizmetiz; TikTok, YouTube veya Twitch tarafından onaylanmış ya da sponsorlu değiliz.',
+  },
+];
+
+const CATEGORIES = [
+  {
+    name: 'Eğlence',
+    icon: PartyPopper,
+    color: '#e0558f',
+    soft: '#fff0f6',
+    text: 'Dans, çark, matbaa ve sosyal sahneler.',
+  },
+  {
+    name: 'Bilgi',
+    icon: Brain,
+    color: '#2563eb',
+    soft: '#eef4ff',
+    text: 'Quiz ve kelime oyunlarıyla sohbeti yarıştır.',
+  },
+  {
+    name: 'Arena',
+    icon: Swords,
+    color: '#dc2626',
+    soft: '#fff1f1',
+    text: 'Dövüş, halat çekme ve duvar itme kapışmaları.',
+  },
+  {
+    name: 'Yarış',
+    icon: Flag,
+    color: '#b45309',
+    soft: '#fff8e7',
+    text: 'Piksel araçlar ve jokeyler bitişe koşar.',
   },
 ];
 
@@ -172,6 +207,57 @@ export function PlatformHomePage() {
               <p className="mt-0.5 text-[9px] uppercase tracking-wider text-ink-400">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id="kategoriler" className="scroll-mt-20 border-b border-[#eee7dc] bg-white/50 py-12 sm:py-16">
+        <div className="container-page">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-600">Kategoriler</p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink-950 sm:text-3xl">
+                Yayınına göre bir kategori seç.
+              </h2>
+              <p className="mt-1.5 max-w-xl text-sm text-ink-500">
+                Eğlence, bilgi, arena veya yarış. Kategoriye tıkla, filtrelenmiş oyun kataloğuna git.
+              </p>
+            </div>
+            <Link to="/oyunlar" className="text-[11px] font-semibold text-brand-700 hover:text-brand-600">
+              Bütün oyunlar →
+            </Link>
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {CATEGORIES.map((category) => {
+              const Icon = category.icon;
+              const games = ARCADE_GAME_LIST.filter((game) => game.category === category.name);
+              return (
+                <Link
+                  key={category.name}
+                  to={`/oyunlar?kategori=${encodeURIComponent(category.name)}`}
+                  className="group relative overflow-hidden rounded-2xl border border-[#e9e1d5] p-4 transition hover:-translate-y-0.5 hover:shadow-card"
+                  style={{ background: `linear-gradient(135deg, ${category.soft}, #ffffff)` }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="grid h-9 w-9 place-items-center rounded-xl text-white"
+                      style={{ background: category.color }}
+                    >
+                      <Icon size={17} />
+                    </span>
+                    <span className="text-[10px] font-bold text-ink-400">{games.length} oyun</span>
+                  </div>
+                  <h3 className="mt-3 text-base font-bold text-ink-950">{category.name}</h3>
+                  <p className="mt-1 text-[10px] leading-relaxed text-ink-500">{category.text}</p>
+                  <p className="mt-2 truncate text-[9px] text-ink-400">
+                    {games.slice(0, 3).map((game) => game.shortName).join(' · ')}
+                  </p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-[9px] font-semibold" style={{ color: category.color }}>
+                    Oyunları gör <ArrowRight size={10} className="transition group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
 

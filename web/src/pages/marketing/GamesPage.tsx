@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
@@ -21,7 +21,11 @@ import { ArcadeGameCard } from '../../components/ArcadeGameCard';
 const FILTERS = ['Tümü', 'Eğlence', 'Bilgi', 'Arena', 'Yarış', 'Favoriler'];
 
 export function GamesPage() {
-  const [filter, setFilter] = useState('Tümü');
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('kategori') ?? '';
+  const [filter, setFilter] = useState(
+    FILTERS.includes(initialCategory) && initialCategory !== 'Favoriler' ? initialCategory : 'Tümü',
+  );
   const [query, setQuery] = useState('');
   const [offers, setOffers] = useState<PackageDTO[]>([]);
   const [favorites, setFavorites] = useState<string[]>(() => {

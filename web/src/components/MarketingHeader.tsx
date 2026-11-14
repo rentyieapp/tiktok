@@ -7,6 +7,7 @@ import { Logo } from './Logo';
 
 const NAV = [
   { to: '/oyunlar', label: 'Oyunlar' },
+  { to: '/#kategoriler', label: 'Kategoriler' },
   { to: '/satin-al', label: 'Mağaza' },
   { to: '/kurulum', label: 'Kurulum' },
   { to: '/liderlik', label: 'Liderlik' },

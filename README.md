@@ -96,9 +96,9 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 | --- | --- |
 | ![Uygulama](docs/screenshots/app-install.png) | ![OBS overlay](docs/screenshots/room-obs.png) |
 
-| Bilgi Arenası soru editörü |
-| --- |
-| ![Soru editörü](docs/screenshots/quiz-editor.png) |
+| Bilgi Arenası soru editörü | Ana sayfa kategorileri |
+| --- | --- |
+| ![Soru editörü](docs/screenshots/quiz-editor.png) | ![Kategoriler](docs/screenshots/categories.png) |
 
 | Yayıncı paneli |
 | --- |
