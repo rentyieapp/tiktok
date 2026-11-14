@@ -394,8 +394,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                   <input type="checkbox" checked={commands.requireJoin} onChange={(event) => setCommands((current) => ({ ...current, requireJoin: event.target.checked }))} className="mt-0.5 h-4 w-4 accent-emerald-600" />
                   Sohbetten oynamak için önce katılım komutu yazılsın
                 </label>
-                <p className="mt-1 text-[9px] text-ink-400">
-                  Örnek: izleyici <strong>!{commands.join}</strong> yazar; takım oyunlarında <strong>!{commands.red || commands.girls}</strong> ile taraf seçer.
+                <p className="mt-1 text-[9px] leading-relaxed text-ink-400">
+                  Dil; OBS’teki durum etiketlerini ve varsayılan komutları belirler. Katılım
+                  komutu yorumda <strong>!</strong> olmadan da çalışır. “Önce katılım” açıksa
+                  izleyici önce <strong>!{commands.join}</strong> yazmalı; takım oyunlarında
+                  <strong> !{commands.red || commands.girls}</strong> ile taraf seçer. Quiz ve
+                  kelime içerikleri yayıncının girdiği dilde kalır.
                 </p>
               </div>
               <label className="flex cursor-pointer items-center gap-2 text-[11px] text-ink-600">

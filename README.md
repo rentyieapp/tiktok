@@ -100,9 +100,13 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 | --- | --- |
 | ![Soru editörü](docs/screenshots/quiz-editor.png) | ![Kategoriler](docs/screenshots/categories.png) |
 
-| Arcade dil ve komut ayarları |
+| Arcade dil ve komut ayarları | English ana sayfa |
+| --- | --- |
+| ![Dil ve komutlar](docs/screenshots/panel-language.png) | ![English ana sayfa](docs/screenshots/home-en.png) |
+
+| English yayıncı paneli |
 | --- |
-| ![Dil ve komutlar](docs/screenshots/panel-language.png) |
+| ![English panel](docs/screenshots/panel-en.png) |
 
 | Yayıncı oyun portföyü | Oyun bazlı panel |
 | --- | --- |
@@ -741,6 +745,15 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - **WhatsApp destek:** `VITE_SUPPORT_WHATSAPP` tanımlanınca site genelinde canlı destek butonu.
 - **Moderasyon:** canlı oyuncu listesi, odadan çıkarma ve **kalıcı ban/blocklist**;
   platform avatarları (YouTube/TikTok) varsa moderasyon ve top-3 HUD’ta gösterilir.
+
+### Platform dili (TR / EN)
+
+- Üst menüdeki **TR / EN** düğmesi tüm arayüz dilini değiştirir; tercih tarayıcıda saklanır.
+- Ana sayfa, oyun kataloğu, oyun sayfaları, mağaza, kurulum, liderlik, giriş ve yayıncı paneli
+  İngilizceye çevrilir; oyun adları ve kategoriler İngilizce karşılıklarıyla gösterilir.
+- Sayfa başlığı ve tarih ayları da seçilen dile uyarlanır.
+- Yayıncı tarafından girilen quiz/kelime içerikleri, kullanıcı adları ve API hata mesajları
+  otomatik çevrilmez; bunlar içerik dilinde kalır.
 
 ### Arcade dil ve komutları
 

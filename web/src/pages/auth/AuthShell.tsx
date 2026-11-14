@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Check, Lock, Radio, ShieldCheck, Sparkles } from 'lucide-react';
 import { ARCADE_GAMES } from '@shared/arcade';
 import { Logo } from '../../components/Logo';
+import { LanguageSwitcher } from '../../i18n';
 import { GameArt } from '../../components/GameArt';
 
 export function AuthShell({
@@ -22,7 +23,7 @@ export function AuthShell({
     <div className="min-h-screen bg-[#fbf7f0] lg:grid lg:grid-cols-[1fr_0.92fr]">
       <div className="flex min-h-screen flex-col px-5 py-6 sm:px-10 lg:px-16">
         <div className="flex items-center justify-between">
-          <Logo />
+          <div className="flex items-center gap-3"><Logo /><LanguageSwitcher /></div>
           <Link
             to="/"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500 hover:text-ink-900"

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '../lib/auth';
 import { Button } from './ui';
 import { Logo } from './Logo';
+import { LanguageSwitcher } from '../i18n';
 
 const NAV = [
   { to: '/oyunlar', label: 'Oyunlar' },
@@ -29,6 +30,7 @@ export function MarketingHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           {me ? (
             <Link to={me.user.role === 'admin' ? '/admin' : '/panel'}>
               <Button variant="brand" size="sm" className="px-4">
@@ -88,6 +90,7 @@ export function MarketingHeader() {
               Giriş yap <ArrowRight size={14} />
             </Link>
           </div>
+          <div className="mt-2 flex justify-end"><LanguageSwitcher /></div>
         </div>
       ) : null}
     </header>

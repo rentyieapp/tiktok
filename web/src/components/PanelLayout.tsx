@@ -24,6 +24,7 @@ import { useAuth } from '../lib/auth';
 import { useStudio, StudioProvider } from '../lib/studio';
 import { Avatar, Button, Spinner } from './ui';
 import { Logo } from './Logo';
+import { LanguageSwitcher } from '../i18n';
 import { formatDate } from '../lib/format';
 
 const NAV_SECTIONS = [
@@ -93,7 +94,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-5 py-5">
-        <Logo />
+        <div className="flex items-center gap-2"><Logo /><LanguageSwitcher compact /></div>
       </div>
 
       <div className="px-3">

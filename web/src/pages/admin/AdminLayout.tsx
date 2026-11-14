@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../../lib/auth';
 import { Avatar, Button } from '../../components/ui';
 import { Logo } from '../../components/Logo';
+import { LanguageSwitcher } from '../../i18n';
 
 const ADMIN_NAV = [
   { to: '/admin', label: 'Genel bakış', icon: LayoutDashboard, end: true },
@@ -38,7 +39,7 @@ function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col border-r border-[#e9e1d5] bg-[#fffaf4] text-ink-900">
       <div className="px-5 py-5">
-        <Logo />
+        <div className="flex items-center gap-2"><Logo /><LanguageSwitcher compact /></div>
         <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-amber-700">
           <ShieldCheck size={10} /> Süper admin
         </span>

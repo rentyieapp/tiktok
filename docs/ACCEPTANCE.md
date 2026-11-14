@@ -26,6 +26,7 @@ Tüm otomatik testler `npm test` ile çalışır; son sonuç **85/85 geçti**.
 | 16 | PWA kurulum, kupon, WhatsApp destek, moderasyon/avatar | ✅ Tamam | `arcade-rooms.test.ts`, tarayıcı |
 | 17 | Bilgi Arenası 24 hazır soru + yayıncı soru editörü + karıştırma | ✅ Tamam | `arcade.test.ts`, `arcade-rooms.test.ts` |
 | 18 | Arcade 5 dil, özel katılım/ayrılma/takım komutları ve OBS HUD çevirisi | ✅ Tamam | `arcade-rooms.test.ts`, oyun paneli |
+| 19 | Tüm arayüz için TR/EN dil değiştirici ve İngilizce vitrin/panel | ✅ Tamam | Tarayıcı görsel kontrolü |
 
 Her faz sonunda tip kontrolü, testler ve tarayıcı görsel kontrolü yapıldı. Mevcut
 özellikler sonraki fazlarda bozulmadı; test paketi bunu doğrular.
