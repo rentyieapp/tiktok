@@ -110,7 +110,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <span className="badge-ok text-[9px]">{me?.licenses.length ?? 0} arcade</span>
           </div>
           <p className="mt-1.5 text-sm font-semibold text-ink-900">
-            {game ? '17 arcade + 3D stüdyo' : 'Oyunlarını keşfet'}
+            {game ? '24 arcade + 3D stüdyo' : 'Oyunlarını keşfet'}
           </p>
           <p className="mt-0.5 text-[11px] text-ink-500">
             {game

@@ -90,7 +90,7 @@ function Scene({ game, id }: { game: ArcadeGameDef; id: string }) {
     case 'tug':
       return <Tug game={game} id={id} />;
     case 'versus':
-      return <Versus game={game} id={id} />;
+      return game.key === 'clash' ? <Clash game={game} id={id} /> : <Versus game={game} id={id} />;
     case 'horse':
       return <Horse game={game} id={id} />;
     default:
@@ -323,6 +323,106 @@ function Ramwong({ game, id }: { game: ArcadeGameDef; id: string }) {
   );
 }
 
+
+function Hill({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <path d="M0 320 L180 150 L340 270 L500 120 L640 280 L640 400 L0 400 Z" fill="#86efac" />
+      <path d="M244 315 L368 315 L420 400 L188 400 Z" fill="#9a6b3f" />
+      <g transform="translate(290 300)">
+        <rect width="84" height="46" rx="10" fill={game.accent} />
+        <rect x="14" y="8" width="38" height="18" rx="5" fill="#d1fae5" opacity="0.75" />
+        <circle cx="18" cy="48" r="13" fill="#1f2937" /><circle cx="66" cy="48" r="13" fill="#1f2937" />
+      </g>
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#166534" opacity="0.6">TEPE FIRLAMASI</text>
+    </g>
+  );
+}
+function GrandPrix({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <path d="M210 150 L430 150 L610 400 L30 400 Z" fill="#2b2b33" />
+      <path d="M240 160 L400 160 L520 400 L120 400 Z" fill="#3f3f49" />
+      {[0, 1, 2].map((i) => <path key={i} d={`M${300 + i * 20} 160 L${250 + i * 80} 400`} stroke="#fff" strokeWidth="5" strokeDasharray="18 20" opacity="0.65" />)}
+      <rect x="180" y="112" width="280" height="34" rx="6" fill="#17171d" />
+      <text x="320" y="135" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" fill="#fecdd3">GRAND PRIX</text>
+      <g transform="translate(260 280)"><rect width="112" height="30" rx="10" fill={game.accent} /><circle cx="22" cy="40" r="14" fill="#111" /><circle cx="86" cy="40" r="14" fill="#111" /></g>
+    </g>
+  );
+}
+function AnimalRun({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <path d="M0 320 L120 210 L260 300 L420 180 L640 310 L640 400 L0 400 Z" fill="#fde68a" opacity="0.8" />
+      <path d="M0 350 L180 270 L360 340 L560 250 L640 330 L640 400 L0 400 Z" fill="#86efac" />
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i} transform={`translate(${130 + i * 130} ${300 - (i % 2) * 20})`}>
+          <ellipse cx="0" cy="0" rx="34" ry="22" fill={['#f59e0b', '#0f8a72', '#db2777', '#2563eb'][i]} />
+          <circle cx="32" cy="-14" r="16" fill={['#f59e0b', '#0f8a72', '#db2777', '#2563eb'][i]} />
+          <circle cx="40" cy="-18" r="3" fill="#1f2937" />
+          <path d="M-20 18 L-26 42 M14 18 L20 42" stroke="#3f2a1d" strokeWidth="6" strokeLinecap="round" />
+        </g>
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#78350f" opacity="0.6">ANIMAL RUN</text>
+    </g>
+  );
+}
+function Town({ game, id }: { game: ArcadeGameDef; id: string }) {
+  const colors = ['#e0558f', '#2563eb', '#0f8a72', '#d97706', '#7c3aed'];
+  return (
+    <g>
+      <rect x="0" y="315" width="640" height="85" fill="#94a3b8" opacity="0.55" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g key={i} transform={`translate(${96 + i * 96} ${300 - (i % 3) * 40})`}>
+          <rect width="64" height={80 + (i % 3) * 40} rx="4" fill={colors[i % colors.length]} />
+          {[0, 1, 2, 3].map((f) => <g key={f}><rect x="12" y={12 + f * 22} width="16" height="9" fill="#fff3b0" opacity="0.8" /><rect x="36" y={12 + f * 22} width="16" height="9" fill="#fff3b0" opacity="0.6" /></g>)}
+          <path d="M0 0 L32 -30 L64 0 Z" fill={colors[i % colors.length]} />
+        </g>
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#155e75" opacity="0.6">İZLEYİCİ KASABASI</text>
+    </g>
+  );
+}
+function Melon({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect x="0" y="270" width="640" height="130" fill="#c99a61" />
+      <ellipse cx="320" cy="235" rx="150" ry="136" fill="#4d9f45" />
+      {[-2, -1, 0, 1, 2].map((i) => <ellipse key={i} cx={320 + i * 34} cy="235" rx="15" ry="128" fill="none" stroke="#1f6b2a" strokeWidth="9" />)}
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => <ellipse key={i} cx="320" cy={140 + i * 25} rx={154 + i * 3} ry="18" fill="none" stroke={i % 2 ? '#fbbf24' : '#f472b6'} strokeWidth="5" />)}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#14532d" opacity="0.6">KARPUZ PATLATMA</text>
+    </g>
+  );
+}
+function Gold({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect x="0" y="300" width="640" height="100" fill="#e9d8b0" />
+      <g transform="translate(320 110)">
+        <rect x="-100" y="-20" width="200" height="54" rx="18" fill="#dc2626" />
+        <rect x="-88" y="30" width="52" height="100" rx="16" fill="#2563eb" /><rect x="36" y="30" width="52" height="100" rx="16" fill="#2563eb" />
+        <rect x="-92" y="122" width="60" height="18" rx="6" fill="#e5e7eb" /><rect x="32" y="122" width="60" height="18" rx="6" fill="#e5e7eb" />
+      </g>
+      {Array.from({ length: 22 }).map((_, i) => <ellipse key={i} cx={170 + (i % 8) * 42} cy={330 + Math.floor(i / 8) * 22} rx="13" ry="6" fill="#f6c945" />)}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#78350f" opacity="0.6">ALTIN MIKNATISI</text>
+    </g>
+  );
+}
+function Clash({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#1f2937" />
+      <path d="M0 0 L280 400 L0 400 Z" fill="#dc2626" opacity="0.35" />
+      <path d="M640 0 L360 400 L640 400 Z" fill="#2563eb" opacity="0.35" />
+      <path d="M310 80 L330 80 L330 320 L310 320 Z" fill="#f8fafc" opacity="0.85" />
+      {[0, 1, 2].map((i) => <circle key={i} cx={120 + i * 55} cy={230 - (i % 2) * 20} r="18" fill="#f0c8ac" />)}
+      {[0, 1, 2].map((i) => <circle key={i} cx={470 + i * 55} cy={230 - (i % 2) * 20} r="18" fill="#f0c8ac" />)}
+      <rect x="60" y="250" width="230" height="60" rx="14" fill="#dc2626" />
+      <rect x="350" y="250" width="230" height="60" rx="14" fill="#2563eb" />
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#fecaca" opacity="0.8">TEAM CLASH</text>
+    </g>
+  );
+}
 function Press({ game, id }: { game: ArcadeGameDef; id: string }) {
   const cards = [
     { x: 95, y: 150, color: '#d97706', rotate: -8 },

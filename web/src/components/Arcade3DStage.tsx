@@ -156,9 +156,9 @@ export function Arcade3DStage({
         <div className="absolute inset-x-3 top-[62px] z-10 sm:inset-x-4">
           <div className="rounded-2xl border border-white/80 bg-white/85 p-2.5 shadow-sm backdrop-blur-md">
             <div className="flex items-center justify-between text-[9px] font-extrabold">
-              <span className="text-pink-600">KIZLAR · {Math.round(state.wall.girls)}m</span>
+              <span className="text-pink-600">{game.key === 'clash' ? 'KIRMIZI' : 'KIZLAR'} · {Math.round(state.wall.girls)}m</span>
               <span className="text-ink-400">DUVAR</span>
-              <span className="text-blue-600">{Math.round(state.wall.boys)}m · ERKEKLER</span>
+              <span className="text-blue-600">{Math.round(state.wall.boys)}m · {game.key === 'clash' ? 'MAVİ' : 'ERKEKLER'}</span>
             </div>
             <div className="mt-1.5 flex h-2 overflow-hidden rounded-full bg-ink-100">
               <div className="h-full bg-pink-500 transition-[width] duration-300" style={{ width: `${((1 - state.wall.position) / 2) * 100}%` }} />

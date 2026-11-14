@@ -873,8 +873,8 @@ function drawVersus(
   ctx.fillStyle = game.ink;
   ctx.font = '800 20px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('KIZLAR', 130, 460);
-  ctx.fillText('ERKEKLER', W - 130, 460);
+  ctx.fillText(game.key === 'clash' ? 'KIRMIZI' : 'KIZLAR', 130, 460);
+  ctx.fillText(game.key === 'clash' ? 'MAVİ' : 'ERKEKLER', W - 130, 460);
 
   ctx.fillStyle = '#fff7f2';
   ctx.fillRect(wallX - 12, 470, 24, 190);
@@ -964,6 +964,44 @@ function drawHorse(
   ctx.fillStyle = '#8a8794';
   ctx.font = '500 12px system-ui, sans-serif';
   ctx.fillText('Yoruma jokey numarası yaz · Beğeni +1 · Hediye +10', W / 2, 896);
+}
+
+
+function drawTown(ctx: CanvasRenderingContext2D, game: ArcadeGameDef, state: ArcadeStateView) {
+  ctx.fillStyle = '#e8f8fb'; ctx.fillRect(0, 88, W, H - 88);
+  ctx.fillStyle = '#94a3b8'; for (let i = 0; i < 4; i += 1) ctx.fillRect(120 + i * 80, 160, 10, 560);
+  state.players.slice(0, 12).forEach((player, index) => {
+    const x = 90 + (index % 4) * 110; const base = 740; const h = Math.max(28, player.progress * 3.4);
+    ctx.fillStyle = player.color; ctx.fillRect(x - 26, base - h, 52, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    for (let y = 0; y < Math.floor(h / 24); y += 1) ctx.fillRect(x - 10, base - h + 10 + y * 24, 20, 7);
+    nameBadge(ctx, x, base + 8, player.name, player.color);
+  });
+  ctx.fillStyle = game.ink; ctx.font = '800 18px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('En yüksek bina kazanır', W / 2, 145);
+}
+
+function drawMelon(ctx: CanvasRenderingContext2D, game: ArcadeGameDef, state: ArcadeStateView, time: number) {
+  ctx.fillStyle = '#fff4dc'; ctx.fillRect(0, 88, W, H - 88);
+  ctx.fillStyle = '#c99a61'; ctx.fillRect(50, 640, W - 100, 24);
+  const cx = W / 2; const cy = 420; const tension = state.melon?.tension ?? 0;
+  ctx.save(); ctx.translate(Math.sin(time * 8) * tension * 0.012, Math.cos(time * 7) * tension * 0.01);
+  ctx.beginPath(); ctx.ellipse(cx, cy, 145, 130, 0, 0, Math.PI * 2); ctx.fillStyle = '#4d9f45'; ctx.fill();
+  ctx.strokeStyle = '#1f6b2a'; ctx.lineWidth = 8;
+  for (let i = -2; i <= 2; i += 1) { ctx.beginPath(); ctx.ellipse(cx + i * 36, cy, 18, 125, 0, 0, Math.PI * 2); ctx.stroke(); }
+  const bands = Math.ceil(tension / 7.2);
+  for (let i = 0; i < bands; i += 1) { ctx.strokeStyle = i % 2 === 0 ? '#fbbf24' : '#f472b6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.ellipse(cx, cy - 110 + i * 16, 146 + i * 1.2, 18, 0, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.restore();
+  ctx.fillStyle = game.ink; ctx.font = '800 22px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`Gerginlik: %${Math.round(tension)}`, cx, 720);
+}
+
+function drawGold(ctx: CanvasRenderingContext2D, game: ArcadeGameDef, state: ArcadeStateView, time: number) {
+  ctx.fillStyle = '#fff7db'; ctx.fillRect(0, 88, W, H - 88);
+  const cx = W / 2; const cy = 400; const pull = state.gold?.pulled ?? 0;
+  ctx.strokeStyle = '#d6a33a'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(cx, cy - 180, 80, Math.PI, 0); ctx.stroke();
+  ctx.fillStyle = '#dc2626'; ctx.fillRect(cx - 92, cy - 195, 28, 100); ctx.fillRect(cx + 64, cy - 195, 28, 100);
+  ctx.fillStyle = '#f6c945';
+  for (let i = 0; i < 35; i += 1) { const angle = i * 2.4 + time * 0.4; const radius = 150 * (1 - pull / 140); const x = cx + Math.cos(angle) * radius; const y = cy + 110 + Math.sin(angle) * 45 - pull * 1.8; ctx.beginPath(); ctx.ellipse(x, y, 10, 5, 0, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = game.ink; ctx.font = '800 22px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`Altın: %${Math.round(pull)}`, cx, 760);
 }
 
 function drawLobby(
@@ -1130,6 +1168,9 @@ export function ArcadeStage({
       else if (game.mode === 'tug') drawTug(ctx, game, current, time);
       else if (game.mode === 'versus') drawVersus(ctx, game, current, time);
       else if (game.mode === 'horse') drawHorse(ctx, game, current, time);
+      else if (game.mode === 'town') drawTown(ctx, game, current);
+      else if (game.mode === 'melon') drawMelon(ctx, game, current, time);
+      else if (game.mode === 'gold') drawGold(ctx, game, current, time);
       else drawRace(ctx, game, current, time);
 
       if (current.phase === 'lobby') drawLobby(ctx, game, current, demo);

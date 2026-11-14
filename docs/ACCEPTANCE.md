@@ -3,7 +3,7 @@
 Tarih: 2026-11-14 · Sürüm: MVP 1.0
 
 Bu belge, proje brief'indeki 17 kabul senaryosunu ve 12 fazın durumunu özetler.
-Tüm otomatik testler `npm test` ile çalışır; son sonuç **85/85 geçti**.
+Tüm otomatik testler `npm test` ile çalışır; son sonuç **87/87 geçti**.
 
 ## Faz durumu
 
@@ -17,10 +17,10 @@ Tüm otomatik testler `npm test` ile çalışır; son sonuç **85/85 geçti**.
 | 6 | Kalıcı, tahmin edilemez `/live/:slug`, link aç/kapat, OBS sahnesi | ✅ Tamam | `game-config.test.ts`, OBS görseli |
 | 7 | Yayıncı bazlı istatistikler, maç geçmişi, sürüm yönetimi | ✅ Tamam | `live-flow.test.ts`, panel |
 | 8 | 3D oyun motoru, OBS Browser Source, canlı event webhook'u, test stüdyosu | ✅ Tamam | WebSocket testleri, 4/8 takım görselleri |
-| 10 | Açık temalı 17 oyunlu platform, oyun sayfaları, canlı demo odaları, uyarılar | ✅ Tamam | `arcade.test.ts`, 17 oyun sahnesi |
+| 10 | Açık temalı 24 oyunlu platform, oyun sayfaları, canlı demo odaları, uyarılar | ✅ Tamam | `arcade.test.ts`, 24 oyun sahnesi |
 | 11 | Yayıncıya özel arcade odaları, lisans kapısı, Twitch/YouTube/TikTok bağlantıları | ✅ Tamam | `arcade-rooms.test.ts`, oda/bağlantı ekranları |
 | 12 | Oyun bazlı 1/30 günlük lisans, mağaza, lisans kapısı ve oda özelleştirme | ✅ Tamam | `arcade-rooms.test.ts`, mağaza/panel ekranları |
-| 13 | Tüm Oyunlar günlük/aylık/yıllık bundle ve 17 oyun lisansı | ✅ Tamam | `arcade-rooms.test.ts` |
+| 13 | Tüm Oyunlar günlük/aylık/yıllık bundle ve 24 oyun lisansı | ✅ Tamam | `arcade-rooms.test.ts` |
 | 14 | Kurulum rehberi, public liderlik, katalog arama/favoriler | ✅ Tamam | Tarayıcı görsel kontrolü, `/api/leaderboard` |
 | 15 | Günde 30 dk ücretsiz deneme, overlay/TTS, ortak yayıncı | ✅ Tamam | `arcade-rooms.test.ts` |
 | 16 | PWA kurulum, kupon, WhatsApp destek, moderasyon/avatar | ✅ Tamam | `arcade-rooms.test.ts`, tarayıcı |

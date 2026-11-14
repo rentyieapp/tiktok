@@ -155,6 +155,42 @@ describe('arcade motoru', () => {
     expect(state.winner?.label).toContain('Deniz');
   });
 
+  it('tepe, grand prix ve animal run yarışlarında bitişe ulaşan kazanır', () => {
+    for (const key of ['hill', 'grandprix', 'animal'] as const) {
+      const state = createArcadeState(key, 1_000);
+      addArcadePlayer(state, { id: 'p1', name: 'Deniz', now: 1_000 });
+      startArcadeRound(state, 1_000);
+      state.players[0]!.progress = 99.9;
+      arcadeTick(state, 1_300);
+      expect(state.phase).toBe('finished');
+      expect(state.winner?.playerId).toBe('p1');
+    }
+  });
+
+  it('karpuz ve altın ortak hedefte, team clash duvarda biter', () => {
+    const melon = createArcadeState('melon', 1_000);
+    addArcadePlayer(melon, { id: 'p1', name: 'Elif', now: 1_000 });
+    startArcadeRound(melon, 1_000);
+    melon.melon!.tension = 100;
+    arcadeTick(melon, 1_300);
+    expect(melon.phase).toBe('finished');
+
+    const gold = createArcadeState('gold', 1_000);
+    addArcadePlayer(gold, { id: 'p1', name: 'Kaan', now: 1_000 });
+    startArcadeRound(gold, 1_000);
+    gold.gold!.pulled = 100;
+    arcadeTick(gold, 1_300);
+    expect(gold.phase).toBe('finished');
+
+    const clash = createArcadeState('clash', 1_000);
+    addArcadePlayer(clash, { id: 'p1', name: 'A', side: 'girls', now: 1_000 });
+    startArcadeRound(clash, 1_000);
+    clash.wall!.girls = 30;
+    arcadeTick(clash, 1_300);
+    expect(clash.phase).toBe('finished');
+    expect(clash.wall!.winningSide).toBe('girls');
+  });
+
   it('arenada son kalan oyuncu kazanır', () => {
     const state = createArcadeState('gladiator', 1_000);
     addArcadePlayer(state, { id: 'p1', name: 'Can', now: 1_000 });
@@ -169,12 +205,12 @@ describe('arcade motoru', () => {
 });
 
 describe('arcade API ve WebSocket', () => {
-  it('on yedi oyunu listeler ve odaya katılımı kabul eder', async () => {
+  it('yirmi dört oyunu listeler ve odaya katılımı kabul eder', async () => {
     built = await makeApp();
     const { app: server } = built;
     const games = await server.inject({ method: 'GET', url: '/api/arcade/games' });
     expect(games.statusCode).toBe(200);
-    expect(games.json().games).toHaveLength(17);
+    expect(games.json().games).toHaveLength(24);
     expect(games.json().games[0].slug).toBe('sahne-90');
 
     const port = await listen(server);

@@ -24,6 +24,13 @@ export const ARCADE_KEYS = [
   'latina',
   'concert',
   'ramwong',
+  'hill',
+  'grandprix',
+  'town',
+  'melon',
+  'gold',
+  'animal',
+  'clash',
 ] as const;
 
 export type ArcadeKey = (typeof ARCADE_KEYS)[number];
@@ -38,7 +45,10 @@ export type ArcadeMode =
   | 'wheel'
   | 'tug'
   | 'versus'
-  | 'horse';
+  | 'horse'
+  | 'town'
+  | 'melon'
+  | 'gold';
 
 export type ArcadeRisk = 'normal' | 'yuksek';
 
@@ -495,6 +505,146 @@ export const ARCADE_GAMES: Record<ArcadeKey, ArcadeGameDef> = {
     durationSec: 80,
     maxPlayers: 40,
   },
+  hill: {
+    key: 'hill',
+    slug: 'tepe-firlamasi',
+    name: 'Tepe Fırlaması',
+    shortName: 'Tepe',
+    category: 'Yarış',
+    mode: 'race',
+    symbol: '⛰️',
+    accent: '#16a34a',
+    soft: '#f0fdf4',
+    ink: '#052e16',
+    tagline: 'Gazı kökle, tepeyi fethet.',
+    description: 'İzleyiciler kendi araçlarıyla tepeye tırmanır. Beğeni gaz, hediye nitro verir; zirveye ilk ulaşan kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile gaz ver.', 'Hediye ile nitro bas.', 'Zirveye ilk ulaşan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 75,
+    maxPlayers: 30,
+  },
+  grandprix: {
+    key: 'grandprix',
+    slug: 'grand-prix',
+    name: 'Grand Prix',
+    shortName: 'GP',
+    category: 'Yarış',
+    mode: 'race',
+    symbol: '🏎️',
+    accent: '#dc2626',
+    soft: '#fff1f2',
+    ink: '#450a0a',
+    tagline: 'Pistte zafer, sohbette güç.',
+    description: 'F1 temalı pistte izleyiciler araçlarını ileri iter. Beğeni hız, hediye nitro etkisi yaratır; bitişe ilk ulaşan kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile hızlan.', 'Hediye ile nitro al.', 'Bitişe ilk gelen kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 70,
+    maxPlayers: 20,
+  },
+  town: {
+    key: 'town',
+    slug: 'izleyici-kasabasi',
+    name: 'İzleyici Kasabası',
+    shortName: 'Kasaba',
+    category: 'Eğlence',
+    mode: 'town',
+    symbol: '🏙️',
+    accent: '#0e7490',
+    soft: '#ecfeff',
+    ink: '#083344',
+    tagline: 'Kulübenden gökdelene yüksel.',
+    description: 'Her izleyici kendi binasını büyütür. Beğeni ve hediyeler kat ekler; en yüksek binaya ulaşan kasabanın mimarı olur.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile kat ekle.', 'Hediye ile binanı büyüt.', 'En yüksek bina kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 75,
+    maxPlayers: 30,
+  },
+  melon: {
+    key: 'melon',
+    slug: 'karpuz-patlatma',
+    name: 'Karpuz Patlatma',
+    shortName: 'Karpuz',
+    category: 'Eğlence',
+    mode: 'melon',
+    symbol: '🍉',
+    accent: '#15803d',
+    soft: '#f0fdf4',
+    ink: '#052e16',
+    tagline: 'Bantlar gerildikçe karpuz çatlar.',
+    description: 'İzleyiciler dev karpuzun etrafına lastik bant geçirir. Beğeni ve hediyeler gerginliği artırır; karpuzu patlatan turu kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile bant ekle.', 'Hediye ile gerginliği yükselt.', 'Karpuzu patlatan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 65,
+    maxPlayers: 40,
+  },
+  gold: {
+    key: 'gold',
+    slug: 'altin-miknatisi',
+    name: 'Altın Mıknatısı',
+    shortName: 'Altın',
+    category: 'Eğlence',
+    mode: 'gold',
+    symbol: '🧲',
+    accent: '#d97706',
+    soft: '#fffbeb',
+    ink: '#451a03',
+    tagline: 'Kasayı boşalt, altını çek.',
+    description: 'İzleyiciler dev mıknatısla altın kasasını boşaltır. Beğeni ve hediyeler mıknatısı güçlendirir; en çok altın çeken kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile mıknatısı çek.', 'Hediye ile kasayı boşalt.', 'En çok altın çeken kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 70,
+    maxPlayers: 40,
+  },
+  animal: {
+    key: 'animal',
+    slug: 'animal-run',
+    name: 'Animal Run',
+    shortName: 'Animal',
+    category: 'Yarış',
+    mode: 'race',
+    symbol: '🐾',
+    accent: '#ca8a04',
+    soft: '#fefce8',
+    ink: '#422006',
+    tagline: 'Vahşi doğada hediye yarışı.',
+    description: 'İzleyiciler hayvan yarışçılarını seçer. Beğeni hız, hediye roket etkisi verir; orman pistinde bitişe ilk ulaşan kazanır.',
+    howTo: ['Yoruma katıl.', 'Beğeni ile koş.', 'Hediye ile roket al.', 'Bitişe ilk gelen kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 70,
+    maxPlayers: 20,
+  },
+  clash: {
+    key: 'clash',
+    slug: 'team-clash',
+    name: 'Team Clash',
+    shortName: 'Clash',
+    category: 'Arena',
+    mode: 'versus',
+    symbol: '⚔️',
+    accent: '#b91c1c',
+    soft: '#fef2f2',
+    ink: '#450a0a',
+    tagline: 'İki takım, tek meydan.',
+    description: 'İzleyiciler A veya B yazarak kırmızı ya da mavi takıma katılır. Beğeni ve hediyeler duvarı iter; karşı tarafa geçiren takım kazanır.',
+    howTo: ['A veya B yazarak takım seç.', 'Beğeni ile duvarı it.', 'Hediye ile özel saldırı yap.', 'Duvarı karşıya geçiren kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
+    maxPlayers: 60,
+  },
 };
 
 export interface HorseRacer {
@@ -934,6 +1084,8 @@ export interface ArcadeState {
   tug?: TugState;
   quizPool?: QuizQuestion[];
   quizOrder?: number[];
+  melon?: { tension: number };
+  gold?: { pulled: number };
   wall?: WallState;
   horse?: HorseState;
 }
@@ -967,7 +1119,7 @@ function rankPlayers(state: ArcadeState): void {
     if (state.key === 'gladiator' || state.key === 'stick') {
       if (b.hp !== a.hp) return b.hp - a.hp;
     }
-    if (state.key === 'kart') return b.progress - a.progress;
+    if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) return b.progress - a.progress;
     return b.score - a.score;
   });
   sorted.forEach((player, index) => {
@@ -1009,13 +1161,15 @@ export function createArcadeState(key: ArcadeKey, now = Date.now()): ArcadeState
         ? { red: 0, blue: 0, position: 0, winningSide: null, lastPullAt: now }
         : undefined,
     wall:
-      key === 'versus'
+      ['versus', 'clash'].includes(key) || key === 'clash'
         ? { girls: 0, boys: 0, position: 0, winningSide: null, lastPushAt: now }
         : undefined,
     horse:
       key === 'horse'
         ? { lanes: HORSE_RACERS.map((racer) => ({ ...racer, progress: 0 })), winnerLane: null }
         : undefined,
+    melon: key === 'melon' ? { tension: 0 } : undefined,
+    gold: key === 'gold' ? { pulled: 0 } : undefined,
   };
 }
 
@@ -1055,7 +1209,7 @@ export function addArcadePlayer(
     side:
       state.key === 'tug'
         ? (redCount <= blueCount ? 'red' : 'blue')
-        : state.key === 'versus'
+        : ['versus', 'clash'].includes(state.key)
           ? input.side === 'girls' || input.side === 'boys'
             ? input.side
             : girlsCount <= boysCount
@@ -1167,7 +1321,7 @@ export function startArcadeRound(state: ArcadeState, now = Date.now()): void {
   if (state.key === 'tug') {
     state.tug = { red: 0, blue: 0, position: 0, winningSide: null, lastPullAt: now };
   }
-  if (state.key === 'versus') {
+  if (['versus', 'clash'].includes(state.key)) {
     state.wall = { girls: 0, boys: 0, position: 0, winningSide: null, lastPushAt: now };
   }
   if (state.key === 'horse') {
@@ -1176,6 +1330,8 @@ export function startArcadeRound(state: ArcadeState, now = Date.now()): void {
       winnerLane: null,
     };
   }
+  if (state.key === 'melon') state.melon = { tension: 0 };
+  if (state.key === 'gold') state.gold = { pulled: 0 };
   feed(state, 'Tur başladı. Kalabalık hazır!', 'system', now);
 }
 
@@ -1187,8 +1343,10 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
   let winner: ArcadePlayer | undefined;
   if (state.key === 'gladiator' || state.key === 'stick') {
     winner = alive.length === 1 ? alive[0] : [...state.players].sort((a, b) => b.hp - a.hp)[0];
-  } else if (state.key === 'kart') {
+  } else if (['kart', 'hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
     winner = [...state.players].sort((a, b) => b.progress - a.progress)[0];
+  } else if (state.key === 'melon' || state.key === 'gold') {
+    winner = [...state.players].sort((a, b) => b.score - a.score)[0];
   } else if (state.key === 'wheel') {
     winner = [...state.players].sort(
       (a, b) => b.wins - a.wins || b.score - a.score,
@@ -1198,7 +1356,7 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
     const team = state.players.filter((player) => player.side === side);
     winner = [...(team.length ? team : state.players)].sort((a, b) => b.score - a.score)[0];
     if (state.tug) state.tug.winningSide = side;
-  } else if (state.key === 'versus') {
+  } else if (['versus', 'clash'].includes(state.key)) {
     const side = state.wall?.winningSide ?? ((state.wall?.position ?? 0) >= 0 ? 'boys' : 'girls');
     const team = state.players.filter((player) => player.side === side);
     winner = [...(team.length ? team : state.players)].sort((a, b) => b.score - a.score)[0];
@@ -1241,13 +1399,27 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
                           ? 'Sahnenin yıldızı'
                           : state.key === 'ramwong'
                             ? 'Panayırın yıldızı'
-                            : state.key === 'wheel'
+                            : state.key === 'hill'
+                    ? 'Tepenin kralı'
+                    : state.key === 'grandprix'
+                      ? 'Pistin şampiyonu'
+                      : state.key === 'animal'
+                        ? 'Ormanın hızırı'
+                        : state.key === 'town'
+                          ? 'Kasabanın mimarı'
+                          : state.key === 'melon'
+                            ? 'Karpuzu patlatan'
+                            : state.key === 'gold'
+                              ? 'Altın avcısı'
+                              : state.key === 'clash'
+                                ? 'Meydanın fatihi'
+                                : state.key === 'wheel'
                     ? 'Çarkın şanslısı'
                     : state.key === 'tug'
                       ? state.tug?.winningSide === 'red'
                         ? 'Kırmızı Takım kazandı'
                         : 'Mavi Takım kazandı'
-                      : state.key === 'versus'
+                      : ['versus', 'clash'].includes(state.key)
                         ? state.wall?.winningSide === 'girls'
                           ? 'Kızlar Takımı kazandı'
                           : 'Erkekler Takımı kazandı'
@@ -1312,6 +1484,8 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
           winnerLane: null,
         };
       }
+      if (state.melon) state.melon = { tension: 0 };
+      if (state.gold) state.gold = { pulled: 0 };
       for (const player of state.players) {
         player.score = 0;
         player.hp = 100;
@@ -1402,7 +1576,7 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
     return;
   }
 
-  if (state.key === 'versus') {
+  if (['versus', 'clash'].includes(state.key)) {
     const wall = state.wall;
     if (wall) {
       wall.position = Math.max(-1, Math.min(1, (wall.boys - wall.girls) / 20));
@@ -1433,13 +1607,37 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
     return;
   }
 
-  if (state.key === 'kart') {
+  if (['kart', 'hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
     for (const player of state.players) {
       if (player.eliminated) continue;
-      const base = 0.62 + (player.isBot ? 0.08 : 0.04);
-      player.progress += base + Math.random() * 0.26;
+      const base = state.key === 'town' ? 0.5 : state.key === 'grandprix' ? 0.7 : 0.62;
+      player.progress += base + (player.isBot ? 0.08 : 0.04) + Math.random() * 0.24;
       if (player.progress >= 100) {
         player.progress = 100;
+        finishArcadeRound(state, now);
+        return;
+      }
+    }
+    rankPlayers(state);
+    return;
+  }
+
+  if (state.key === 'melon') {
+    if (state.melon) {
+      state.melon.tension = Math.min(100, state.melon.tension + 0.18 + Math.random() * 0.12);
+      if (state.melon.tension >= 100) {
+        finishArcadeRound(state, now);
+        return;
+      }
+    }
+    rankPlayers(state);
+    return;
+  }
+
+  if (state.key === 'gold') {
+    if (state.gold) {
+      state.gold.pulled = Math.min(100, state.gold.pulled + 0.22 + Math.random() * 0.1);
+      if (state.gold.pulled >= 100) {
         finishArcadeRound(state, now);
         return;
       }
@@ -1503,14 +1701,17 @@ export function arcadeAction(
   if (action === 'like') {
     if (state.key === 'wheel') player.score += 3;
     else if (state.key === 'tug' && state.tug) addTugPull(state, player, 1.2);
-    else if (state.key === 'versus' && state.wall) addWallPush(state, player, 0.5);
+    else if (['versus', 'clash'].includes(state.key) && state.wall) addWallPush(state, player, 0.5);
     else if (state.key === 'horse') pushHorse(state, player, 1);
+    else if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 1.2);
+    else if (state.key === 'melon' && state.melon) { state.melon.tension = Math.min(100, state.melon.tension + 1); player.score += 1; }
+    else if (state.key === 'gold' && state.gold) { state.gold.pulled = Math.min(100, state.gold.pulled + 1); player.score += 1; }
     else player.score += state.key === 'quiz' || state.key === 'word' ? 0 : 1.5;
     feed(
       state,
       state.key === 'tug'
         ? `${player.name} halatı çekti (${player.side === 'red' ? 'kırmızı' : 'mavi'}).`
-        : state.key === 'versus'
+        : ['versus', 'clash'].includes(state.key)
           ? `${player.name} duvarı itti (${player.side === 'girls' ? 'kızlar' : 'erkekler'}).`
           : state.key === 'horse'
             ? `${player.name} atını ileri itti (${state.horse?.lanes.find((lane) => lane.id === player.lane)?.name ?? 'jokey'}).`
@@ -1522,20 +1723,23 @@ export function arcadeAction(
   }
 
   if (action === 'gift') {
-    if (state.key === 'kart') player.progress = Math.min(100, player.progress + 7);
+    if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) player.progress = Math.min(100, player.progress + 7);
     if (state.key === 'gladiator' || state.key === 'stick') {
       player.hp = Math.min(player.maxHp, player.hp + 16);
     }
     if (state.key === 'wheel') player.score += 25;
     else if (state.key === 'tug' && state.tug) addTugPull(state, player, 13);
-    else if (state.key === 'versus' && state.wall) addWallPush(state, player, 8);
+    else if (['versus', 'clash'].includes(state.key) && state.wall) addWallPush(state, player, 8);
     else if (state.key === 'horse') pushHorse(state, player, 10);
+    else if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) player.progress = Math.min(100, player.progress + 12);
+    else if (state.key === 'melon' && state.melon) { state.melon.tension = Math.min(100, state.melon.tension + 10); player.score += 10; }
+    else if (state.key === 'gold' && state.gold) { state.gold.pulled = Math.min(100, state.gold.pulled + 10); player.score += 10; }
     else player.score += state.key === 'quiz' || state.key === 'word' ? 0 : 12;
     feed(
       state,
       state.key === 'tug'
         ? `${player.name} takımına güç verdi (${player.side === 'red' ? 'kırmızı' : 'mavi'}).`
-        : state.key === 'versus'
+        : ['versus', 'clash'].includes(state.key)
           ? `${player.name} duvara 8 metre güç verdi.`
           : state.key === 'horse'
             ? `${player.name} atına hediye gücü verdi.`
@@ -1547,6 +1751,23 @@ export function arcadeAction(
   }
 
   // comment
+  if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+    player.progress = Math.min(100, player.progress + 0.5);
+    feed(state, `${player.name} tempoyu artırdı.`, 'answer', now);
+    return { ok: true };
+  }
+  if (state.key === 'melon' && state.melon) {
+    state.melon.tension = Math.min(100, state.melon.tension + 0.4);
+    player.score += 0.4;
+    feed(state, `${player.name} bir bant daha gerdi.`, 'answer', now);
+    return { ok: true };
+  }
+  if (state.key === 'gold' && state.gold) {
+    state.gold.pulled = Math.min(100, state.gold.pulled + 0.4);
+    player.score += 0.4;
+    feed(state, `${player.name} mıknatısı çekti.`, 'answer', now);
+    return { ok: true };
+  }
   if (state.key === 'horse') {
     const laneNumber = Number.parseInt(payload.trim(), 10);
     if (laneNumber >= 1 && laneNumber <= HORSE_RACERS.length) {
@@ -1568,7 +1789,7 @@ export function arcadeAction(
     feed(state, `${player.name} halata asıldı.`, 'answer', now);
     return { ok: true };
   }
-  if (state.key === 'versus' && state.wall) {
+  if (['versus', 'clash'].includes(state.key) && state.wall) {
     addWallPush(state, player, 0.2);
     feed(state, `${player.name} duvarı dürttü.`, 'answer', now);
     return { ok: true };
@@ -1669,12 +1890,26 @@ export function arcadeRunBots(state: ArcadeState, now = Date.now()): void {
       addTugPull(state, player, roll < 0.75 ? 1 : 7);
       continue;
     }
-    if (state.key === 'versus') {
+    if (['versus', 'clash'].includes(state.key)) {
       addWallPush(state, player, roll < 0.75 ? 0.5 : 4);
       continue;
     }
     if (state.key === 'horse') {
       pushHorse(state, player, roll < 0.75 ? 1 : 6);
+      continue;
+    }
+    if (['hill', 'grandprix', 'animal', 'town'].includes(state.key)) {
+      player.progress = Math.min(100, player.progress + (roll < 0.75 ? 1 : 6));
+      continue;
+    }
+    if (state.key === 'melon' && state.melon) {
+      state.melon.tension = Math.min(100, state.melon.tension + (roll < 0.75 ? 1 : 5));
+      player.score += roll < 0.75 ? 1 : 5;
+      continue;
+    }
+    if (state.key === 'gold' && state.gold) {
+      state.gold.pulled = Math.min(100, state.gold.pulled + (roll < 0.75 ? 1 : 5));
+      player.score += roll < 0.75 ? 1 : 5;
       continue;
     }
     if (state.key === 'quiz' && state.prompt?.kind === 'quiz') {
@@ -1695,7 +1930,7 @@ export function arcadeRunBots(state: ArcadeState, now = Date.now()): void {
       player.score += 100;
       continue;
     }
-  if (state.key === 'kart') {
+  if (['kart', 'hill', 'grandprix', 'animal'].includes(state.key)) {
       player.progress = Math.min(100, player.progress + 2);
       continue;
     }

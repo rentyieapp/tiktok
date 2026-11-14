@@ -309,6 +309,11 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private readonly actors = new Map<string, Actor>();
   private readonly karts = new Map<string, Kart>();
   private readonly horseLanes = new Map<number, HorseActor>();
+  private readonly townBuildings = new Map<string, { group: THREE.Group; floors: number }>();
+  private melonGroup: THREE.Group | null = null;
+  private melonBands: THREE.Mesh[] = [];
+  private goldCoins: THREE.Mesh[] = [];
+  private goldMagnet: THREE.Group | null = null;
   private readonly cards = new Map<string, PressCard>();
   private readonly podiums: Podium[] = [];
   private readonly dynamic: Array<(state: ArcadeStateView, time: number, dt: number) => void> = [];
@@ -429,6 +434,15 @@ class Arcade3DRenderer implements Arcade3DHandle {
         break;
       case 'horse':
         this.buildHorse();
+        break;
+      case 'melon':
+        this.buildMelon();
+        break;
+      case 'town':
+        this.buildTown();
+        break;
+      case 'gold':
+        this.buildGold();
         break;
     }
     this.buildAmbientParticles();
@@ -1353,12 +1367,16 @@ class Arcade3DRenderer implements Arcade3DHandle {
   }
 
   private buildRace(): void {
+    const hillMode = this.game.key === 'hill';
+    const grandPrix = this.game.key === 'grandprix';
+    const animalMode = this.game.key === 'animal';
     this.baseCamera.set(0, 7.8, 14.5);
     this.lookTarget.set(0, 0.8, -2.5);
-    this.scene.background = new THREE.Color('#eef7ff');
-    this.scene.fog = new THREE.Fog(0xeef7ff, 26, 52);
+    const sky = hillMode ? '#ecfdf5' : grandPrix ? '#fff1f2' : animalMode ? '#fefce8' : '#eef7ff';
+    this.scene.background = new THREE.Color(sky);
+    this.scene.fog = new THREE.Fog(new THREE.Color(sky), 26, 52);
 
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat('#dcebdc'));
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat(hillMode || animalMode ? '#bbf7d0' : grandPrix ? '#fecdd3' : '#dcebdc'));
     ground.rotation.x = -Math.PI / 2;
     ground.position.z = -4;
     ground.receiveShadow = true;
@@ -1367,7 +1385,10 @@ class Arcade3DRenderer implements Arcade3DHandle {
     // Düz piksel pisti: 5 şerit, start ve finish arası.
     const road = new THREE.Mesh(
       new THREE.PlaneGeometry(13, 27),
-      new THREE.MeshStandardMaterial({ color: 0x3d3d4a, roughness: 0.88 }),
+      new THREE.MeshStandardMaterial({
+        color: hillMode ? 0x9a6b3f : animalMode ? 0x8b6b3f : grandPrix ? 0x2b2b33 : 0x3d3d4a,
+        roughness: 0.88,
+      }),
     );
     road.rotation.x = -Math.PI / 2;
     road.position.set(0, 0.04, -2);
@@ -1438,7 +1459,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     finishCtx.fillStyle = '#24242c';
     finishCtx.font = '900 58px system-ui, sans-serif';
     finishCtx.textAlign = 'center';
-    finishCtx.fillText('F I N I S', 512, 102);
+    finishCtx.fillText(hillMode ? 'Z İ R V E' : grandPrix ? 'F I N I S H' : animalMode ? 'F I N I S H' : 'F I N I S', 512, 102);
     const finishTexture = new THREE.CanvasTexture(finishCanvas);
     finishTexture.colorSpace = THREE.SRGBColorSpace;
     const finishBanner = new THREE.Mesh(
@@ -1924,8 +1945,13 @@ class Arcade3DRenderer implements Arcade3DHandle {
       sign.position.set(x, 3.6, -3.0);
       this.scene.add(sign);
     };
-    banner('KIZLAR', 0xdb2777, -2.4);
-    banner('ERKEKLER', 0x2563eb, 2.4);
+    if (this.game.key === 'clash') {
+      banner('KIRMIZI', 0xdc2626, -2.4);
+      banner('MAVI', 0x2563eb, 2.4);
+    } else {
+      banner('KIZLAR', 0xdb2777, -2.4);
+      banner('ERKEKLER', 0x2563eb, 2.4);
+    }
 
     const blueLight = new THREE.PointLight(0x60a5fa, 20, 22, 2);
     blueLight.position.set(5, 5, 3);
@@ -2148,6 +2174,183 @@ class Arcade3DRenderer implements Arcade3DHandle {
     });
   }
 
+
+  private buildTown(): void {
+    this.baseCamera.set(12.5, 9.8, 19.5);
+    this.lookTarget.set(0, 2.4, -1);
+    this.scene.background = new THREE.Color('#e8f8fb');
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(34, 26),
+      new THREE.MeshStandardMaterial({ color: 0xbfe6da, roughness: 0.95 }),
+    );
+    this.scene.add(ground);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    for (let index = -2; index <= 2; index += 1) {
+      const road = new THREE.Mesh(
+        new THREE.BoxGeometry(1.25, 0.02, 26),
+        new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.85 }),
+      );
+      road.position.set(index * 2.2, 0.03, 0);
+      this.scene.add(road);
+    }
+    this.dynamic.push((_state, time) => {
+      this.lookTarget.set(0, 2.3 + Math.sin(time * 0.4) * 0.08, -1);
+    });
+  }
+
+  private syncTown(state: ArcadeStateView): void {
+    const seen = new Set<string>();
+    state.players.forEach((player, index) => {
+      seen.add(player.id);
+      const x = (index % 5 - 2) * 2.2;
+      const z = Math.floor(index / 5) * 3.6 - 3.6;
+      const floors = Math.max(1, Math.min(12, Math.ceil(player.progress / 8.2) + 1));
+      let building = this.townBuildings.get(player.id);
+      if (building && building.floors !== floors) {
+        this.scene.remove(building.group);
+        disposeObject(building.group);
+        this.townBuildings.delete(player.id);
+        building = undefined;
+      }
+      if (!building) {
+        const group = new THREE.Group();
+        group.position.set(x, 0, z);
+        for (let floor = 0; floor < floors; floor += 1) {
+          const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(1.35, 0.72, 1.35),
+            mat(floor % 2 === 0 ? player.color : '#f8fafc', { roughness: 0.55 }),
+          );
+          mesh.position.y = 0.36 + floor * 0.72;
+          mesh.castShadow = true;
+          group.add(mesh);
+          const win = new THREE.Mesh(
+            new THREE.BoxGeometry(0.42, 0.18, 0.03),
+            new THREE.MeshBasicMaterial({ color: 0xfff3b0 }),
+          );
+          win.position.set(0, 0.36 + floor * 0.72, 0.69);
+          group.add(win);
+        }
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(0.82, 0.6, 4), mat(player.color));
+        roof.position.y = 0.72 * floors + 0.28;
+        roof.rotation.y = Math.PI / 4;
+        group.add(roof);
+        addLabel(group, makeTextTexture(player.name, player.color), 0.72 * floors + 0.9, 0.7);
+        this.scene.add(group);
+        this.townBuildings.set(player.id, { group, floors });
+      }
+    });
+    for (const [id, building] of this.townBuildings) {
+      if (seen.has(id)) continue;
+      this.scene.remove(building.group);
+      disposeObject(building.group);
+      this.townBuildings.delete(id);
+    }
+  }
+
+  private buildMelon(): void {
+    this.baseCamera.set(0, 5.6, 14.5);
+    this.lookTarget.set(0, 2.1, 0);
+    this.scene.background = new THREE.Color('#fff4dc');
+    const counter = new THREE.Mesh(new THREE.BoxGeometry(14, 0.5, 6), new THREE.MeshStandardMaterial({ color: 0xe8d3b0, roughness: 0.9 }));
+    counter.position.set(0, 0.25, 0);
+    counter.receiveShadow = true;
+    this.scene.add(counter);
+    const board = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.08, 4.2), new THREE.MeshStandardMaterial({ color: 0xc99a61, roughness: 0.8 }));
+    board.position.set(0, 0.54, 0);
+    this.scene.add(board);
+    const melon = new THREE.Group();
+    melon.position.set(0, 2.1, 0);
+    const body = new THREE.Mesh(new THREE.SphereGeometry(2.05, 36, 24), new THREE.MeshStandardMaterial({ color: 0x4d9f45, roughness: 0.35 }));
+    body.scale.set(1.08, 0.96, 1);
+    body.castShadow = true;
+    melon.add(body);
+    for (let index = 0; index < 7; index += 1) {
+      const stripe = new THREE.Mesh(new THREE.TorusGeometry(2.02, 0.055, 6, 32), new THREE.MeshStandardMaterial({ color: 0x1f6b2a, roughness: 0.5 }));
+      stripe.rotation.y = (index / 7) * Math.PI;
+      stripe.scale.set(1.08, 0.96, 1);
+      melon.add(stripe);
+    }
+    this.scene.add(melon);
+    this.melonGroup = melon;
+    this.melonBands = [];
+    for (let index = 0; index < 14; index += 1) {
+      const band = new THREE.Mesh(
+        new THREE.TorusGeometry(2.13 + index * 0.02, 0.055, 6, 36),
+        new THREE.MeshStandardMaterial({ color: index % 2 === 0 ? 0xfbbf24 : 0xf472b6, roughness: 0.55 }),
+      );
+      band.rotation.x = Math.PI / 2;
+      band.rotation.z = (index / 14) * Math.PI;
+      band.position.y = -1.4 + index * 0.21;
+      band.visible = true;
+      melon.add(band);
+      this.melonBands.push(band);
+    }
+    this.dynamic.push((state, time) => {
+      const tension = state.melon?.tension ?? 0;
+      const visible = Math.ceil(tension / 7.2);
+      this.melonBands.forEach((band, index) => {
+        band.visible = true;
+        band.rotation.z += 0.002;
+      });
+      this.melonGroup?.rotation.set(Math.sin(time * 4) * 0.012 * (tension / 100), time * 0.08, Math.cos(time * 5) * 0.01 * (tension / 100));
+      if (this.melonGroup) this.melonGroup.scale.setScalar(1 + tension * 0.0012);
+    });
+  }
+
+  private buildGold(): void {
+    this.baseCamera.set(0, 8.2, 18.5);
+    this.lookTarget.set(0, 2.8, 0);
+    this.scene.background = new THREE.Color('#fff7db');
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 24), new THREE.MeshStandardMaterial({ color: 0xe9d8b0, roughness: 0.95 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    this.scene.add(floor);
+    const vault = new THREE.Mesh(new THREE.BoxGeometry(8, 3.2, 5), mat(0x2b2a33, { roughness: 0.6 }));
+    vault.position.set(0, 1.7, -5.2);
+    vault.castShadow = true;
+    this.scene.add(vault);
+    const door = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.7, 0.2, 32), mat(0xd6a33a, { metalness: 0.55, roughness: 0.3 }));
+    door.rotation.x = Math.PI / 2;
+    door.position.set(0, 1.8, -0.25);
+    this.scene.add(door);
+    for (let index = 0; index < 65; index += 1) {
+      const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.055, 12), new THREE.MeshStandardMaterial({ color: 0xf6c945, metalness: 0.45, roughness: 0.28 }));
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 3.2;
+      coin.position.set(Math.cos(angle) * radius, 0.4 + Math.random() * 0.6, Math.sin(angle) * radius);
+      coin.castShadow = true;
+      this.scene.add(coin);
+      this.goldCoins.push(coin);
+    }
+    const magnet = new THREE.Group();
+    magnet.position.set(0, 7.0, 2.0);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.2, 1.5), mat(0xdc2626));
+    magnet.add(top);
+    for (const x of [-1.1, 1.1]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.6, 1.4), mat(0x2563eb));
+      leg.position.set(x, -1.3, 0);
+      magnet.add(leg);
+      const tip = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.28, 1.42), mat(0xe5e7eb, { metalness: 0.5, roughness: 0.25 }));
+      tip.position.set(x, -2.18, 0);
+      magnet.add(tip);
+    }
+    this.scene.add(magnet);
+    this.goldMagnet = magnet;
+    this.dynamic.push((state, time) => {
+      const pull = state.gold?.pulled ?? 0;
+      this.goldCoins.forEach((coin, index) => {
+        const angle = time * 0.35 + index;
+        const radius = 3.2 * (1 - pull / 130);
+        coin.position.x += (Math.cos(angle) * radius - coin.position.x) * 0.02;
+        coin.position.z += (Math.sin(angle) * radius - coin.position.z) * 0.02;
+        coin.position.y += (1.2 + pull * 0.03 - coin.position.y) * 0.015;
+        coin.rotation.y += 0.04 + pull * 0.0006;
+      });
+      this.goldMagnet?.rotation.set(0, Math.sin(time * 0.6) * 0.2, 0);
+    });
+  }
+
   private buildAmbientParticles(): void {
     const count = 90;
     const positions = new Float32Array(count * 3);
@@ -2276,6 +2479,11 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const state = this.state;
     if (!state) return;
     if (this.game.mode === 'wheel' || this.game.mode === 'horse') return;
+    if (this.game.mode === 'town') {
+      this.syncTown(state);
+      return;
+    }
+    if (this.game.mode === 'melon' || this.game.mode === 'gold') return;
     if (this.game.mode === 'press') {
       this.syncPressCards(state);
     } else if (this.game.mode === 'race') {
@@ -2563,23 +2771,59 @@ class Arcade3DRenderer implements Arcade3DHandle {
   }
 
   private createKart(player: ArcadePlayer): Kart {
+    const hillMode = this.game.key === 'hill';
+    const grandPrix = this.game.key === 'grandprix';
+    const animalMode = this.game.key === 'animal';
     const group = new THREE.Group();
     const shadow = shadowMesh(0.55);
     group.add(shadow);
     const body = new THREE.Mesh(
-      new THREE.BoxGeometry(1.15, 0.46, 1.6),
+      hillMode
+        ? new THREE.BoxGeometry(1.25, 0.62, 1.72)
+        : grandPrix
+          ? new THREE.BoxGeometry(0.9, 0.3, 1.85)
+          : animalMode
+            ? new THREE.CapsuleGeometry(0.34, 0.85, 6, 10)
+            : new THREE.BoxGeometry(1.15, 0.46, 1.6),
       new THREE.MeshStandardMaterial({ color: player.color, roughness: 0.35, metalness: 0.15 }),
     );
-    body.position.y = 0.45;
+    body.position.y = animalMode ? 0.72 : hillMode ? 0.5 : grandPrix ? 0.38 : 0.45;
+    if (animalMode) body.rotation.z = Math.PI / 2;
     body.castShadow = true;
     group.add(body);
     const cabin = new THREE.Mesh(
-      new THREE.BoxGeometry(0.68, 0.38, 0.68),
-      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25 }),
+      hillMode
+        ? new THREE.BoxGeometry(0.78, 0.5, 0.82)
+        : grandPrix
+          ? new THREE.BoxGeometry(0.48, 0.25, 0.5)
+          : animalMode
+            ? new THREE.SphereGeometry(0.34, 14, 10)
+            : new THREE.BoxGeometry(0.68, 0.38, 0.68),
+      new THREE.MeshStandardMaterial({ color: animalMode ? player.color : hillMode ? player.color : 0xf8fafc, roughness: 0.25 }),
     );
-    cabin.position.set(0, 0.7, 0.12);
+    cabin.position.set(0, animalMode ? 0.9 : hillMode ? 0.84 : grandPrix ? 0.56 : 0.7, animalMode ? -0.8 : 0.12);
     group.add(cabin);
-    const wheelGeometry = new THREE.CylinderGeometry(0.19, 0.19, 0.12, 12);
+    if (animalMode) {
+      for (const [x, z] of [[-0.45, 0.45], [0.45, 0.45], [-0.45, -0.45], [0.45, -0.45]] as const) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.06, 0.55, 8), mat(0x3f2a1d));
+        leg.position.set(x, 0.32, z);
+        group.add(leg);
+      }
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 8), mat(player.color));
+      ear.position.set(0, 1.35, -0.9);
+      group.add(ear);
+    }
+    if (grandPrix) {
+      const wing = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.07, 0.32), new THREE.MeshStandardMaterial({ color: 0x2b2b33 }));
+      wing.position.set(0, 0.5, 0.92);
+      group.add(wing);
+    }
+    if (hillMode) {
+      const rollBar = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.1, 0.1), new THREE.MeshStandardMaterial({ color: 0x1f2937 }));
+      rollBar.position.set(0, 1.18, 0.28);
+      group.add(rollBar);
+    }
+    const wheelGeometry = new THREE.CylinderGeometry(hillMode ? 0.26 : 0.19, hillMode ? 0.26 : 0.19, 0.12, 12);
     const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x23232b, roughness: 0.8 });
     const wheels: THREE.Mesh[] = [];
     for (const x of [-0.63, 0.63]) {
