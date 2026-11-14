@@ -65,10 +65,20 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [loggingOut, setLoggingOut] = useState(false);
-  const isArcadeGamePanel = /^\/panel\/oyun\/[^/]+$/.test(location.pathname);
-  const sections = isArcadeGamePanel
-    ? NAV_SECTIONS.filter((section) => section.title !== 'Taraftar Savaşı 3D')
-    : NAV_SECTIONS;
+  const isStudioPath =
+    location.pathname === '/panel/3d' ||
+    location.pathname === '/panel/takimlar' ||
+    location.pathname === '/panel/ayarlar' ||
+    location.pathname === '/panel/komutlar' ||
+    location.pathname === '/panel/yayin' ||
+    location.pathname === '/panel/onizleme' ||
+    location.pathname === '/panel/istatistikler' ||
+    location.pathname === '/panel/gecmis' ||
+    location.pathname === '/panel/oyun';
+  // 3D stüdyo alt menüsü yalnızca 3D oyunun içindeyken görünür.
+  const sections = isStudioPath
+    ? NAV_SECTIONS
+    : NAV_SECTIONS.filter((section) => section.title !== 'Taraftar Savaşı 3D');
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -99,7 +109,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <span className="badge-ok text-[9px]">{me?.licenses.length ?? 0} arcade</span>
           </div>
           <p className="mt-1.5 text-sm font-semibold text-ink-900">
-            {game ? 'Taraftar Savaşı 3D + oyunlar' : 'Oyunlarını keşfet'}
+            {game ? '12 arcade + 3D stüdyo' : 'Oyunlarını keşfet'}
           </p>
           <p className="mt-0.5 text-[11px] text-ink-500">
             {game
