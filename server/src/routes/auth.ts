@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { AppContext } from '../context.js';
-import { createUser, findUserByEmail, markUserEmailVerified, trackActivity, updateUserPassword } from '../db/repo.js';
+import { createUser, findUserByEmail, findUserById, markUserEmailVerified, trackActivity, updateUserPassword } from '../db/repo.js';
 import { nowIso } from '../db/index.js';
 import { badRequest, conflict, forbidden, unauthorized } from '../lib/errors.js';
 import { dummyVerify, hashPassword, verifyPassword } from '../lib/password.js';
@@ -94,7 +94,13 @@ export async function authRoutes(app: FastifyInstance, ctx: AppContext): Promise
       const consumed = consumeAuthToken(db, body.token, 'verify_email');
       if (!consumed) throw badRequest('Doğrulama bağlantısı geçersiz veya süresi dolmuş.');
       markUserEmailVerified(db, consumed.userId, nowIso());
-      return reply.send({ ok: true });
+      const user = findUserById(db, consumed.userId);
+      if (!user) throw badRequest('Doğrulama bağlantısına ait kullanıcı bulunamadı.');
+      // Doğrulama token'ı tek kullanımlık ve e-posta sahipliğini kanıtlar.
+      // Kullanıcıyı yeniden şifre girmeye zorlamadan oturumu aç.
+      setSessionCookie(reply, user.id, config);
+      trackActivity(db, user.id, 'login', nowIso());
+      return reply.send({ ok: true, user: rowToUser(user) });
     },
   );
 

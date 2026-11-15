@@ -42,6 +42,15 @@ describe('e-posta doğrulama ve şifre sıfırlama', () => {
       payload: { token: decodeURIComponent(debugUrl.split('token=')[1]!) },
     });
     expect(verified.statusCode).toBe(200);
+    const verifyCookie = String(verified.headers['set-cookie'] ?? '').split(';')[0];
+    expect(verifyCookie).toContain('tt_session=');
+    const autoSession = await server.inject({
+      method: 'GET',
+      url: '/api/auth/me',
+      headers: { cookie: verifyCookie },
+    });
+    expect(autoSession.statusCode).toBe(200);
+    expect(autoSession.json().user.email).toBe(email);
 
     const login = await server.inject({
       method: 'POST',

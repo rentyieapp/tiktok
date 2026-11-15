@@ -1,13 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Mail, RefreshCw, ArrowRight } from 'lucide-react';
 import { api, ApiError } from '../../lib/api';
 import { Button, Field, TextInput } from '../../components/ui';
 import { AuthShell } from './AuthShell';
+import { useAuth } from '../../lib/auth';
 
 export function VerifyEmailPage() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const { refresh } = useAuth();
   const token = params.get('token');
+  const next = params.get('next') || '/panel';
   const sent = params.get('sent') === '1';
   const [email, setEmail] = useState(params.get('email') ?? '');
   const [state, setState] = useState<'idle' | 'verifying' | 'verified' | 'error'>(token ? 'verifying' : 'idle');
@@ -18,12 +22,18 @@ export function VerifyEmailPage() {
     if (!token) return;
     api
       .post('/api/auth/verify-email', { token })
-      .then(() => setState('verified'))
+      .then(async () => {
+        // Doğrulama cevabı oturum çerezini de set eder; kullanıcıyı tekrar
+        // giriş ekranına göndermek yerine oturumu tazeleyip panele al.
+        await refresh();
+        setState('verified');
+        window.setTimeout(() => navigate(next, { replace: true }), 900);
+      })
       .catch((caught) => {
         setState('error');
         setMessage(caught instanceof ApiError ? caught.message : 'Doğrulama başarısız.');
       });
-  }, [token]);
+  }, [token, next, refresh, navigate]);
 
   const resend = async (event: FormEvent) => {
     event.preventDefault();
@@ -48,7 +58,8 @@ export function VerifyEmailPage() {
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center">
           <CheckCircle2 size={32} className="mx-auto text-emerald-600" />
           <p className="mt-3 text-sm font-semibold text-emerald-900">Doğrulama tamamlandı.</p>
-          <Link to="/giris" className="mt-4 inline-flex"><Button variant="brand">Giriş yap <ArrowRight size={14} /></Button></Link>
+          <p className="mt-1 text-[11px] text-emerald-800/70">Panele yönlendiriliyorsun…</p>
+          <Link to={next} className="mt-4 inline-flex"><Button variant="brand">Panele git <ArrowRight size={14} /></Button></Link>
         </div>
       </AuthShell>
     );
