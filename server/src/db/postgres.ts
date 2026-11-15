@@ -1,7 +1,9 @@
 import { createRequire } from 'node:module';
-import { Pool, type PoolClient, type QueryResult } from 'pg';
+import type { PoolClient, QueryResult } from 'pg';
 
 const require = createRequire(import.meta.url);
+const pg = require('pg') as typeof import('pg');
+const Pool = pg.Pool;
 const deasync = require('deasync') as { loopWhile: (predicate: () => boolean) => void };
 
 export interface Statement<Row = Record<string, unknown>> {
@@ -69,7 +71,7 @@ function waitForCallback<T>(
 }
 
 export class PostgresDatabase implements SyncDatabase {
-  private pool: Pool;
+  private pool: import('pg').Pool;
   private txClient: PoolClient | null = null;
   private txDepth = 0;
 
@@ -118,7 +120,7 @@ export class PostgresDatabase implements SyncDatabase {
   transaction<T>(fn: () => T): () => T {
     return () => {
       if (!this.txClient) {
-        const client = waitForCallback<PoolClient>((callback) => this.pool.connect((error, connected) => callback(error ?? null, connected as PoolClient)));
+        const client = waitForCallback<PoolClient>((callback) => this.pool.connect((error: Error | undefined, connected: PoolClient | undefined) => callback(error ?? null, connected as PoolClient)));
         this.txClient = client;
         this.txDepth = 0;
         waitForCallback<QueryResult>((callback) => client.query('BEGIN', callback));
