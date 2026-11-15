@@ -31,6 +31,7 @@ Tüm otomatik testler `npm test` ile çalışır; son sonuç **91/91 geçti**.
 | 21 | Tüm oyunlarda aksiyon efekti, combo, hedef barı, katılım ve kazanan anı | ✅ Tamam | `arcade.test.ts`, canlı sahne |
 | 22 | Overlay Pro ayrı ürünü, aylık/yıllık SKU ve lisans kontrolü | ✅ Tamam | `arcade-rooms.test.ts`, overlay |
 | 23 | Tam sahne ve şeffaf overlay-only OBS bağlantıları | ✅ Tamam | `/canli/:slug?obs=1`, `?overlay=1` |
+| 24 | Canlı oyun önizlemesinde Temel/Pro overlay gösterimi | ✅ Tamam | Oyun sayfası |
 
 Her faz sonunda tip kontrolü, testler ve tarayıcı görsel kontrolü yapıldı. Mevcut
 özellikler sonraki fazlarda bozulmadı; test paketi bunu doğrular.

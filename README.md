@@ -778,6 +778,16 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - Paket aboneliği ile oyun lisansını aynı modalda ayırma.
 - Tüm işlemler admin API’si ve testlerle doğrulanır.
 
+### Canlı önizlemede overlay
+
+Oyun sayfasındaki canlı demo artık overlay katmanını da gösterir. Ziyaretçi:
+
+- **Temel** ve **Pro** overlay arasında geçiş yapabilir.
+- Liderlik tablosu, hedef barı, oda kartı ve bot duyurusunu canlı görebilir.
+- “Overlay Pro →” bağlantısıyla ürüne gidebilir.
+
+Bu, oyun lisansı satın almadan önce overlay’in ne işe yaradığını gösterir.
+
 ### Overlay nasıl çalışır?
 
 İki OBS bağlantısı vardır:

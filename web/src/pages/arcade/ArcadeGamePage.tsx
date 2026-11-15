@@ -10,6 +10,7 @@ import {
   Heart,
   LockKeyhole,
   Info,
+  Layers3,
   MessageCircle,
   Play,
   Radio,
@@ -35,6 +36,7 @@ import {
 } from '@shared/arcade';
 import { ArcadeLiveStage } from '../../components/ArcadeLiveStage';
 import { ArcadeGameCard } from '../../components/ArcadeGameCard';
+import { ArcadeOverlay } from '../../components/ArcadeOverlay';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
 import { GameArt } from '../../components/GameArt';
 import { Button } from '../../components/ui';
@@ -215,6 +217,8 @@ function GameView({ game }: { game: ArcadeGameDef }) {
   const [joinLane, setJoinLane] = useState(1);
   const [message, setMessage] = useState('');
   const [tab, setTab] = useState<'chat' | 'ranking'>('chat');
+  const [overlayPreview, setOverlayPreview] = useState(true);
+  const [overlayMode, setOverlayMode] = useState<'basic' | 'pro'>('pro');
   const playbook = useMemo(() => buildPlaybook(game), [game]);
   const [prices, setPrices] = useState<{ oneDay: number | null; thirtyDay: number | null }>({
     oneDay: null,
@@ -437,8 +441,58 @@ function GameView({ game }: { game: ArcadeGameDef }) {
 
             <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_1fr] xl:grid-cols-[minmax(0,430px)_1fr]">
               <div className="mx-auto w-full max-w-[430px]">
-                <div className="overflow-hidden rounded-[26px] border border-[#e5dccf] bg-white p-2 shadow-[0_25px_60px_-30px_rgba(48,38,25,0.35)]">
+                <div className="relative overflow-hidden rounded-[26px] border border-[#e5dccf] bg-white p-2 shadow-[0_25px_60px_-30px_rgba(48,38,25,0.35)]">
                   <ArcadeLiveStage game={game} state={state} />
+                  {overlayPreview ? (
+                    <ArcadeOverlay
+                      game={game}
+                      state={state}
+                      roomName="Meydan canlı önizleme"
+                      accent={game.accent}
+                      theme="full"
+                      botEnabled
+                      pro={overlayMode === 'pro'}
+                    />
+                  ) : null}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-ink-500">
+                    <Layers3 size={12} className="text-violet-600" /> Overlay önizleme
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setOverlayMode('basic')}
+                      className={`rounded-full px-2.5 py-1 text-[9px] font-bold ${overlayMode === 'basic' ? 'bg-ink-950 text-white' : 'bg-ink-100 text-ink-500'}`}
+                    >
+                      Temel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOverlayMode('pro')}
+                      className={`rounded-full px-2.5 py-1 text-[9px] font-bold ${overlayMode === 'pro' ? 'bg-violet-600 text-white' : 'bg-violet-50 text-violet-700'}`}
+                    >
+                      ✦ Pro
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOverlayPreview((current) => !current)}
+                      className="ml-1 rounded-full border border-[#e4dccf] bg-white px-2 py-1 text-[9px] font-semibold text-ink-400"
+                    >
+                      {overlayPreview ? 'Gizle' : 'Göster'}
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center justify-between gap-2 rounded-xl border border-violet-100 bg-violet-50/60 px-3 py-2">
+                  <p className="text-[9px] leading-relaxed text-violet-800">
+                    {overlayMode === 'pro'
+                      ? 'Pro: liderlik tablosu + hedef barı + kazanan kartı + bot.'
+                      : 'Temel: oda bilgisi + son olay.'}{' '}
+                    Overlay, OBS’de oyun sahnesinin üstüne ayrı katman olarak eklenir.
+                  </p>
+                  <Link to="/satin-al" className="shrink-0 text-[9px] font-bold text-violet-700 hover:text-violet-600">
+                    Overlay Pro →
+                  </Link>
                 </div>
                 <p className="mt-2 text-center text-[10px] text-ink-400">
                   9:16 dikey sahne · OBS Browser Source için hazır
