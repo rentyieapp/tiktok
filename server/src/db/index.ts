@@ -398,6 +398,22 @@ const MIGRATIONS: string[] = [
   CREATE INDEX IF NOT EXISTS idx_shopier_orders_received ON shopier_orders (received_at DESC);
   CREATE INDEX IF NOT EXISTS idx_shopier_orders_status ON shopier_orders (status);
   `,
+  `
+  CREATE TABLE IF NOT EXISTS shopier_checkout_intents (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    package_id TEXT NOT NULL REFERENCES packages(id),
+    product_id TEXT NOT NULL,
+    expected_email TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_shopier_intents_lookup
+    ON shopier_checkout_intents (product_id, status, expires_at);
+  CREATE INDEX IF NOT EXISTS idx_shopier_intents_user
+    ON shopier_checkout_intents (user_id, created_at DESC);
+  `,
 ];
 
 export function openDatabase(path: string): DB {

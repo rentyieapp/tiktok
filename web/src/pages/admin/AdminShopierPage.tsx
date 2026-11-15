@@ -247,7 +247,7 @@ export function AdminShopierPage() {
                       <td className="text-[10px]">{order.email ?? '—'}</td>
                       <td className="max-w-[180px] truncate text-[10px]">{order.productTitles.join(', ') || order.productIds.join(', ') || '—'}</td>
                       <td className="whitespace-nowrap text-[10px]">{order.amountCents === null ? '—' : formatPrice(order.amountCents, order.currency ?? 'TRY')}</td>
-                      <td><StatusBadge status={order.status === 'activated' ? 'ok' : order.status === 'failed' ? 'bad' : 'warn'}>{order.status === 'activated' ? 'Lisans açıldı' : order.status === 'failed' ? 'Hata' : order.status === 'awaiting_payment' ? 'Ödeme bekliyor' : 'Eşleşme bekliyor'}</StatusBadge>{order.activationMessage ? <p className="mt-1 max-w-[180px] text-[9px] leading-snug text-ink-400">{order.activationMessage}</p> : null}</td>
+                      <td><StatusBadge status={order.status === 'activated' ? 'ok' : order.status === 'failed' ? 'bad' : 'warn'}>{order.status === 'activated' ? 'Lisans açıldı' : order.status === 'failed' ? 'Hata' : order.status === 'awaiting_payment' ? 'Ödeme bekliyor' : order.status === 'needs_review' ? 'Manuel inceleme' : 'Eşleşme bekliyor'}</StatusBadge>{order.activationMessage ? <p className="mt-1 max-w-[180px] text-[9px] leading-snug text-ink-400">{order.activationMessage}</p> : null}</td>
                     </tr>
                   ))}
                 </tbody>

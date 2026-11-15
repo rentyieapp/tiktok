@@ -19,6 +19,7 @@ import {
   type UserRow,
 } from '../db/repo.js';
 import { isoPlusDays, nowIso, type DB } from '../db/index.js';
+import { createShopierCheckoutIntent } from '../db/shopierIntents.js';
 import { rowToPayment, rowToPackage } from '../game/mappers.js';
 import type { AppConfig } from '../config.js';
 import type { PaymentProvider, WebhookHeaders } from '../payments/provider.js';
@@ -72,6 +73,22 @@ export async function startCheckout(
   if (pkg.shopier_url && /^https:\/\/(www\.)?shopier\.com\/(?:[^/?#]+\/)?\d{4,}(?:[/?#]|$)/i.test(pkg.shopier_url)) {
     if (couponCode?.trim()) {
       throw badRequest('Shopier ürününde kupon kodu uygulanamıyor.');
+    }
+    const productId = pkg.shopier_product_id
+      ?? pkg.shopier_url.match(/\/(\d{4,})(?:[/?#]|$)/)?.[1]
+      ?? null;
+    if (productId) {
+      const now = nowIso();
+      createShopierCheckoutIntent(db, {
+        id: randomId('sint'),
+        user_id: user.id,
+        package_id: pkg.id,
+        product_id: productId,
+        expected_email: user.email.trim().toLowerCase(),
+        status: 'pending',
+        created_at: now,
+        expires_at: isoPlusDays(0.1),
+      });
     }
     return { payment: null, redirectUrl: pkg.shopier_url };
   }

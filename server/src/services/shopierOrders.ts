@@ -8,7 +8,9 @@ import {
   findActiveGameLicense,
   findActiveSubscription,
   findPackageByShopierProductId,
+  findPackageById,
   findUserByEmail,
+  findUserById,
   getAppSetting,
   listPackages,
   setAppSetting,
@@ -16,6 +18,7 @@ import {
   type UserRow,
 } from '../db/repo.js';
 import { findShopierOrderByOrderId, insertShopierOrder, updateShopierOrder, type ShopierOrderRow } from '../db/shopierOrders.js';
+import { listPendingShopierIntents, updateShopierIntentStatus } from '../db/shopierIntents.js';
 import { ARCADE_GAME_LIST } from '../../../shared/arcade.js';
 import type { AppConfig } from '../config.js';
 
@@ -237,22 +240,50 @@ export function handleShopierOrder(db: DB, apiOrder: ShopierApiOrder): { inserte
     updateShopierOrder(db, orderId, { status: 'needs_mapping', activationMessage: 'Sipariş e-postası yok.' });
     return { inserted: true, status: 'needs_mapping' };
   }
-  const user = findUserByEmail(db, email);
-  const pkg = resolvePackage(db, ids);
-  if (!user || !pkg) {
+  const pkgFromProduct = resolvePackage(db, ids);
+  const pendingIntents = ids.flatMap((id) => listPendingShopierIntents(db, id, now));
+  const matchingIntent = pendingIntents.find((intent) => intent.expected_email.toLowerCase() === email);
+
+  // Site checkout'u bir Rook Works oturumundan başlatılmadıysa yalnızca
+  // ödeme e-postasına bakarak lisans açma; bu durum manuel incelemeye düşer.
+  if (pendingIntents.length === 0) {
     updateShopierOrder(db, orderId, {
-      status: 'needs_mapping',
-      matchedPackageId: pkg?.id ?? null,
-      matchedUserId: user?.id ?? null,
-      activationMessage: !user
-        ? 'Bu e-posta ile kayıtlı yayıncı yok.'
-        : 'Sipariş ürünü bir pakete eşleşmedi.',
+      status: 'needs_review',
+      matchedPackageId: pkgFromProduct?.id ?? null,
+      matchedUserId: null,
+      activationMessage: 'Siparişi başlatan güvenilir Rook Works oturumu yok; manuel inceleme gerekli.',
       processedAt: now,
     });
-    return { inserted: true, status: 'needs_mapping' };
+    return { inserted: true, status: 'needs_review' };
+  }
+
+  if (!matchingIntent) {
+    const intent = pendingIntents[0]!;
+    updateShopierOrder(db, orderId, {
+      status: 'needs_review',
+      matchedPackageId: intent.package_id,
+      matchedUserId: intent.user_id,
+      activationMessage: 'Shopier ödeme e-postası, siparişi başlatan Rook Works kullanıcısıyla eşleşmiyor; manuel inceleme gerekli.',
+      processedAt: now,
+    });
+    return { inserted: true, status: 'needs_review' };
+  }
+
+  const user = findUserById(db, matchingIntent.user_id);
+  const pkg = findPackageById(db, matchingIntent.package_id);
+  if (!user || !pkg || (pkgFromProduct && pkgFromProduct.id !== pkg.id)) {
+    updateShopierOrder(db, orderId, {
+      status: 'needs_review',
+      matchedPackageId: pkg?.id ?? null,
+      matchedUserId: user?.id ?? null,
+      activationMessage: 'Sipariş ürünü ile checkout niyeti uyuşmuyor; manuel inceleme gerekli.',
+      processedAt: now,
+    });
+    return { inserted: true, status: 'needs_review' };
   }
   try {
     const result = activateForUser(db, user, pkg, row, amountCents || pkg.price_cents, row.currency ?? pkg.currency);
+    if (result.ok) updateShopierIntentStatus(db, matchingIntent.id, 'consumed');
     updateShopierOrder(db, orderId, {
       status: result.ok ? 'activated' : 'failed',
       matchedPackageId: pkg.id,
