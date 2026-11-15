@@ -1190,10 +1190,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
 
   private buildBattle(): void {
     const stick = this.game.key === 'stick';
+    const manor = this.game.key === 'manor';
     this.baseCamera.set(0, stick ? 6.6 : 7.4, stick ? 15.5 : 17.3);
     this.lookTarget.set(0, 1.6, 0);
-    this.scene.background = new THREE.Color(stick ? '#e7fbff' : '#fff7ec');
-    this.scene.fog = new THREE.Fog(new THREE.Color(stick ? '#e7fbff' : '#fff7ec'), 18, 36);
+    const battleBg = manor ? '#171126' : stick ? '#e7fbff' : '#fff7ec';
+    this.scene.background = new THREE.Color(battleBg);
+    this.scene.fog = new THREE.Fog(new THREE.Color(battleBg), 18, 36);
 
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(7.2, 64),
@@ -1371,13 +1373,14 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const grandPrix = this.game.key === 'grandprix';
     const animalMode = this.game.key === 'animal';
     const crowdMode = this.game.key === 'crowd';
+    const balloonMode = this.game.key === 'balloon';
     this.baseCamera.set(0, 7.8, 14.5);
     this.lookTarget.set(0, 0.8, -2.5);
-    const sky = hillMode ? '#ecfdf5' : grandPrix ? '#fff1f2' : animalMode ? '#fefce8' : crowdMode ? '#ecfeff' : '#eef7ff';
+    const sky = hillMode ? '#ecfdf5' : grandPrix ? '#fff1f2' : animalMode ? '#fefce8' : crowdMode ? '#ecfeff' : balloonMode ? '#fdf2f8' : '#eef7ff';
     this.scene.background = new THREE.Color(sky);
     this.scene.fog = new THREE.Fog(new THREE.Color(sky), 26, 52);
 
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat(hillMode || animalMode ? '#bbf7d0' : grandPrix ? '#fecdd3' : crowdMode ? '#cffafe' : '#dcebdc'));
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(34, 44), softMat(hillMode || animalMode ? '#bbf7d0' : grandPrix ? '#fecdd3' : crowdMode ? '#cffafe' : balloonMode ? '#fce7f3' : '#dcebdc'));
     ground.rotation.x = -Math.PI / 2;
     ground.position.z = -4;
     ground.receiveShadow = true;
@@ -2182,7 +2185,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     this.scene.background = new THREE.Color('#e8f8fb');
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(34, 26),
-      new THREE.MeshStandardMaterial({ color: 0xbfe6da, roughness: 0.95 }),
+      new THREE.MeshStandardMaterial({ color: this.game.key === 'brick' ? 0xdbeafe : 0xbfe6da, roughness: 0.95 }),
     );
     this.scene.add(ground);
     ground.rotation.x = -Math.PI / 2;
@@ -2262,12 +2265,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
     this.scene.add(board);
     const melon = new THREE.Group();
     melon.position.set(0, 2.1, 0);
-    const body = new THREE.Mesh(new THREE.SphereGeometry(2.05, 36, 24), new THREE.MeshStandardMaterial({ color: 0x4d9f45, roughness: 0.35 }));
+    const body = new THREE.Mesh(new THREE.SphereGeometry(2.05, 36, 24), new THREE.MeshStandardMaterial({ color: this.game.key === 'egg' ? 0xfef3c7 : 0x4d9f45, roughness: 0.35 }));
     body.scale.set(1.08, 0.96, 1);
     body.castShadow = true;
     melon.add(body);
     for (let index = 0; index < 7; index += 1) {
-      const stripe = new THREE.Mesh(new THREE.TorusGeometry(2.02, 0.055, 6, 32), new THREE.MeshStandardMaterial({ color: 0x1f6b2a, roughness: 0.5 }));
+      const stripe = new THREE.Mesh(new THREE.TorusGeometry(2.02, 0.055, 6, 32), new THREE.MeshStandardMaterial({ color: this.game.key === 'egg' ? 0xfde68a : 0x1f6b2a, roughness: 0.5 }));
       stripe.rotation.y = (index / 7) * Math.PI;
       stripe.scale.set(1.08, 0.96, 1);
       melon.add(stripe);
@@ -2307,7 +2310,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
-    const vault = new THREE.Mesh(new THREE.BoxGeometry(8, 3.2, 5), mat(0x2b2a33, { roughness: 0.6 }));
+    const vault = new THREE.Mesh(new THREE.BoxGeometry(8, 3.2, 5), mat(this.game.key === 'chest' ? 0x6b3f2a : 0x2b2a33, { roughness: 0.6 }));
     vault.position.set(0, 1.7, -5.2);
     vault.castShadow = true;
     this.scene.add(vault);
@@ -2776,6 +2779,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const grandPrix = this.game.key === 'grandprix';
     const animalMode = this.game.key === 'animal';
     const crowdMode = this.game.key === 'crowd';
+    const balloonMode = this.game.key === 'balloon';
     const group = new THREE.Group();
     const shadow = shadowMesh(0.55);
     group.add(shadow);
@@ -2788,11 +2792,14 @@ class Arcade3DRenderer implements Arcade3DHandle {
             ? new THREE.CapsuleGeometry(0.34, 0.85, 6, 10)
             : crowdMode
               ? new THREE.CapsuleGeometry(0.3, 0.7, 6, 10)
-              : new THREE.BoxGeometry(1.15, 0.46, 1.6),
+              : balloonMode
+                ? new THREE.SphereGeometry(0.62, 18, 14)
+                : new THREE.BoxGeometry(1.15, 0.46, 1.6),
       new THREE.MeshStandardMaterial({ color: player.color, roughness: 0.35, metalness: 0.15 }),
     );
-    body.position.y = animalMode ? 0.72 : crowdMode ? 0.82 : hillMode ? 0.5 : grandPrix ? 0.38 : 0.45;
+    body.position.y = animalMode ? 0.72 : crowdMode ? 0.82 : balloonMode ? 1.25 : hillMode ? 0.5 : grandPrix ? 0.38 : 0.45;
     if (animalMode || crowdMode) body.rotation.z = Math.PI / 2;
+    if (balloonMode) body.scale.set(1, 1.2, 1);
     body.castShadow = true;
     group.add(body);
     const cabin = new THREE.Mesh(
@@ -2804,10 +2811,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
             ? new THREE.SphereGeometry(0.34, 14, 10)
             : crowdMode
               ? new THREE.SphereGeometry(0.28, 14, 10)
-              : new THREE.BoxGeometry(0.68, 0.38, 0.68),
+              : balloonMode
+                ? new THREE.BoxGeometry(0.5, 0.36, 0.5)
+                : new THREE.BoxGeometry(0.68, 0.38, 0.68),
       new THREE.MeshStandardMaterial({ color: animalMode ? player.color : hillMode ? player.color : 0xf8fafc, roughness: 0.25 }),
     );
-    cabin.position.set(0, animalMode ? 0.9 : crowdMode ? 1.28 : hillMode ? 0.84 : grandPrix ? 0.56 : 0.7, animalMode ? -0.8 : crowdMode ? -0.62 : 0.12);
+    cabin.position.set(0, animalMode ? 0.9 : crowdMode ? 1.28 : balloonMode ? 0.5 : hillMode ? 0.84 : grandPrix ? 0.56 : 0.7, animalMode ? -0.8 : crowdMode ? -0.62 : 0.12);
     group.add(cabin);
     if (animalMode) {
       for (const [x, z] of [[-0.45, 0.45], [0.45, 0.45], [-0.45, -0.45], [0.45, -0.45]] as const) {

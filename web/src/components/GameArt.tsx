@@ -82,9 +82,15 @@ function Scene({ game, id }: { game: ArcadeGameDef; id: string }) {
     case 'word':
       return <Word game={game} id={id} />;
     case 'battle':
-      return game.key === 'stick' ? <Stick game={game} id={id} /> : <Battle game={game} id={id} />;
+      return game.key === 'stick' ? <Stick game={game} id={id} /> : game.key === 'manor' ? <Manor game={game} id={id} /> : <Battle game={game} id={id} />;
     case 'race':
-      return <Race game={game} id={id} />;
+      return game.key === 'hill' ? <Hill game={game} id={id} /> : game.key === 'grandprix' ? <GrandPrix game={game} id={id} /> : game.key === 'animal' ? <AnimalRun game={game} id={id} /> : game.key === 'crowd' ? <Crowd game={game} id={id} /> : game.key === 'balloon' ? <Balloon game={game} id={id} /> : <Race game={game} id={id} />;
+    case 'town':
+      return game.key === 'brick' ? <Brick game={game} id={id} /> : <Town game={game} id={id} />;
+    case 'melon':
+      return game.key === 'egg' ? <Egg game={game} id={id} /> : <Melon game={game} id={id} />;
+    case 'gold':
+      return game.key === 'chest' ? <Chest game={game} id={id} /> : <Gold game={game} id={id} />;
     case 'wheel':
       return <Wheel game={game} id={id} />;
     case 'tug':
@@ -324,6 +330,79 @@ function Ramwong({ game, id }: { game: ArcadeGameDef; id: string }) {
 }
 
 
+
+function Balloon({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#fdf2f8" />
+      <path d="M0 330 Q160 280 320 320 Q480 360 640 310 L640 400 L0 400 Z" fill="#fbcfe8" opacity="0.8" />
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i} transform={`translate(${140 + i * 120} ${170 + (i % 2) * 35})`}>
+          <ellipse cx="0" cy="0" rx="42" ry="50" fill={['#e11d48', '#2563eb', '#0f8a72', '#d97706'][i]} />
+          <path d="M-30 20 L-14 52 L14 52 L30 20" fill="none" stroke="#7c2d12" strokeWidth="3" />
+          <rect x="-15" y="50" width="30" height="20" rx="4" fill="#b45309" />
+        </g>
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#9d174d" opacity="0.6">BALON SAVAŞI</text>
+    </g>
+  );
+}
+function Brick({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#eff6ff" />
+      <rect x="190" y="80" width="260" height="300" fill="#dbeafe" stroke="#93c5fd" strokeWidth="4" />
+      {Array.from({ length: 15 }).map((_, i) => (
+        <rect key={i} x={210 + (i % 3) * 80} y={330 - Math.floor(i / 3) * 45} width="72" height="38" rx="4" fill={['#2563eb', '#60a5fa', '#93c5fd'][i % 3]} stroke="#1d4ed8" />
+      ))}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#1e3a8a" opacity="0.6">BRICK BOX</text>
+    </g>
+  );
+}
+function Chest({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#fffbeb" />
+      <ellipse cx="320" cy="340" rx="240" ry="36" fill="#fde68a" />
+      <g transform="translate(320 230)">
+        <rect x="-110" y="-30" width="220" height="135" rx="16" fill="#92400e" />
+        <path d="M-110 -30 Q0 -120 110 -30 Z" fill="#b45309" />
+        <rect x="-16" y="35" width="32" height="40" rx="6" fill="#fbbf24" />
+        <circle cx="0" cy="54" r="7" fill="#78350f" />
+      </g>
+      {[0, 1, 2, 3, 4].map((i) => <circle key={i} cx={140 + i * 90} cy={340 - (i % 2) * 16} r="12" fill="#f6c945" />)}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#78350f" opacity="0.6">CHEST COVE</text>
+    </g>
+  );
+}
+function Manor({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#171126" />
+      <circle cx="500" cy="90" r="38" fill="#fef3c7" opacity="0.85" />
+      <path d="M100 340 L100 190 L200 120 L300 190 L300 340 Z" fill="#3b2f4a" />
+      <path d="M180 340 L180 230 L260 170 L340 230 L340 340 Z" fill="#4c3b5e" />
+      <rect x="215" y="255" width="28" height="42" fill="#fbbf24" />
+      <rect x="270" y="255" width="28" height="42" fill="#fbbf24" />
+      <path d="M0 350 L640 350" stroke="#7c3aed" strokeWidth="8" opacity="0.4" />
+      {[0, 1, 2].map((i) => <circle key={i} cx={430 + i * 50} cy={300 - (i % 2) * 20} r="14" fill="#a78bfa" opacity="0.8" />)}
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#ddd6fe" opacity="0.8">MIDNIGHT MANOR</text>
+    </g>
+  );
+}
+function Egg({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#fffbeb" />
+      <rect x="0" y="320" width="640" height="80" fill="#d6d3d1" />
+      <ellipse cx="320" cy="240" rx="110" ry="140" fill="#fef3c7" stroke="#fbbf24" strokeWidth="5" />
+      {[0, 1, 2, 3].map((i) => <path key={i} d={`M${260 + i * 30} 140 L${250 + i * 30} 190 L${270 + i * 30} 230`} stroke="#d97706" strokeWidth="4" fill="none" />)}
+      <circle cx="280" cy="210" r="7" fill="#78350f" />
+      <circle cx="360" cy="210" r="7" fill="#78350f" />
+      <text x="320" y="34" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#78350f" opacity="0.6">EGG SMASH</text>
+    </g>
+  );
+}
 function Hill({ game, id }: { game: ArcadeGameDef; id: string }) {
   return (
     <g>

@@ -60,7 +60,7 @@ export function AuthShell({
           <div className="flex justify-end">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#e4dccf] bg-white px-3.5 py-1.5 text-[11px] font-semibold text-ink-500">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-              Yirmi beş oyunlu platform
+              Otuz oyunlu platform
             </span>
           </div>
 
@@ -79,7 +79,7 @@ export function AuthShell({
               Sohbetin hazır. Sahne senin.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-ink-500">
-              Yirmi beş oyun, tek hesap ve kalıcı yayın bağlantısı. Oyunu seç, OBS’e ekle, yayını
+              Otuz oyun, tek hesap ve kalıcı yayın bağlantısı. Oyunu seç, OBS’e ekle, yayını
               başlat.
             </p>
 

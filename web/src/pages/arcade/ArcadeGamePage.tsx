@@ -21,6 +21,11 @@ import {
   Sparkles,
   Users,
   Zap,
+  TrendingUp,
+  ListChecks,
+  CircleHelp,
+  Trophy,
+  Wand2,
 } from 'lucide-react';
 import {
   ARCADE_GAME_LIST,
@@ -39,6 +44,139 @@ import { api } from '../../lib/api';
 import { startCheckout } from '../../lib/checkout';
 import { useArcadeSocket } from '../../lib/useArcadeSocket';
 import { useAuth } from '../../lib/auth';
+
+
+interface Playbook {
+  features: Array<{ title: string; text: string }>;
+  tips: string[];
+  faq: Array<{ q: string; a: string }>;
+  commands: string[];
+}
+
+function buildPlaybook(game: ArcadeGameDef): Playbook {
+  const mode = game.mode;
+  const features = [
+    {
+      title: 'Canlı 3D sahne',
+      text: `${game.name} için özel hazırlanmış, 9:16 dikey yayın sahnesi. OBS Browser Source olarak doğrudan eklenir.`,
+    },
+    {
+      title: 'Sohbetle kontrol',
+      text: 'İzleyici yorum, beğeni ve hediye gönderdiğinde oyun anında tepki verir. Ek uygulama veya eklenti gerekmez.',
+    },
+    {
+      title: 'Canlı sıralama',
+      text: 'Tur içinde puanlar, ilerleme ve kazananlar anlık güncellenir; yayıncı ve izleyici aynı sahneyi görür.',
+    },
+    {
+      title: 'Yayıncı kontrolü',
+      text: 'Katılım komutları, dil, overlay, TTS ve moderasyon oyun panelinden yönetilir. İstenmeyen izleyici kalıcı olarak engellenebilir.',
+    },
+  ];
+  const modeFeatures: Record<string, Array<{ title: string; text: string }>> = {
+    race: [
+      { title: 'Hız ve nitro', text: 'Beğeni temel hızı, hediye ise kısa süreli nitro etkisini tetikler. Farklı hediye kademeleri yarışın temposunu değiştirir.' },
+      { title: 'Şerit yarışı', text: `${game.maxPlayers} izleyiciye kadar aynı pistte yarışılır; bitiş çizgisine ilk ulaşan turu kazanır.` },
+      { title: 'Kısa turlar', text: `${game.durationSec} saniyelik turlar sayesinde yayın temposu düşmez, yeni izleyici hızla dahil olur.` },
+    ],
+    dance: [
+      { title: 'Ritim ve coşku', text: 'Beğeni ve hediyeler dansçıların enerjisini yükseltir; sahne ışıkları ve kalabalık tepki verir.' },
+      { title: 'Kostüm ve sahne', text: 'Her izleyici kendi rengiyle sahnede görünür. Yayıncı overlay ve vurgu rengini kendi markasına uyarlar.' },
+      { title: 'Sosyal anlar', text: 'Dansçılar aynı sahnede buluşur; sohbet akışı ve kazanan duyurusu yayıncıya doğal etkileşim sağlar.' },
+    ],
+    battle: [
+      { title: 'Hayatta kalma', text: 'Beğeni ve hediyeler can/savunma gücü verir; tur sonuna kadar kalan izleyici kazanır.' },
+      { title: 'Sürekli gerilim', text: 'Canlı HP göstergesi ve eleme akışı izleyiciyi ekranda tutar. Son saniye dönüşleri yüksek etkileşim yaratır.' },
+      { title: 'Hediye saldırıları', text: 'Farklı hediye seviyeleri saldırı gücünü artırır; yayıncı dengeli bir ekonomi için hediye eşiklerini ayarlar.' },
+    ],
+    quiz: [
+      { title: 'Bilgi yarışı', text: 'Her turda yeni soru gelir; doğru cevap puan kazandırır, yanlış cevap sıralamayı değiştirir.' },
+      { title: 'Karışık cevaplar', text: 'Sorular ve seçenekler her turda karıştırılır; aynı cevabı ezberlemek avantaj sağlamaz.' },
+      { title: 'Özel soru havuzu', text: 'Yayıncı kendi sorularını ekleyebilir; niş kitlesine uygun bilgi yarışı kurar.' },
+    ],
+    word: [
+      { title: 'Harf avı', text: 'Verilen harfle başlayan kelimeleri sohbetten topla; doğru kelime anında puana dönüşür.' },
+      { title: 'Kategori çeşitliliği', text: 'Şehir, hayvan, bitki gibi kategorilerle her tur farklı bir kelime oyunu oynanır.' },
+      { title: 'Hızlı katılım', text: 'Kısa cevap süresi sayesinde izleyici beklemeden oyuna girer; sohbet hareketli kalır.' },
+    ],
+    wheel: [
+      { title: 'Bilet ekonomisi', text: 'Beğeni, yorum ve hediye bilet kazandırır; çark ağırlıklı olarak en çok bilete sahip izleyiciyi ödüllendirir.' },
+      { title: 'Otomatik dönüş', text: 'Çark belirli aralıklarla kendiliğinden döner; yayıncı ekstra butona basmadan tempo korunur.' },
+      { title: 'Şans ve strateji', text: 'Az bileti olan da şansını deneyebilir; hediye ile bilet artırmak kazanma ihtimalini yükseltir.' },
+    ],
+    tug: [
+      { title: 'Takım savaşı', text: 'İzleyiciler kırmızı veya mavi takıma katılır; beğeni ve hediyeler halatı kendi tarafına çeker.' },
+      { title: 'Takım komutları', text: 'Yayıncı kırmızı/mavi komutlarını ve katılım komutunu kendi diline göre özelleştirir.' },
+      { title: 'Ortak hedef', text: 'Tek bir izleyici yerine takım kazanır; sohbet içinde rekabet ve dayanışma aynı anda oluşur.' },
+    ],
+    versus: [
+      { title: 'İki taraf, tek duvar', text: 'İzleyiciler taraf seçer; beğeni ve hediyeler duvarı karşı tarafa iter.' },
+      { title: 'Takım kimliği', text: 'Kızlar/erkekler veya kırmızı/mavi gibi takım isimleri yayıncı tarafından özelleştirilebilir.' },
+      { title: 'Dengeli tur', text: 'Duvarın konumu anlık gösterilir; izleyici hangi tarafın önde olduğunu her an görür.' },
+    ],
+    horse: [
+      { title: 'Jokey yarışı', text: 'İzleyiciler 10 farklı jokeyden birini seçer; beğeni ve hediye atı ileri iter.' },
+      { title: 'Şerit değiştirme', text: 'Yorumla jokey değiştirilebilir; yayıncı katılım komutlarıyla akışı yönetir.' },
+      { title: 'Canlı skor', text: 'Her şeridin ilerlemesi ayrı gösterilir; yarışın sonuna kadar heyecan korunur.' },
+    ],
+    melon: [
+      { title: 'Ortak gerginlik', text: 'Karpuzun etrafındaki bantlar her etkileşimde sıklaşır; tur sonunda karpuz patlar.' },
+      { title: 'Katkı sıralaması', text: 'En çok bant geren izleyici kazanır; küçük hediyeler bile katkı sağlar.' },
+      { title: 'Görsel gerilim', text: 'Bant sayısı ve sallanma efekti izleyiciye yaklaşan patlamayı hissettirir.' },
+    ],
+    gold: [
+      { title: 'Ortak hazine', text: 'Tüm izleyiciler aynı altın kasasını boşaltmak için birlikte çalışır.' },
+      { title: 'Mıknatıs gücü', text: 'Beğeni ve hediyeler mıknatısı güçlendirir; altınlar kasaya doğru çekilir.' },
+      { title: 'Katkı yarışı', text: 'En çok altın çeken izleyici kazanır; ekip çalışması ve bireysel rekabet bir arada.' },
+    ],
+    town: [
+      { title: 'Bina büyütme', text: 'Her izleyici kendi binasını kat kat yükseltir; beğeni ve hediyeler yeni kat ekler.' },
+      { title: 'Şehir manzarası', text: 'Tüm binalar aynı sahnede görünür; en yüksek bina turun kazananı olur.' },
+      { title: 'Uzun vadeli hedef', text: 'İzleyici binasını büyütmek için geri döner; yayıncı tekrar eden etkileşim kazanır.' },
+    ],
+  };
+  features.push(...(modeFeatures[mode] ?? []));
+  const tips = [
+    `İlk turda izleyiciye ${game.controls.includes('Yorum') ? 'katılım komutunu' : 'beğeni ve hediyenin etkisini'} gösterin; ilk 30 saniye katılımın en yüksek olduğu aralıktır.`,
+    `Hediye eşiklerini ${game.durationSec} saniyelik tur içinde görünür tutun; düşük, orta ve yüksek katkı arasında net bir fark olsun.`,
+    'Tur arasında kazananı ve bir sonraki turun başlangıcını duyurun. Kısa geri sayım, izleyicinin odada kalmasını sağlar.',
+    'Oyun panelindeki dil ve katılım komutlarını kendi topluluğunuza uyarlayın; moderasyon ve ban araçlarını yayın öncesi test edin.',
+  ];
+  const commands = [
+    'Yoruma katıl.',
+    'Beğeni gönder.',
+    'Hediye gönder.',
+    ...(mode === 'quiz' || mode === 'word' ? ['Doğru cevabı yaz.'] : []),
+    ...(mode === 'tug' || mode === 'versus' ? ['Takım komutunu yaz.'] : []),
+  ];
+  const faq = [
+    {
+      q: `${game.name} oynamak için ne gerekiyor?`,
+      a: 'Yayıncı tarafında oyun lisansı ve yayın odası gerekir. İzleyici tarafında sadece TikTok/YouTube/Twitch sohbeti yeterlidir; uygulama indirmesi gerekmez.',
+    },
+    {
+      q: 'Kaç izleyici aynı anda katılabilir?',
+      a: `${game.name} aynı anda ${game.maxPlayers} izleyiciye kadar destekler. Tur süresi ${game.durationSec} saniyedir; yeni turlar otomatik başlar.`,
+    },
+    {
+      q: 'Hediye göndermek zorunlu mu?',
+      a: 'Hayır. Beğeni ve yorum da oyunu etkiler. Hediye, daha güçlü bir etki yaratır; yayıncı bunu kendi topluluğuna göre dengeleyebilir.',
+    },
+    {
+      q: 'OBS’e nasıl eklerim?',
+      a: 'Yayıncı panelinden oyun odasını açın, OBS bağlantısını kopyalayın ve OBS’de Browser Source olarak ekleyin. 9:16 dikey sahne otomatik ölçeklenir.',
+    },
+    {
+      q: 'Lisans bitince ne olur?',
+      a: 'Oda yayına kapanır ancak ayarlarınız ve geçmişiniz korunur. Yeni lisans aldığınızda aynı odadan kaldığınız yerden devam edersiniz.',
+    },
+    {
+      q: 'Moderasyon ve engelleme var mı?',
+      a: 'Evet. İzleyiciyi kalıcı olarak engelleyebilir, sohbeti yönetebilir ve istenmeyen katılımcıları odadan çıkarabilirsiniz.',
+    },
+  ];
+  return { features: features.slice(0, 7), tips, faq, commands };
+}
 
 const FEED_COLORS: Record<string, string> = {
   join: 'text-brand-700',
@@ -77,6 +215,7 @@ function GameView({ game }: { game: ArcadeGameDef }) {
   const [joinLane, setJoinLane] = useState(1);
   const [message, setMessage] = useState('');
   const [tab, setTab] = useState<'chat' | 'ranking'>('chat');
+  const playbook = useMemo(() => buildPlaybook(game), [game]);
   const [prices, setPrices] = useState<{ oneDay: number | null; thirtyDay: number | null }>({
     oneDay: null,
     thirtyDay: null,
@@ -713,6 +852,133 @@ function GameView({ game }: { game: ArcadeGameDef }) {
                 değildir. Yayın kısıtlaması ve ihlal riski yayıncıya aittir.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section className="container-page py-10">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-600">Oyun rehberi</p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink-950">İçeride neler var?</h2>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-ink-500">
+                {game.name} sadece bir sahne değil; katılım, hediye ekonomisi, moderasyon ve yayın
+                akışı birlikte çalışır. Aşağıdaki başlıklar yayına hazırlık için gereken tüm katmanları özetler.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+              <TrendingUp size={12} /> Etkileşim odaklı
+            </span>
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {playbook.features.map((feature, index) => (
+              <div key={feature.title} className="rounded-2xl border border-[#e9e1d5] bg-white p-5 shadow-card">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#f7f2e9] text-[11px] font-bold text-brand-700">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 className="mt-3 text-sm font-bold text-ink-950">{feature.title}</h3>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-ink-500">{feature.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-y border-[#eee7dc] bg-[#fffaf4] py-10">
+          <div className="container-page grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-3xl border border-[#e9e1d5] bg-white p-6 shadow-card sm:p-8">
+              <div className="flex items-center gap-2">
+                <Wand2 size={18} className="text-brand-600" />
+                <h2 className="text-xl font-bold tracking-tight text-ink-950">Yayıncı stratejileri</h2>
+              </div>
+              <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
+                Aynı oyun, doğru akışla iki kat daha fazla etkileşim üretir. Yayın öncesi bu dört
+                adımı uygulayın.
+              </p>
+              <div className="mt-5 space-y-3">
+                {playbook.tips.map((tip, index) => (
+                  <div key={tip} className="flex items-start gap-3">
+                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-50 text-[10px] font-bold text-brand-700">
+                      {index + 1}
+                    </span>
+                    <p className="pt-0.5 text-[11px] leading-relaxed text-ink-600">{tip}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {playbook.commands.map((command) => (
+                  <span key={command} className="rounded-full bg-[#f7f2e9] px-2.5 py-1 text-[10px] font-medium text-ink-500">
+                    {command}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-3xl border border-[#e9e1d5] bg-white p-6 shadow-card sm:p-8">
+              <div className="flex items-center gap-2">
+                <ListChecks size={18} className="text-brand-600" />
+                <h2 className="text-xl font-bold tracking-tight text-ink-950">Yayına hazırlık</h2>
+              </div>
+              <div className="mt-5 space-y-3">
+                {[
+                  'Oyun lisansını seç ve yayın odasını aç.',
+                  'OBS bağlantısını Browser Source olarak ekle.',
+                  'Katılım komutlarını ve dili panelden ayarla.',
+                  'Sohbet bağlantısını test et, ilk turu başlat.',
+                  'Moderasyon ve ban listesini yayın öncesi kontrol et.',
+                ].map((step, index) => (
+                  <div key={step} className="flex items-start gap-2.5">
+                    <Check size={14} className="mt-0.5 shrink-0 text-emerald-600" />
+                    <p className="text-[11px] leading-relaxed text-ink-600">
+                      <span className="font-semibold text-ink-800">{index + 1}.</span> {step}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-[#f7f2e9] p-3">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-ink-400">Tur süresi</p>
+                  <p className="mt-1 text-lg font-bold text-ink-950">{game.durationSec}s</p>
+                </div>
+                <div className="rounded-xl bg-[#f7f2e9] p-3">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-ink-400">Kapasite</p>
+                  <p className="mt-1 text-lg font-bold text-ink-950">{game.maxPlayers}</p>
+                </div>
+              </div>
+              <Link to="/kurulum" className="mt-4 inline-flex items-center gap-1 text-[10px] font-semibold text-brand-700">
+                Kurulum rehberini aç <ArrowRight size={11} />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-page py-10">
+          <div className="flex items-center gap-2">
+            <CircleHelp size={18} className="text-brand-600" />
+            <h2 className="text-2xl font-bold tracking-tight text-ink-950">Sık sorulan sorular</h2>
+          </div>
+          <div className="mt-5 grid gap-2 lg:grid-cols-2">
+            {playbook.faq.map((item) => (
+              <details key={item.q} className="group rounded-2xl border border-[#e9e1d5] bg-white p-4 open:bg-[#fffaf4]">
+                <summary className="cursor-pointer list-none text-[12px] font-semibold text-ink-800 marker:hidden">
+                  {item.q}
+                  <span className="float-right text-brand-600 transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-2 text-[11px] leading-relaxed text-ink-500">{item.a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="mt-6 grid gap-3 rounded-2xl border border-[#e9e1d5] bg-white p-5 sm:grid-cols-3">
+            {[
+              { icon: <Trophy size={15} />, title: 'Kazanan akışı', text: 'Tur sonunda kazanan sahne ve sohbette duyurulur; yeni tur otomatik başlar.' },
+              { icon: <ShieldCheck size={15} />, title: 'Güvenli moderasyon', text: 'Ban listesi, sohbet filtresi ve yayıncı onayıyla istenmeyen etkileşim engellenir.' },
+              { icon: <Radio size={15} />, title: 'Tek bağlantı', text: 'Aynı OBS sahnesi TikTok, YouTube ve Twitch yayınlarında kullanılabilir.' },
+            ].map((item) => (
+              <div key={item.title} className="flex items-start gap-2.5">
+                <span className="mt-0.5 text-brand-600">{item.icon}</span>
+                <div>
+                  <p className="text-[11px] font-bold text-ink-800">{item.title}</p>
+                  <p className="mt-0.5 text-[10px] leading-relaxed text-ink-400">{item.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
