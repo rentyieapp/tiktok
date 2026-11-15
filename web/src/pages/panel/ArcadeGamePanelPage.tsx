@@ -552,7 +552,13 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
               <h3 className="text-sm font-bold text-ink-950">OBS bağlantısı</h3>
               <p className="mt-1 text-[10px] leading-relaxed text-ink-400">Bu URL yayın boyunca sabit kalır.</p>
               <p className="mt-2 text-[9px] font-bold uppercase tracking-wider text-ink-400">Tam sahne</p>
-              <code className="mt-1 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600">{room.obsUrl}</code>
+              <input
+                readOnly
+                value={room.obsUrl}
+                onFocus={(event) => event.currentTarget.select()}
+                aria-label="OBS tam sahne bağlantısı"
+                className="mt-1 block w-full rounded-lg border border-[#eadfce] bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600 outline-none focus:border-brand-400"
+              />
               <div className="mt-2 flex gap-1.5">
                 <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyObs()}>Kopyala</Button>
                 <a href={room.obsUrl} target="_blank" rel="noreferrer">
@@ -560,7 +566,13 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                 </a>
               </div>
               <p className="mt-3 text-[9px] font-bold uppercase tracking-wider text-violet-500">Sadece overlay (şeffaf)</p>
-              <code className="mt-1 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-violet-50 px-2.5 py-2 text-[9px] text-violet-700">{room.overlayUrl}</code>
+              <input
+                readOnly
+                value={room.overlayUrl}
+                onFocus={(event) => event.currentTarget.select()}
+                aria-label="OBS overlay bağlantısı"
+                className="mt-1 block w-full rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-2 text-[9px] text-violet-700 outline-none focus:border-violet-400"
+              />
               <div className="mt-2 flex gap-1.5">
                 <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyOverlay()}>Kopyala</Button>
                 <a href={room.overlayUrl} target="_blank" rel="noreferrer">
