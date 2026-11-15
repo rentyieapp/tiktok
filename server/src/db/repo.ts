@@ -294,6 +294,13 @@ export function findPackageByShopierProductId(db: DB, productId: string): Packag
     .get(productId) as PackageRow | undefined;
 }
 
+export function setPackageShopierProduct(db: DB, id: string, productId: string, url: string | null): boolean {
+  const result = db
+    .prepare('UPDATE packages SET shopier_product_id = ?, shopier_url = ? WHERE id = ?')
+    .run(productId.trim() || null, url?.trim() || null, id);
+  return result.changes > 0;
+}
+
 export function setPackageShopierProductId(db: DB, id: string, productId: string): boolean {
   const result = db
     .prepare('UPDATE packages SET shopier_product_id = ? WHERE id = ?')

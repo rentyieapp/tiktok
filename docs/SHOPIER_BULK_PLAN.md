@@ -86,7 +86,7 @@ Durum: **ONAY BEKLİYOR — hiçbir yeni ürün oluşturulmadı.**
 1. Yalnızca `is_active=1` ve `shopier_product_id` boş paketler seçilir.
 2. Her paket için atomik bir “claim” alınır (`shopier_product_sync_state=creating`, benzersiz claim token). Claim alınamazsa satır atlanır.
 3. Ürün `POST /v1/products` ile **sıralı** oluşturulur; paralel çağrı yapılmaz.
-4. Dönen `id` ve `url` aynı transaction içinde `shopier_product_id` + `shopier_product_url` alanlarına yazılır.
+4. Dönen `id` ve `url` aynı transaction içinde `shopier_product_id` + `shopier_url` alanlarına yazılır. Mevcut `Başlangıç` için URL `https://www.shopier.com/52981076` olarak kaydedildi.
 5. Başarısız/ambiguous istek otomatik tekrar denenmez; `failed` olarak işaretlenir. Aynı ürünün ikinci kez açılmasını önlemek için manuel/API uzlaştırması gerekir.
 6. Batch öncesi ve sonrası eşleşmiş ID sayısı raporlanır; mevcut eşleşmiş ürünlere dokunulmaz.
 7. Ürün adları benzersizdir; paket adı doğrudan ürün başlığı olarak kullanılır.

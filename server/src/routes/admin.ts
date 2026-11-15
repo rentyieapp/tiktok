@@ -14,7 +14,7 @@ import {
   listGameProducts,
   listPackages,
   setAppSetting,
-  setPackageShopierProductId,
+  setPackageShopierProduct,
   updateGameProduct,
   updatePackage,
   type GameProductRow,
@@ -332,7 +332,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
       })),
       catalog.products,
     );
-    for (const match of matches) setPackageShopierProductId(db, match.packageId, match.productId);
+    for (const match of matches) setPackageShopierProduct(db, match.packageId, match.productId, match.url);
     return reply.send({ ...catalog, matched: matches.length, matches });
   });
 
@@ -358,7 +358,10 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
     const pkg = findPackageById(db, body.packageId);
     if (!pkg) throw notFound('Paket bulunamadı.');
     const productId = (body.shopierProductId.match(/(\d{4,})/)?.[1] ?? body.shopierProductId).trim();
-    setPackageShopierProductId(db, pkg.id, productId);
+    const productUrl = /^https?:\/\//i.test(body.shopierProductId)
+      ? body.shopierProductId
+      : `https://www.shopier.com/${productId}`;
+    setPackageShopierProduct(db, pkg.id, productId, productUrl);
     return reply.send({ ok: true, packageId: pkg.id, shopierProductId: productId });
   });
 

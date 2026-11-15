@@ -1,6 +1,6 @@
 import type { DB } from '../db/index.js';
 import type { AppConfig } from '../config.js';
-import { findPackageById, setPackageShopierProductId } from '../db/repo.js';
+import { findPackageById, setPackageShopierProduct } from '../db/repo.js';
 
 export interface ShopierProductCreateResult {
   productId: string;
@@ -70,7 +70,9 @@ export async function createAndMapShopierProduct(
   const pkg = findPackageById(db, packageId);
   if (!pkg || pkg.is_active !== 1) throw new ShopierProductError('Aktif paket bulunamadı.', 404);
   if (pkg.shopier_product_id) {
-    return { packageId: pkg.id, productId: pkg.shopier_product_id, productUrl: null, existing: true };
+    const productUrl = pkg.shopier_url ?? `https://www.shopier.com/${pkg.shopier_product_id}`;
+    if (!pkg.shopier_url) setPackageShopierProduct(db, pkg.id, pkg.shopier_product_id, productUrl);
+    return { packageId: pkg.id, productId: pkg.shopier_product_id, productUrl, existing: true };
   }
   const created = await createShopierProduct(config, {
     title: pkg.name,
@@ -79,6 +81,6 @@ export async function createAndMapShopierProduct(
     currency: pkg.currency,
     imageUrl: `${config.appUrl}/rook-profile.png`,
   });
-  setPackageShopierProductId(db, pkg.id, created.productId);
+  setPackageShopierProduct(db, pkg.id, created.productId, created.productUrl ?? `https://www.shopier.com/${created.productId}`);
   return { packageId: pkg.id, ...created };
 }

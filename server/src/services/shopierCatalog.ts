@@ -114,12 +114,12 @@ export async function listShopierProducts(config: AppConfig): Promise<ShopierCat
 export function matchPackagesToProducts(
   packages: Array<{ id: string; name: string; shopier_product_id: string | null }>,
   products: ShopierCatalogProduct[],
-): Array<{ packageId: string; productId: string; title: string }> {
+): Array<{ packageId: string; productId: string; title: string; url: string }> {
   const byTitle = new Map(products.map((product) => [normalize(product.title), product]));
   return packages
     .filter((pkg) => !pkg.shopier_product_id)
     .flatMap((pkg) => {
       const product = byTitle.get(normalize(pkg.name));
-      return product ? [{ packageId: pkg.id, productId: product.id, title: product.title }] : [];
+      return product ? [{ packageId: pkg.id, productId: product.id, title: product.title, url: product.url }] : [];
     });
 }
