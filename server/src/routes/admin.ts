@@ -44,6 +44,7 @@ import {
   requireAdmin,
 } from '../services/admin.js';
 import { getAnalytics } from '../services/analytics.js';
+import { getShopierApiStatus } from '../services/shopier.js';
 
 function toAdminPackage(row: PackageRow) {
   return {
@@ -273,6 +274,11 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
     return reply.send(getShopierSettings(db, config));
   });
 
+  app.get('/api/admin/shopier/status', async (request, reply) => {
+    adminUser(request);
+    return reply.send(await getShopierApiStatus(config.shopierPat));
+  });
+
   app.get('/api/admin/health', async (request, reply) => {
     adminUser(request);
     const payments = listAllPayments(db);
@@ -282,6 +288,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
       provider: config.paymentProvider,
       testPayments: config.testPaymentsEnabled,
       shopierWebhookConfigured: Boolean(config.shopierWebhookToken),
+    shopierApiConfigured: Boolean(config.shopierPat),
     });
   });
 }
@@ -309,6 +316,7 @@ function getShopierSettings(db: AppContext['db'], config: AppContext['config']) 
   return {
     shopierStoreUrl: storeUrl,
     shopierWebhookConfigured: Boolean(config.shopierWebhookToken),
+    shopierApiConfigured: Boolean(config.shopierPat),
     shopierProviderActive: String(config.paymentProvider) === 'shopier',
     paymentProvider: config.paymentProvider,
     webhookUrl: `${config.appUrl}/api/webhooks/payments/shopier`,

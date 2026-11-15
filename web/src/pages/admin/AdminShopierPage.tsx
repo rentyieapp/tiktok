@@ -32,19 +32,22 @@ export function AdminShopierPage() {
   const [settings, setSettings] = useState<AdminSettingsDTO | null>(null);
   const [packages, setPackages] = useState<PackageDTO[]>([]);
   const [storeUrl, setStoreUrl] = useState('');
+  const [apiStatus, setApiStatus] = useState<{ configured: boolean; connected: boolean; orderCount: number; message: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
     try {
-      const [settingsResult, packageResult] = await Promise.all([
+      const [settingsResult, packageResult, statusResult] = await Promise.all([
         api.get<AdminSettingsDTO>('/api/admin/settings'),
         api.get<{ packages: PackageDTO[] }>('/api/admin/packages'),
+        api.get<{ configured: boolean; connected: boolean; orderCount: number; message: string }>('/api/admin/shopier/status'),
       ]);
       setSettings(settingsResult);
       setStoreUrl(settingsResult.shopierStoreUrl);
       setPackages(packageResult.packages);
+      setApiStatus(statusResult);
     } catch (caught) {
       toastError('Shopier ayarları yüklenemedi', caught instanceof ApiError ? caught.message : 'Tekrar dene.');
     } finally {
@@ -120,6 +123,20 @@ export function AdminShopierPage() {
                 </div>
               </Field>
 
+              <div className="rounded-xl border border-ink-100 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">Shopier API bağlantısı</p>
+                  <StatusBadge status={apiStatus?.connected ? 'ok' : apiStatus?.configured ? 'warn' : 'neutral'}>
+                    {apiStatus?.connected ? 'Bağlı' : apiStatus?.configured ? 'Kontrol et' : 'Tanımsız'}
+                  </StatusBadge>
+                </div>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-ink-500">
+                  {apiStatus?.message ?? 'SHOPIER_PAT ortam değişkeni bekleniyor.'}
+                </p>
+                <p className="mt-1 text-[9px] leading-relaxed text-ink-400">
+                  Anahtar yalnızca sunucuda tutulur; panelde veya tarayıcıda görünmez.
+                </p>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-ink-100 p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">

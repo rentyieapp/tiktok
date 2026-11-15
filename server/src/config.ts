@@ -24,6 +24,7 @@ export interface AppConfig {
   stripePriceId: string;
   liveWebhookSecret: string;
   shopierWebhookToken: string;
+  shopierPat: string;
   youtubeApiKey: string;
   resendApiKey: string;
   mailFrom: string;
@@ -118,6 +119,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     stripePriceId: env.STRIPE_PRICE_ID || '',
     liveWebhookSecret: env.LIVE_WEBHOOK_SECRET || 'live-webhook-secret',
     shopierWebhookToken: env.SHOPIER_WEBHOOK_TOKEN || '',
+    shopierPat: env.SHOPIER_PAT || '',
     youtubeApiKey: env.YOUTUBE_API_KEY || '',
     resendApiKey: env.RESEND_API_KEY || '',
     mailFrom: env.MAIL_FROM || 'Meydan <no-reply@meydan.local>',

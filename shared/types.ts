@@ -519,6 +519,7 @@ export interface AdminPaymentRow extends PaymentDTO {
 export interface AdminSettingsDTO {
   shopierStoreUrl: string;
   shopierWebhookConfigured: boolean;
+  shopierApiConfigured?: boolean;
   shopierProviderActive: boolean;
   paymentProvider: string;
   webhookUrl: string;
