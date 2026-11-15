@@ -49,10 +49,10 @@ export function ArcadeGameCard({
           <div className="mt-3 flex flex-wrap gap-1.5">
             {offers
               .sort((a, b) => a.durationDays - b.durationDays)
-              .slice(0, 2)
+              .slice(0, 3)
               .map((offer) => (
                 <span key={offer.id} className="rounded-full bg-[#f7f2e9] px-2 py-1 text-[9px] font-semibold text-ink-600">
-                  {offer.durationDays === 1 ? '1 gün' : `${offer.durationDays} gün`} ·{' '}
+                  {offer.durationDays === 1 ? '1 gün' : offer.durationDays === 365 ? '1 yıl' : `${offer.durationDays} gün`} ·{' '}
                   {formatPrice(offer.priceCents, offer.currency)}
                 </span>
               ))}

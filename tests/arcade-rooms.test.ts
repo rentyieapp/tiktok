@@ -506,7 +506,7 @@ describe('yayıncıya özel arcade odaları', () => {
       payload: { packageId: 'offer_bundle_all_1d', couponCode: 'MEYDAN10' },
     });
     expect(checkout.statusCode).toBe(201);
-    expect(checkout.json().payment.amountCents).toBe(8910);
+    expect(checkout.json().payment.amountCents).toBe(17910);
     const paid = await server.inject({
       method: 'POST',
       url: `/api/test-payments/${checkout.json().payment.id}/pay`,

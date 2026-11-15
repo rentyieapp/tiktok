@@ -273,7 +273,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                       className="flex items-center justify-between rounded-xl border border-[#e4dccf] bg-[#fffaf4] px-3 py-2.5 text-left transition hover:border-brand-300 hover:bg-brand-50/40 disabled:opacity-60"
                     >
                       <span>
-                        <span className="block text-[10px] font-bold text-ink-800">{offer.durationDays === 1 ? '1 Günlük' : `${offer.durationDays} Günlük`}</span>
+                        <span className="block text-[10px] font-bold text-ink-800">{offer.durationDays === 1 ? '1 Günlük' : offer.durationDays === 365 ? 'Yıllık' : `${offer.durationDays} Günlük`}</span>
                         <span className="block text-[9px] text-ink-400">{game.name} lisansı</span>
                       </span>
                       <span className="text-[12px] font-bold text-brand-700">{formatPrice(offer.priceCents, offer.currency)}</span>

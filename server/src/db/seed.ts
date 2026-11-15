@@ -157,6 +157,45 @@ const PACKAGES: SeedPackage[] = [
     highlight: 0,
     sortOrder: 15,
   },
+  {
+    id: 'pkg_starter_365d',
+    code: 'starter_365d',
+    name: 'Başlangıç Yıllık',
+    tagline: 'Yıl boyunca 2 takımlı stüdyo',
+    description: 'Taraftar Savaşı 3D için 2 takımlı, 365 günlük yayıncı paketi.',
+    priceCents: 249900,
+    maxTeams: 2,
+    durationDays: 365,
+    features: ['2 takımlı 3D Taraftar Savaşı', '365 günlük yayıncı lisansı', 'Kalıcı OBS bağlantısı', 'Temel istatistikler'],
+    highlight: 0,
+    sortOrder: 20,
+  },
+  {
+    id: 'pkg_pro_365d',
+    code: 'pro_365d',
+    name: 'Profesyonel Yıllık',
+    tagline: 'Yıl boyunca tam güç',
+    description: 'Taraftar Savaşı 3D için 4 takım, çok dilli komutlar ve 365 günlük yayıncı lisansı.',
+    priceCents: 399900,
+    maxTeams: 4,
+    durationDays: 365,
+    features: ['4 takımlı 3D Taraftar Savaşı', '365 günlük lisans', 'Tüm komut özelleştirmeleri', 'Gelişmiş istatistikler'],
+    highlight: 1,
+    sortOrder: 21,
+  },
+  {
+    id: 'pkg_legend_365d',
+    code: 'legend_365d',
+    name: 'Efsane Yıllık',
+    tagline: 'Yıl boyunca en büyük sahne',
+    description: 'Taraftar Savaşı 3D için 8 takım, sınırsız izleyici ve 365 günlük yayıncı lisansı.',
+    priceCents: 599900,
+    maxTeams: 8,
+    durationDays: 365,
+    features: ['8 takımlı 3D Taraftar Savaşı', '365 günlük lisans', 'Sınırsız izleyici', 'Öncelikli destek'],
+    highlight: 0,
+    sortOrder: 22,
+  },
 ];
 
 /**
@@ -206,29 +245,30 @@ export function seedGameOffers(db: DB): void {
   const tx = db.transaction(() => {
     ARCADE_GAME_LIST.forEach((game, gameIndex) => {
       [
-        { days: 1, price: 4900 },
-        { days: 30, price: 24900 },
+        { days: 1, price: 10000 },
+        { days: 30, price: 39900 },
+        { days: 365, price: 299900 },
       ].forEach((offer, offerIndex) => {
         const id = `offer_${game.key}_${offer.days}d`;
         insert.run(
           id,
           `offer_${game.key}_${offer.days}d`,
-          `${game.name} · ${offer.days === 1 ? '1 Gün' : '30 Gün'}`,
-          offer.days === 1 ? 'Tek günlük oyun lisansı' : 'Aylık oyun lisansı',
-          `${game.name} oyununu kendi yayın odanda kullanmak için ${offer.days} günlük lisans.`,
+          `${game.name} · ${offer.days === 1 ? '1 Gün' : offer.days === 30 ? '30 Gün' : '1 Yıl'}`,
+          offer.days === 1 ? 'Tek günlük oyun lisansı' : offer.days === 30 ? 'Aylık oyun lisansı' : 'Yıllık oyun lisansı',
+          `${game.name} oyununu kendi yayın odanda kullanmak için ${offer.days === 365 ? '1 yıllık' : `${offer.days} günlük`} lisans.`,
           offer.price,
           offer.days,
           JSON.stringify(['Oyun lisansı', 'Yayıncıya özel oda', '3D sahne', 'OBS bağlantısı']),
-          120 + gameIndex * 2 + offerIndex,
+          120 + gameIndex * 3 + offerIndex,
           game.key,
         );
       });
     });
 
     const bundleOffers = [
-      { days: 1, price: 9900, code: 'bundle_all_1d', label: 'Günlük' },
-      { days: 30, price: 39900, code: 'bundle_all_30d', label: 'Aylık' },
-      { days: 365, price: 299900, code: 'bundle_all_365d', label: 'Yıllık' },
+      { days: 1, price: 19900, code: 'bundle_all_1d', label: 'Günlük' },
+      { days: 30, price: 59900, code: 'bundle_all_30d', label: 'Aylık' },
+      { days: 365, price: 399900, code: 'bundle_all_365d', label: 'Yıllık' },
     ];
     bundleOffers.forEach((offer, index) => {
       insert.run(
@@ -244,6 +284,19 @@ export function seedGameOffers(db: DB): void {
         '*',
       );
     });
+
+    // Mevcut kurulumlarda oyun sayısı değişince paket açıklamalarını güncelle.
+    db.prepare(
+      `UPDATE packages SET
+         tagline = ?,
+         description = ?,
+         features_json = ?
+       WHERE id IN ('offer_bundle_all_1d', 'offer_bundle_all_30d', 'offer_bundle_all_365d')`,
+    ).run(
+      `${ARCADE_GAME_LIST.length} oyunun tamamı`,
+      `Tüm arcade oyunlarına günlük, aylık veya yıllık erişim. Satın alınca ${ARCADE_GAME_LIST.length} oyun için lisans açılır.`,
+      JSON.stringify([`${ARCADE_GAME_LIST.length} oyunun tamamı`, 'Yayıncıya özel oda', '3D sahneler', 'OBS bağlantısı']),
+    );
 
     // Ücretsiz deneme lisanslarının bağlı olduğu gizli paket.
     db.prepare(

@@ -60,12 +60,15 @@ export function PricingPlans({
         <div className="mx-auto max-w-2xl text-center">
           <span className="badge-neutral">Paketler</span>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-ink-950 sm:text-4xl">
-            Günlük, haftalık veya aylık. Ne kadar yayın yaparsan o kadar.
+            3D Stüdyo paketleri: günlük, haftalık, aylık veya yıllık.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-500 sm:text-base">
-            Otuz oyun, tek yayıncı hesabı ve kalıcı OBS bağlantısı. Süre bitmeden yenilersen
-            kalan günlerin üzerine eklenir.
+            Taraftar Savaşı 3D stüdyosu için takım kapasitesi, komutlar ve OBS bağlantısı. Arcade oyunları ayrıca oyun mağazasından veya Tüm Oyunlar paketinden alınır.
           </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-[10px]">
+            <span className="rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">Sadece 3D Stüdyo</span>
+            <a href="/satin-al" className="rounded-full bg-white px-2.5 py-1 font-semibold text-brand-700 ring-1 ring-inset ring-[#e4dccf]">Arcade oyun mağazası →</a>
+          </div>
         </div>
       ) : null}
 
@@ -136,7 +139,7 @@ export function PricingPlans({
                   </div>
                   <p className={`mt-1 text-[11px] ${pkg.highlight ? 'text-ink-400' : 'text-ink-400'}`}>
                     <Users size={10} className="mr-1 inline" />
-                    Tüm oyunlar · {pkg.durationDays} gün lisans
+                    3D Stüdyo · {pkg.durationDays} gün · {pkg.maxTeams} takım
                   </p>
                   <ul className="mt-6 flex-1 space-y-2.5">
                     {pkg.features.map((feature) => (

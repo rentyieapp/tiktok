@@ -65,7 +65,7 @@ export function GameStoreGrid({ limit }: { limit?: number }) {
                           className="flex items-center justify-between rounded-lg bg-[#fffaf4] px-2.5 py-1.5 text-[10px]"
                         >
                           <span className="inline-flex items-center gap-1 text-ink-500">
-                            <Clock3 size={10} /> {offer.durationDays === 1 ? '1 gün' : `${offer.durationDays} gün`}
+                            <Clock3 size={10} /> {offer.durationDays === 1 ? '1 gün' : offer.durationDays === 365 ? '1 yıl' : `${offer.durationDays} gün`}
                           </span>
                           <span className="font-bold text-ink-900">
                             {formatPrice(offer.priceCents, offer.currency)}

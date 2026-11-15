@@ -616,16 +616,17 @@ Arcade oyunları için varsayılan teklifler (`packages.game_key` dolu):
 
 | Süre | Oyun başına fiyat |
 | --- | --- |
-| 1 gün | ₺49 |
-| 30 gün | ₺249 |
+| 1 gün | ₺100 |
+| 30 gün | ₺399 |
+| 365 gün | ₺2.999 |
 
 | Tüm Oyunlar paketi | Fiyat |
 | --- | --- |
-| Günlük | ₺99 |
-| Aylık | ₺399 |
-| Yıllık | ₺2.999 |
+| Günlük | ₺199 |
+| Aylık | ₺599 |
+| Yıllık | ₺3.999 |
 
-30 oyun × 2 süre = 60 oyun lisansı + 3 Tüm Oyunlar paketi seed edilir.
+30 oyun × 3 süre = 90 oyun lisansı + 3 Tüm Oyunlar paketi seed edilir.
 
 3D Taraftar Savaşı stüdyosu paketleri ayrıdır (`game_key` boş):
 
@@ -634,6 +635,7 @@ Arcade oyunları için varsayılan teklifler (`packages.game_key` dolu):
 | 1 gün | ₺49 | ₺79 | ₺129 |
 | 7 gün | ₺129 | ₺199 | ₺349 |
 | 30 gün | ₺299 | ₺499 | ₺799 |
+| 365 gün | ₺2.499 | ₺3.999 | ₺5.999 |
 
 Bu değerler admin panelinden değiştirilebilir; yeni süreler eklenebilir. Oyun lisansı
 ödemesi `game_licenses`, 3D stüdyo ödemesi `subscriptions` tablosuna yazılır.
@@ -642,10 +644,9 @@ Bu değerler admin panelinden değiştirilebilir; yeni süreler eklenebilir. Oyu
 
 Şu an iki güvenli seçenek hazır:
 
-1. **Manuel lisans (aktif, 3D stüdyo):** Shopier satışı geldiğinde `/admin/yayincilar` →
-   “Manuel lisans” ile yayıncının e-postasına 3D stüdyo paketi tanımlanır. Sistem başarılı
-   bir ödeme kaydı (`provider = manual`) ve abonelik oluşturur; panel anında açılır. Oyun
-   bazlı lisansların Shopier eşleştirmesi sonraki adımdır.
+1. **Manuel lisans (aktif):** `/admin/yayincilar` → “Yeni lisans” ile yayıncıya oyun bazlı
+   lisans veya 3D stüdyo aboneliği tanımlanır. Oyun lisansları oluşturulabilir, süre
+   eklenebilir ve iptal edilebilir. 3D stüdyo paketleri abonelik olarak açılır.
 2. **Otomatik webhook (sonraki adım):** Shopier mağazası açıldığında
    `SHOPIER_WEBHOOK_TOKEN` ve `PAYMENT_PROVIDER=shopier` ile `order.created`
    webhook’u bağlanacak. Panelde webhook adresi ve paket başına Shopier ürün URL’si
