@@ -48,7 +48,7 @@ export function ArcadeOverlay({
   }, [state, lastAt]);
 
   if (theme === 'minimal') return null;
-  const leaders = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 5);
+  const leaders = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 3);
   const goalPercent = (() => {
     if (!state) return 0;
     if (['kart', 'hill', 'grandprix', 'animal', 'crowd', 'balloon', 'town', 'brick'].includes(state.key)) {
@@ -60,7 +60,7 @@ export function ArcadeOverlay({
   })();
 
   const topClass = layout === 'bottom' ? 'bottom-14' : 'top-[64px]';
-  const goalClass = layout === 'bottom' ? 'top-[64px]' : 'top-[118px]';
+  const goalClass = layout === 'bottom' ? 'bottom-14' : 'top-[150px]';
   const scaleClass = scale === 'sm' ? 'scale-90' : scale === 'lg' ? 'scale-110' : '';
   return (
     <div className={`pointer-events-none absolute inset-0 z-30 origin-center ${scaleClass}`}>
