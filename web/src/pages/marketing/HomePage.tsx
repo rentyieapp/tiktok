@@ -30,6 +30,7 @@ import { useAuth } from '../../lib/auth';
 import { Button } from '../../components/ui';
 import { Logo } from '../../components/Logo';
 import { PricingPlans } from '../../components/PricingPlans';
+import { LivePublishers } from '../../components/LivePublishers';
 
 /* ------------------------------------------------------------------ */
 /* Görsel sahne maketi                                                  */
@@ -218,6 +219,8 @@ export function HomePage() {
           </span>
         </div>
       </div>
+
+      <LivePublishers />
 
       {/* NASIL ÇALIŞIR */}
       <section id="nasil" className="scroll-mt-24 bg-white py-20 text-ink-900 sm:py-28">
@@ -501,7 +504,7 @@ export function HomePage() {
             <Link to="/giris" className="hover:text-white">
               Yayıncı girişi
             </Link>
-            <span className="text-white/25">© {new Date().getFullYear()} Taraftar Savaşı</span>
+            <span className="text-white/25">© {new Date().getFullYear()} Rook Works</span>
           </div>
         </div>
       </footer>

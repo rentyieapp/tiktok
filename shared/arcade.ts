@@ -37,6 +37,9 @@ export const ARCADE_KEYS = [
   'chest',
   'manor',
   'egg',
+  'halay',
+  'kina',
+  'tavaf',
 ] as const;
 
 export type ArcadeKey = (typeof ARCADE_KEYS)[number];
@@ -734,22 +737,92 @@ export const ARCADE_GAMES: Record<ArcadeKey, ArcadeGameDef> = {
   manor: {
     key: 'manor',
     slug: 'gece-konagi',
-    name: 'Midnight Manor',
-    shortName: 'Manor',
+    name: 'Gece Yarısı',
+    shortName: 'Gece',
     category: 'Arena',
     mode: 'battle',
     symbol: '🕯️',
     accent: '#7c3aed',
     soft: '#f5f3ff',
     ink: '#2e1065',
-    tagline: 'Perili konakta sabaha kadar kal.',
-    description: 'İzleyiciler perili konakta hayatta kalmaya çalışır. Beğeni ve hediyeler savunma gücü verir; son kalan konaktan sağ çıkar.',
-    howTo: ['Yoruma katıl.', 'Beğeni ile savun.', 'Hediye ile can topla.', 'Son kalan kazanır.'],
-    controls: ['Katıl', 'Beğen', 'Hediye'],
+    tagline: 'Karanlık konakta sabaha kadar kal.',
+    description:
+      'Karanlık bir konakta jeneratörleri onarıp kapıdan kaçmaya çalışırsın. Karabasan izleyicileri avlar; beğeniler kalkan, hediyeler can ve özel güç verir. Her tur 4 dakika sürer.',
+    howTo: [
+      'Yoruma GİR yaz, konağa katıl.',
+      'Beğeni gönder, kalkan kazan ve ışıkları açık tut.',
+      '!saklan ile dolaba gir, !tamir ile jeneratörü çalıştır, !kurtar ile arkadaşını kaldır.',
+      'Hediye ile kalkan, hız veya özel rol aç.',
+      '4 dakika sonunda hayatta kalanlar kazanır.',
+    ],
+    controls: ['GİR', 'Beğen', 'Hediye', '!saklan', '!tamir', '!kurtar'],
     warnings: [GENERAL_WARNING],
     risk: 'yuksek',
-    durationSec: 85,
+    durationSec: 240,
+    maxPlayers: 90,
+  },
+  halay: {
+    key: 'halay',
+    slug: 'halay',
+    name: 'Halay',
+    shortName: 'Halay',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🪘',
+    accent: '#dc2626',
+    soft: '#fff1f0',
+    ink: '#450a0a',
+    tagline: 'Davul zurna, halay ve düğün coşkusu.',
+    description:
+      'İzleyiciler yorumla halay halkasına girer. Beğeniler tempoyu, hediyeler sahneyi coşturur. En coşkulu dansçı turu kazanır.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle tempo tut.', 'Hediye ile sahneye coşku ver.', 'En yüksek enerjiyi toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 80,
     maxPlayers: 40,
+  },
+  kina: {
+    key: 'kina',
+    slug: 'kina-gecesi',
+    name: 'Kına Gecesi',
+    shortName: 'Kına',
+    category: 'Eğlence',
+    mode: 'dance',
+    symbol: '🕯️',
+    accent: '#b45309',
+    soft: '#fff7ed',
+    ink: '#431407',
+    tagline: 'Kına gecesinde mumlar, türküler ve halay.',
+    description:
+      'Kına gecesi atmosferinde izleyiciler mumların etrafında toplanır. Beğeniler ışıkları, hediyeler türküyü ve halayı coşturur; en çok katkı veren geceyi kazanır.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle mumları yak.', 'Hediye ile halayı büyüt.', 'En yüksek puanı toplayan kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 90,
+    maxPlayers: 40,
+  },
+  tavaf: {
+    key: 'tavaf',
+    slug: 'tavaf',
+    name: 'Tavaf',
+    shortName: 'Tavaf',
+    category: 'Bilgi',
+    mode: 'circle',
+    symbol: '🕋',
+    accent: '#0f8a72',
+    soft: '#ecfdf5',
+    ink: '#052e22',
+    tagline: 'Halkanın etrafında saygıyla dön.',
+    description:
+      'İzleyiciler merkezdeki halka etrafında sırayla döner. Beğeniler ritmi, hediyeler ışığı ve kalabalığı büyütür; tur sonunda en çok katkı veren öne çıkar.',
+    howTo: ['Yoruma adını yaz.', 'Beğeniyle halkaya katıl.', 'Hediye ile ışığı büyüt.', 'Tur sonunda en yüksek katkı kazanır.'],
+    controls: ['Katıl', 'Beğen', 'Hediye', 'Yorum'],
+    warnings: [GENERAL_WARNING],
+    risk: 'normal',
+    durationSec: 75,
+    maxPlayers: 50,
   },
   egg: {
     key: 'egg',
@@ -1117,6 +1190,8 @@ export interface ArcadePlayer {
   y: number;
   wins: number;
   combo?: number;
+  /** Gece Yarısı'nda beğeniyle kazanılan geçici kalkan. */
+  shieldUntil?: number;
 }
 
 export interface ArcadePrompt {
@@ -1447,6 +1522,7 @@ export function startArcadeRound(state: ArcadeState, now = Date.now()): void {
     player.answeredPrompt = 0;
     player.rank = 1;
     player.wins = 0;
+    player.shieldUntil = 0;
   }
   ensurePositions(state);
   if (state.key === 'quiz') {
@@ -1642,6 +1718,7 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
         player.eliminated = false;
         player.answeredPrompt = 0;
         player.rank = 1;
+        player.shieldUntil = 0;
       }
       ensurePositions(state);
     }
@@ -1801,6 +1878,10 @@ export function arcadeTick(state: ArcadeState, now = Date.now()): void {
       const targets = state.players.filter((other) => other.id !== player.id && !other.eliminated);
       if (targets.length === 0) return;
       const target = targets[Math.floor(Math.random() * targets.length)]!;
+      if (state.key === 'manor' && (target.shieldUntil ?? 0) > now) {
+        feed(state, `${target.name} kalkanıyla Karabasan'ı savuşturdu.`, 'system', now);
+        return;
+      }
       const damage = 5 + Math.floor(Math.random() * 9);
       target.hp = Math.max(0, target.hp - damage);
       if (target.hp === 0) {
@@ -1866,6 +1947,10 @@ export function arcadeAction(
     else if (['hill', 'grandprix', 'animal', 'crowd', 'balloon', 'town', 'brick'].includes(state.key)) player.progress = Math.min(100, player.progress + 1.2);
     else if (['melon', 'egg'].includes(state.key) && state.melon) { state.melon.tension = Math.min(100, state.melon.tension + 1); player.score += 1; }
     else if (['gold', 'chest'].includes(state.key) && state.gold) { state.gold.pulled = Math.min(100, state.gold.pulled + 1); player.score += 1; }
+    else if (state.key === 'manor') {
+      player.shieldUntil = Math.max(player.shieldUntil ?? 0, now + 4000);
+      player.score += 1.5;
+    }
     else player.score += state.key === 'quiz' || state.key === 'word' ? 0 : 1.5;
     feed(
       state,
@@ -1886,6 +1971,7 @@ export function arcadeAction(
     if (['kart', 'hill', 'grandprix', 'animal', 'crowd', 'balloon'].includes(state.key)) player.progress = Math.min(100, player.progress + 7);
     if (['gladiator', 'stick', 'manor'].includes(state.key)) {
       player.hp = Math.min(player.maxHp, player.hp + 16);
+      if (state.key === 'manor') player.shieldUntil = Math.max(player.shieldUntil ?? 0, now + 6000);
     }
     if (state.key === 'wheel') player.score += 25;
     else if (state.key === 'tug' && state.tug) addTugPull(state, player, 13);
@@ -1911,6 +1997,31 @@ export function arcadeAction(
   }
 
   // comment
+  if (state.key === 'manor') {
+    const command = payload.trim().toLocaleLowerCase('tr');
+    if (command === '!saklan') {
+      player.shieldUntil = Math.max(player.shieldUntil ?? 0, now + 8000);
+      feed(state, `${player.name} dolaba saklandı ve kalkan kazandı.`, 'answer', now);
+      return { ok: true };
+    }
+    if (command === '!tamir') {
+      player.hp = Math.min(player.maxHp, player.hp + 24);
+      player.score += 2;
+      feed(state, `${player.name} jeneratörü onardı.`, 'answer', now);
+      return { ok: true };
+    }
+    if (command === '!kurtar') {
+      const revived = player.eliminated;
+      player.eliminated = false;
+      player.hp = Math.max(player.hp, 40);
+      player.shieldUntil = Math.max(player.shieldUntil ?? 0, now + 3000);
+      feed(state, revived ? `${player.name} kurtarıldı ve ayağa kalktı.` : `${player.name} arkadaşını kurtardı.`, 'answer', now);
+      return { ok: true };
+    }
+    player.score += 0.5;
+    feed(state, `${player.name}: ${payload.slice(0, 60)}`, 'answer', now);
+    return { ok: true };
+  }
   if (['hill', 'grandprix', 'animal', 'crowd', 'balloon', 'town', 'brick'].includes(state.key)) {
     player.progress = Math.min(100, player.progress + 0.5);
     feed(state, `${player.name} tempoyu artırdı.`, 'answer', now);

@@ -82,7 +82,7 @@ export function GamesPage() {
                 <Gamepad2 size={12} className="text-brand-600" /> Oyun platformu
               </span>
               <h1 className="mt-5 max-w-2xl text-balance font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink-950 sm:text-5xl">
-                30 oyun. Tek yayın bağlantısı.
+                {ARCADE_GAME_LIST.length} oyun. Tek yayın bağlantısı.
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-relaxed text-ink-500 sm:text-base">
                 İzleyicilerin yorum, beğeni ve hediyeleriyle oynanan oyunlar. Her oyunun kendi

@@ -345,6 +345,12 @@ export function seedGameOffers(db: DB): void {
       JSON.stringify([`${ARCADE_GAME_LIST.length} oyunun tamamı`, 'Yayıncıya özel oda', '3D sahneler', 'OBS bağlantısı']),
     );
 
+    // Eski Manor adını yeni Gece Yarısı oyunuyla hizala.
+    db.prepare(
+      `UPDATE packages SET name = REPLACE(name, 'Midnight Manor', 'Gece Yarısı')
+       WHERE game_key = 'manor' AND name LIKE '%Midnight Manor%'`,
+    ).run();
+
     // Ücretsiz deneme lisanslarının bağlı olduğu gizli paket.
     db.prepare(
       `INSERT OR IGNORE INTO packages (

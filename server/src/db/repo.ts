@@ -1263,6 +1263,31 @@ export function listArcadeRoomsByUser(db: DB, userId: string): ArcadeRoomRow[] {
     .all(userId) as ArcadeRoomRow[];
 }
 
+export interface PublicLiveRoomRow {
+  public_slug: string;
+  room_name: string;
+  game_key: string;
+  publisher_name: string;
+  rounds_played: number;
+  last_played_at: string | null;
+  updated_at: string;
+}
+
+export function listPublicLiveRooms(db: DB, limit = 12): PublicLiveRoomRow[] {
+  const rows = db
+    .prepare(
+      `SELECT r.public_slug, r.name AS room_name, r.game_key, u.display_name AS publisher_name,
+              r.rounds_played, r.last_played_at, r.updated_at
+       FROM arcade_rooms r
+       JOIN users u ON u.id = r.user_id
+       WHERE r.status = 'live' AND u.status = 'active'
+       ORDER BY COALESCE(r.last_played_at, r.updated_at) DESC
+       LIMIT ?`,
+    )
+    .all(Math.max(1, Math.min(50, limit))) as PublicLiveRoomRow[];
+  return rows;
+}
+
 export function listArcadeRoomsForUser(db: DB, userId: string): ArcadeRoomRow[] {
   return db
     .prepare(

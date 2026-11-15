@@ -8,12 +8,13 @@ import {
   listArcadeRoomBans,
   listGameLicenses,
   removeArcadeRoomBan,
+  listPublicLiveRooms,
 } from '../db/repo.js';
 import { nowIso } from '../db/index.js';
 import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { parseBody } from '../lib/schemas.js';
 import { randomId } from '../lib/tokens.js';
-import { isArcadeKey, type ArcadeKey } from '../../../shared/arcade.js';
+import { ARCADE_GAMES, isArcadeKey, type ArcadeKey } from '../../../shared/arcade.js';
 import { requireUser } from '../services/session.js';
 import { getTrialStatus, startTrial } from '../services/trial.js';
 import {
@@ -271,6 +272,21 @@ export async function arcadeRoomRoutes(app: FastifyInstance, ctx: AppContext): P
     const updatedRow = findArcadeRoomById(db, id);
     if (updatedRow && body.status !== 'disabled') arcade.applyRoomSettings(updatedRow);
     return reply.send({ room });
+  });
+
+  app.get('/api/arcade/live', async (_request, reply) => {
+    const rows = listPublicLiveRooms(db, 12);
+    return reply.send({
+      rooms: rows.map((row) => ({
+        slug: row.public_slug,
+        name: row.room_name,
+        gameKey: row.game_key,
+        gameName: ARCADE_GAMES[row.game_key as keyof typeof ARCADE_GAMES]?.name ?? row.game_key,
+        publisherName: row.publisher_name,
+        roundsPlayed: row.rounds_played,
+        lastPlayedAt: row.last_played_at,
+      })),
+    });
   });
 
   app.get('/api/arcade/rooms/:slug/public', async (request, reply) => {

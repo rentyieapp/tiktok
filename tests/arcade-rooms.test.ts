@@ -3,6 +3,7 @@ import WebSocket from 'ws';
 import type { BuiltApp } from '../server/src/app';
 import { mapYouTubeChatItem, normalizeTikTokEvent, parseTwitchLine } from '../server/src/platforms/hub';
 import { activatePublisher, listen, makeApp, registerUser } from './helpers';
+import { ARCADE_GAME_LIST } from '../shared/arcade';
 
 let built: BuiltApp | null = null;
 let sockets: WebSocket[] = [];
@@ -529,7 +530,7 @@ describe('yayıncıya özel arcade odaları', () => {
     });
     expect(paid.statusCode).toBe(200);
     const me = await server.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: user.cookie } });
-    expect(me.json().licenses).toHaveLength(30);
+    expect(me.json().licenses).toHaveLength(ARCADE_GAME_LIST.length);
   });
 
   it('tüm oyunlar paketi 30 oyun lisansını birlikte açar', async () => {
@@ -539,8 +540,8 @@ describe('yayıncıya özel arcade odaları', () => {
     await buyGame(server, user.cookie, 'offer_bundle_all_1d');
 
     const me = await server.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: user.cookie } });
-    expect(me.json().licenses).toHaveLength(30);
-    expect(new Set(me.json().licenses.map((license: any) => license.gameKey)).size).toBe(30);
+    expect(me.json().licenses).toHaveLength(ARCADE_GAME_LIST.length);
+    expect(new Set(me.json().licenses.map((license: any) => license.gameKey)).size).toBe(ARCADE_GAME_LIST.length);
 
     const room = await server.inject({
       method: 'POST',

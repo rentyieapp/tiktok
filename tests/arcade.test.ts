@@ -1,3 +1,4 @@
+import { ARCADE_GAME_LIST } from '../shared/arcade';
 import { afterEach, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
 import {
@@ -264,12 +265,12 @@ describe('arcade motoru', () => {
 });
 
 describe('arcade API ve WebSocket', () => {
-  it('otuz oyunu listeler ve odaya katılımı kabul eder', async () => {
+  it('tüm oyunları listeler ve odaya katılımı kabul eder', async () => {
     built = await makeApp();
     const { app: server } = built;
     const games = await server.inject({ method: 'GET', url: '/api/arcade/games' });
     expect(games.statusCode).toBe(200);
-    expect(games.json().games).toHaveLength(30);
+    expect(games.json().games).toHaveLength(ARCADE_GAME_LIST.length);
     expect(games.json().games[0].slug).toBe('sahne-90');
 
     const port = await listen(server);
