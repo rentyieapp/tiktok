@@ -65,6 +65,10 @@ export function Arcade3DStage({
   const ss = remaining % 60;
   const prompt = state?.prompt;
   const nameRail = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 12);
+  const lastAction = state?.lastAction;
+  const actionPlayer = lastAction ? state?.players.find((player) => player.id === lastAction.playerId) : null;
+  const showAction = Boolean(lastAction && actionPlayer && (state?.now ?? 0) - lastAction.at < 2800);
+  const actionLabel = lastAction?.kind === 'gift' ? 'hediye gönderdi' : lastAction?.kind === 'like' ? 'beğeni gönderdi' : 'yorum yaptı';
   const copy = {
     tr: { live: 'CANLI', demo: 'DEMO', broadcast: 'YAYIN', players: 'oyuncu', round: 'Tur', remaining: 'kalan süre', lobby: 'lobi', lobbyTitle: 'Sahne hazırlanıyor', lobbySub: 'tur birazdan başlıyor', ready: 'Yayın hazır', wait: 'İlk izleyiciyi bekle', waitSub: 'Platform sohbeti bağlıysa ilk yorum, beğeni veya hediye turu otomatik başlatır.', winner: 'yeni tur birazdan', score: 'puan' },
     en: { live: 'LIVE', demo: 'DEMO', broadcast: 'LIVE', players: 'players', round: 'Round', remaining: 'time left', lobby: 'lobby', lobbyTitle: 'Stage is getting ready', lobbySub: 'round starts soon', ready: 'Ready to broadcast', wait: 'Wait for the first viewer', waitSub: 'Once chat is connected, the first comment, like or gift starts the round.', winner: 'next round soon', score: 'pts' },
@@ -82,6 +86,24 @@ export function Arcade3DStage({
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_20%,transparent_55%,rgba(50,35,45,0.12))]" />
 
+      {showAction && lastAction && actionPlayer ? (
+        <div
+          key={lastAction.id}
+          className="action-pop pointer-events-none absolute inset-x-0 top-16 z-30 flex justify-center px-3"
+        >
+          <span
+            className="inline-flex max-w-[92%] items-center gap-1.5 rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[11px] font-bold text-ink-900 shadow-lg backdrop-blur"
+            style={{ borderColor: `${actionPlayer.color}66` }}
+          >
+            <span className="h-2 w-2 rounded-full" style={{ background: actionPlayer.color }} />
+            <span className="truncate">{actionPlayer.name}</span>
+            <span className="font-medium text-ink-500">{actionLabel}</span>
+            <span className="rounded-full px-1.5 py-0.5 text-[9px] font-extrabold text-white" style={{ background: actionPlayer.color }}>
+              {lastAction.kind === 'gift' ? '+10' : lastAction.kind === 'like' ? '+1' : '★'}
+            </span>
+          </span>
+        </div>
+      ) : null}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 bg-white/80 px-3 py-2.5 backdrop-blur-md sm:px-4">
         <div className="flex min-w-0 items-center gap-2">
           <span

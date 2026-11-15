@@ -18,6 +18,7 @@ interface Actor {
   lastScore: number;
   baseScale: number;
   shadow: THREE.Mesh;
+  shield: THREE.Mesh;
 }
 
 interface Kart {
@@ -309,9 +310,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private readonly actors = new Map<string, Actor>();
   private readonly karts = new Map<string, Kart>();
   private readonly horseLanes = new Map<number, HorseActor>();
+  private lastActionEffectId = '';
+  private actionEffects: Array<{ group: THREE.Group; born: number; life: number }> = [];
   private readonly townBuildings = new Map<string, { group: THREE.Group; floors: number }>();
   private melonGroup: THREE.Group | null = null;
   private melonBands: THREE.Mesh[] = [];
+  private eggCracks: THREE.Mesh[] = [];
   private goldCoins: THREE.Mesh[] = [];
   private goldMagnet: THREE.Group | null = null;
   private readonly cards = new Map<string, PressCard>();
@@ -2290,6 +2294,21 @@ class Arcade3DRenderer implements Arcade3DHandle {
       melon.add(band);
       this.melonBands.push(band);
     }
+    if (this.game.key === 'egg') {
+      this.eggCracks = [];
+      for (let index = 0; index < 7; index += 1) {
+        const crack = new THREE.Mesh(
+          new THREE.BoxGeometry(0.035, 0.7 + (index % 3) * 0.25, 0.03),
+          new THREE.MeshBasicMaterial({ color: 0x78350f }),
+        );
+        const angle = -0.8 + index * 0.27;
+        crack.position.set(Math.sin(angle) * 1.45, 0.4 + (index % 4) * 0.3, 2.02);
+        crack.rotation.z = angle * 0.7;
+        crack.visible = false;
+        melon.add(crack);
+        this.eggCracks.push(crack);
+      }
+    }
     this.dynamic.push((state, time) => {
       const tension = state.melon?.tension ?? 0;
       const visible = Math.ceil(tension / 7.2);
@@ -2297,6 +2316,14 @@ class Arcade3DRenderer implements Arcade3DHandle {
         band.visible = true;
         band.rotation.z += 0.002;
       });
+      this.eggCracks.forEach((crack, index) => {
+        crack.visible = tension > 12 + index * 9;
+      });
+      const action = state.lastAction;
+      const kicked = action && state.now - action.at < 320 && action.kind !== 'comment';
+      if (this.melonGroup) {
+        this.melonGroup.position.x = kicked ? Math.sin(time * 55) * 0.07 : 0;
+      }
       this.melonGroup?.rotation.set(Math.sin(time * 4) * 0.012 * (tension / 100), time * 0.08, Math.cos(time * 5) * 0.01 * (tension / 100));
       if (this.melonGroup) this.melonGroup.scale.setScalar(1 + tension * 0.0012);
     });
@@ -2482,6 +2509,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private sync(): void {
     const state = this.state;
     if (!state) return;
+    this.spawnActionEffect(state);
     if (this.game.mode === 'wheel' || this.game.mode === 'horse') return;
     if (this.game.mode === 'town') {
       this.syncTown(state);
@@ -2526,6 +2554,14 @@ class Arcade3DRenderer implements Arcade3DHandle {
       actor.bar.visible = this.game.mode === 'battle' && !player.eliminated;
       actor.group.visible = !player.eliminated || this.game.mode === 'battle';
       actor.label.visible = !player.eliminated;
+      const action = state.lastAction;
+      const shieldActive =
+        this.game.key === 'manor' &&
+        action?.playerId === player.id &&
+        action.kind === 'gift' &&
+        state.now - action.at < 900;
+      actor.shield.visible = shieldActive;
+      if (shieldActive) actor.shield.scale.setScalar(1 + Math.sin(state.now / 80) * 0.08);
       actor.group.scale.setScalar(actor.baseScale * (player.eliminated ? 0.6 : 1));
       if (player.eliminated) actor.group.rotation.z = Math.PI / 2;
       else actor.group.rotation.z = 0;
@@ -2747,8 +2783,18 @@ class Arcade3DRenderer implements Arcade3DHandle {
     bar.visible = false;
     group.add(bar);
 
+    const shield = new THREE.Mesh(
+      new THREE.TorusGeometry(0.72, 0.035, 8, 32),
+      new THREE.MeshBasicMaterial({ color: 0xa78bfa, transparent: true, opacity: 0.85, depthWrite: false }),
+    );
+    shield.rotation.x = Math.PI / 2;
+    shield.position.y = 0.08;
+    shield.visible = false;
+    group.add(shield);
+
     return {
       group,
+      shield,
       body,
       head,
       leftArm,
@@ -2944,10 +2990,81 @@ class Arcade3DRenderer implements Arcade3DHandle {
       this.animateHorses(state, time);
       this.animateCards(state, time);
     }
+    this.updateActionEffects(time);
     this.animateCamera(time);
     this.renderer.render(this.scene, this.camera);
     this.frame = requestAnimationFrame(this.animate);
   };
+
+
+  private spawnActionEffect(state: ArcadeStateView): void {
+    const action = state.lastAction;
+    if (!action || action.id === this.lastActionEffectId) return;
+    this.lastActionEffectId = action.id;
+    const player = state.players.find((entry) => entry.id === action.playerId);
+    if (!player) return;
+    const actor = this.actors.get(player.id);
+    const kart = this.karts.get(player.id);
+    const origin = actor
+      ? actor.group.position.clone().add(new THREE.Vector3(0, 1.3, 0))
+      : kart
+        ? kart.group.position.clone().add(new THREE.Vector3(0, 1.2, 0))
+        : new THREE.Vector3(0, 2.4, 1);
+    const color = new THREE.Color(player.color);
+    const group = new THREE.Group();
+    group.position.copy(origin);
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.55, 0.05, 8, 32),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthTest: false }),
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.renderOrder = 900;
+    group.add(ring);
+    const count = action.kind === 'gift' ? 12 : action.kind === 'like' ? 7 : 4;
+    for (let index = 0; index < count; index += 1) {
+      const particle = new THREE.Mesh(
+        new THREE.SphereGeometry(action.kind === 'gift' ? 0.09 : 0.06, 6, 6),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 1, depthTest: false }),
+      );
+      const angle = (index / count) * Math.PI * 2;
+      particle.userData.velocity = new THREE.Vector3(
+        Math.cos(angle) * (0.7 + Math.random() * 0.8),
+        0.9 + Math.random() * 1.1,
+        Math.sin(angle) * (0.7 + Math.random() * 0.8),
+      );
+      particle.renderOrder = 901;
+      group.add(particle);
+    }
+    this.scene.add(group);
+    this.actionEffects.push({ group, born: this.clock.elapsedTime, life: action.kind === 'gift' ? 1.15 : 0.8 });
+  }
+
+  private updateActionEffects(time: number): void {
+    for (let index = this.actionEffects.length - 1; index >= 0; index -= 1) {
+      const effect = this.actionEffects[index]!;
+      const age = time - effect.born;
+      if (age >= effect.life) {
+        this.scene.remove(effect.group);
+        disposeObject(effect.group);
+        this.actionEffects.splice(index, 1);
+        continue;
+      }
+      const ratio = age / effect.life;
+      effect.group.children.forEach((child, childIndex) => {
+        if (childIndex === 0) {
+          const ring = child as THREE.Mesh;
+          ring.scale.setScalar(1 + ratio * 2.5);
+          (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - ratio);
+        } else {
+          const particle = child as THREE.Mesh;
+          const velocity = particle.userData.velocity as THREE.Vector3;
+          particle.position.addScaledVector(velocity, 0.025);
+          velocity.y -= 0.045;
+          (particle.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - ratio);
+        }
+      });
+    }
+  }
 
   private animateCamera(time: number): void {
     if (this.game.mode === 'race') return;

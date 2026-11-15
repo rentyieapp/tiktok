@@ -229,6 +229,25 @@ describe('arcade motoru', () => {
     expect(clash.wall!.winningSide).toBe('girls');
   });
 
+  it('hediye ve beğeni görünür action olayı üretir', () => {
+    const egg = createArcadeState('egg', 1_000);
+    addArcadePlayer(egg, { id: 'p1', name: 'Ece', now: 1_000 });
+    startArcadeRound(egg, 1_000);
+    const result = arcadeAction(egg, 'p1', 'gift', '', 1_400);
+    expect(result.ok).toBe(true);
+    expect(egg.lastAction?.kind).toBe('gift');
+    expect(egg.lastAction?.playerId).toBe('p1');
+    expect(egg.melon!.tension).toBeGreaterThan(0);
+
+    const manor = createArcadeState('manor', 2_000);
+    addArcadePlayer(manor, { id: 'p2', name: 'Kaan', now: 2_000 });
+    startArcadeRound(manor, 2_000);
+    manor.players[0]!.hp = 40;
+    arcadeAction(manor, 'p2', 'gift', '', 2_400);
+    expect(manor.players[0]!.hp).toBeGreaterThan(40);
+    expect(manor.lastAction?.kind).toBe('gift');
+  });
+
   it('arenada son kalan oyuncu kazanır', () => {
     const state = createArcadeState('gladiator', 1_000);
     addArcadePlayer(state, { id: 'p1', name: 'Can', now: 1_000 });

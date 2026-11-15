@@ -1214,6 +1214,12 @@ export interface ArcadeState {
   gold?: { pulled: number };
   wall?: WallState;
   horse?: HorseState;
+  lastAction?: {
+    id: string;
+    playerId: string;
+    kind: 'like' | 'gift' | 'comment';
+    at: number;
+  };
 }
 
 export interface ArcadeStateView extends ArcadeState {
@@ -1835,6 +1841,12 @@ export function arcadeAction(
   if (state.phase !== 'running') return { ok: false, message: 'Tur henüz başlamadı.' };
   if (now - player.lastActionAt < 350) return { ok: false, message: 'Biraz yavaş.' };
   player.lastActionAt = now;
+  state.lastAction = {
+    id: `act_${now}_${player.id}_${action}`,
+    playerId: player.id,
+    kind: action,
+    at: now,
+  };
 
   if (action === 'like') {
     if (state.key === 'wheel') player.score += 3;
@@ -1897,7 +1909,7 @@ export function arcadeAction(
   if (['melon', 'egg'].includes(state.key) && state.melon) {
     state.melon.tension = Math.min(100, state.melon.tension + 0.4);
     player.score += 0.4;
-    feed(state, `${player.name} bir bant daha gerdi.`, 'answer', now);
+    feed(state, state.key === 'egg' ? `${player.name} yumurtaya çivi fırlattı.` : `${player.name} bir bant daha gerdi.`, 'answer', now);
     return { ok: true };
   }
   if (['gold', 'chest'].includes(state.key) && state.gold) {
