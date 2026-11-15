@@ -285,6 +285,26 @@ export function seedGameOffers(db: DB): void {
       );
     });
 
+    // Eski 49/249 TL varsayılanlarını yeni fiyatlara taşı; admin özel fiyatlarını ezme.
+    db.prepare(
+      `UPDATE packages SET price_cents = 10000
+       WHERE game_key IS NOT NULL AND game_key <> '*'
+         AND duration_days = 1 AND price_cents = 4900`,
+    ).run();
+    db.prepare(
+      `UPDATE packages SET price_cents = 39900
+       WHERE game_key IS NOT NULL AND game_key <> '*'
+         AND duration_days = 30 AND price_cents = 24900`,
+    ).run();
+    db.prepare(
+      `UPDATE packages SET price_cents = CASE id
+         WHEN 'offer_bundle_all_1d' THEN 19900
+         WHEN 'offer_bundle_all_30d' THEN 59900
+         WHEN 'offer_bundle_all_365d' THEN 399900
+       END
+       WHERE id IN ('offer_bundle_all_1d', 'offer_bundle_all_30d', 'offer_bundle_all_365d')`,
+    ).run();
+
     // Mevcut kurulumlarda oyun sayısı değişince paket açıklamalarını güncelle.
     db.prepare(
       `UPDATE packages SET
