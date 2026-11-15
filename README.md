@@ -920,3 +920,8 @@ varlıklar için gerekli izinlerin alınması yayıncının sorumluluğundadır.
 ## PostgreSQL production
 
 Production ortamı Coolify üzerinde PostgreSQL 18 ile çalışır. Kurulum, ortam değişkenleri ve yedekleme için [docs/POSTGRES.md](docs/POSTGRES.md) dosyasına bak.
+
+
+## Shopier sipariş otomasyonu
+
+Shopier webhook’u yerine 10 saniyelik sipariş kontrolü ve ürün ID eşleştirmesi kullanılır. Ayrıntılar: [docs/SHOPIER.md](docs/SHOPIER.md).
