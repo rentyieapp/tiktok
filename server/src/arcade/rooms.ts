@@ -87,6 +87,7 @@ export function roomToDTO(
     createdAt: row.created_at,
     publicUrl,
     obsUrl: `${publicUrl}?obs=1`,
+    overlayUrl: `${publicUrl}?overlay=1`,
   };
 }
 

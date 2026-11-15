@@ -576,6 +576,7 @@ export interface ArcadeRoomDTO {
   createdAt: string;
   publicUrl: string;
   obsUrl: string;
+  overlayUrl: string;
 }
 
 export interface PlatformConnectionDTO {

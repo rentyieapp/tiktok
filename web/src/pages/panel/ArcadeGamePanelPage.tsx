@@ -173,6 +173,16 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
     }
   };
 
+  const copyOverlay = async () => {
+    if (!room) return;
+    try {
+      await navigator.clipboard.writeText(room.overlayUrl);
+      success('Overlay bağlantısı kopyalandı');
+    } catch {
+      toastError('Kopyalanamadı', 'Bağlantıyı manuel seçebilirsin.');
+    }
+  };
+
   const buy = async (offer: PackageDTO) => {
     setWorking(true);
     try {
@@ -423,10 +433,19 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
             <div className="rounded-2xl border border-ink-100 bg-white p-4">
               <h3 className="text-sm font-bold text-ink-950">OBS bağlantısı</h3>
               <p className="mt-1 text-[10px] leading-relaxed text-ink-400">Bu URL yayın boyunca sabit kalır.</p>
-              <code className="mt-2 block truncate rounded-lg bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600">{room.obsUrl}</code>
+              <p className="mt-2 text-[9px] font-bold uppercase tracking-wider text-ink-400">Tam sahne</p>
+              <code className="mt-1 block truncate rounded-lg bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600">{room.obsUrl}</code>
               <div className="mt-2 flex gap-1.5">
                 <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyObs()}>Kopyala</Button>
                 <a href={room.obsUrl} target="_blank" rel="noreferrer">
+                  <Button variant="secondary" size="sm" icon={<ExternalLink size={12} />}>Aç</Button>
+                </a>
+              </div>
+              <p className="mt-3 text-[9px] font-bold uppercase tracking-wider text-violet-500">Sadece overlay (şeffaf)</p>
+              <code className="mt-1 block truncate rounded-lg bg-violet-50 px-2.5 py-2 text-[9px] text-violet-700">{room.overlayUrl}</code>
+              <div className="mt-2 flex gap-1.5">
+                <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyOverlay()}>Kopyala</Button>
+                <a href={room.overlayUrl} target="_blank" rel="noreferrer">
                   <Button variant="secondary" size="sm" icon={<ExternalLink size={12} />}>Aç</Button>
                 </a>
               </div>

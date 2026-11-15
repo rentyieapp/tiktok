@@ -48,6 +48,7 @@ export function ArcadeRoomPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const obs = new URLSearchParams(window.location.search).get('obs') === '1';
+  const overlayOnly = new URLSearchParams(window.location.search).get('overlay') === '1';
 
   useEffect(() => {
     if (!slug) return;
@@ -111,6 +112,7 @@ export function ArcadeRoomPage() {
       data={data}
       slug={slug}
       obs={obs}
+      overlayOnly={overlayOnly}
       onRefresh={() => {
         api
           .get<ArcadeRoomPublicDTO>(`/api/arcade/rooms/${encodeURIComponent(slug)}/public`)
@@ -125,11 +127,13 @@ function RoomView({
   data,
   slug,
   obs,
+  overlayOnly,
   onRefresh,
 }: {
   data: ArcadeRoomPublicDTO;
   slug: string;
   obs: boolean;
+  overlayOnly: boolean;
   onRefresh: () => void;
 }) {
   const game = data.game;
@@ -155,8 +159,22 @@ function RoomView({
     savedName,
   } = useArcadeSocket(game.key, slug);
   const [name, setName] = useState(savedName);
+  const [overlayScale, setOverlayScale] = useState(1);
   const [message, setMessage] = useState('');
   useArcadeTTS(state, ttsEnabled);
+  useEffect(() => {
+    if (!overlayOnly) return;
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    const updateScale = () => setOverlayScale(Math.min(3.2, Math.max(1, window.innerWidth / 430)));
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => {
+      document.documentElement.style.background = '';
+      document.body.style.background = '';
+      window.removeEventListener('resize', updateScale);
+    };
+  }, [overlayOnly]);
   const me = useMemo(
     () => state?.players.find((player) => player.id === playerId) ?? null,
     [state, playerId],
@@ -173,6 +191,27 @@ function RoomView({
     !prompt.reveal &&
     me?.answeredPrompt !== prompt.id;
 
+  if (overlayOnly) {
+    return (
+      <div className="relative h-screen w-screen overflow-hidden bg-transparent">
+        <div
+          className="absolute left-0 top-0 origin-top-left"
+          style={{ width: 430, height: 764, transform: `scale(${overlayScale})` }}
+        >
+          <ArcadeOverlay
+            game={game}
+            state={state}
+            roomName={data.room.name}
+            accent={accent}
+            theme="full"
+            botEnabled={data.room.settings.botEnabled === true}
+            pro={data.overlayPro === true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (obs) {
     return (
       <div className="flex h-screen w-screen items-center justify-center overflow-hidden bg-[#fbf7f0]">
@@ -183,7 +222,7 @@ function RoomView({
             state={state}
             roomName={data.room.name}
             accent={accent}
-            theme={overlayTheme}
+            theme="full"
             botEnabled={data.room.settings.botEnabled === true}
             pro={data.overlayPro === true}
           />

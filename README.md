@@ -778,6 +778,22 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - Paket aboneliği ile oyun lisansını aynı modalda ayırma.
 - Tüm işlemler admin API’si ve testlerle doğrulanır.
 
+### Overlay nasıl çalışır?
+
+İki OBS bağlantısı vardır:
+
+- **Tam sahne:** `/canli/{slug}?obs=1` → oyun + overlay birlikte.
+- **Sadece overlay:** `/canli/{slug}?overlay=1` → şeffaf arka plan; kameranın veya başka sahnenin üzerine eklenir.
+
+OBS’te Browser Source olarak ekle:
+
+- Genişlik/yükseklik: **1080 × 1920** (9:16)
+- “Shutdown source when not visible” kapalı
+- “Refresh browser when scene becomes active” açık
+- TTS isteniyorsa oda ayarında TTS açık veya URL’ye `&tts=1` ekle; OBS’te ses kaynağını aç.
+
+Overlay Pro aktifse şeffaf modda liderlik tablosu, hedef barı, kazanan kartı ve bot duyuruları görünür.
+
 ### Overlay Pro (ayrı ürün)
 
 - Oyun lisansından bağımsız satılan OBS overlay katmanı.
