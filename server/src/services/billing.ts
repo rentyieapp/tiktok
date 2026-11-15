@@ -53,7 +53,7 @@ function requireStripeProvider() {
 }
 
 export interface CheckoutResult {
-  payment: PaymentDTO;
+  payment: PaymentDTO | null;
   redirectUrl: string;
 }
 
@@ -67,6 +67,14 @@ export async function startCheckout(
 ): Promise<CheckoutResult> {
   const pkg = findPackageById(db, packageId);
   if (!pkg || pkg.is_active !== 1) throw notFound('Seçilen paket bulunamadı veya satışta değil.');
+  // Shopier ürünü eşleşmişse ödeme sayfası olarak doğrudan Shopier kullanılır.
+  // Ödeme kaydı webhook'ta yetkili sipariş doğrulandıktan sonra oluşturulur.
+  if (pkg.shopier_url && /^https:\/\/(www\.)?shopier\.com\//i.test(pkg.shopier_url)) {
+    if (couponCode?.trim()) {
+      throw badRequest('Shopier ürününde kupon kodu uygulanamıyor.');
+    }
+    return { payment: null, redirectUrl: pkg.shopier_url };
+  }
   const provider = providers.get(config.paymentProvider);
   if (!provider) {
     throw new HttpError(

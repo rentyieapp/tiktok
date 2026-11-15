@@ -459,7 +459,7 @@ export interface GameStateResponse {
 }
 
 export interface CheckoutResponse {
-  payment: PaymentDTO;
+  payment: PaymentDTO | null;
   redirectUrl: string;
 }
 

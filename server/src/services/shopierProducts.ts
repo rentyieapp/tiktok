@@ -1,6 +1,7 @@
 import type { DB } from '../db/index.js';
 import type { AppConfig } from '../config.js';
 import { findPackageById, setPackageShopierProduct } from '../db/repo.js';
+import { ARCADE_GAME_LIST } from '../../../shared/arcade.js';
 
 export interface ShopierProductCreateResult {
   productId: string;
@@ -23,13 +24,26 @@ export class ShopierProductError extends Error {
  */
 export async function createShopierProduct(
   config: AppConfig,
-  input: { title: string; description: string; priceCents: number; currency: string; imageUrl: string },
+  input: {
+    title: string;
+    description: string;
+    priceCents: number;
+    currency: string;
+    imageUrl: string;
+    durationDays?: number;
+    scope?: string;
+  },
 ): Promise<ShopierProductCreateResult> {
   if (!config.shopierPat) throw new ShopierProductError('SHOPIER_PAT tanımlı değil.', 503);
   const price = (Math.max(0, input.priceCents) / 100).toFixed(2);
+  const description = [
+    input.description,
+    input.durationDays ? `Lisans süresi: ${input.durationDays} gün.` : '',
+    input.scope ? `Kapsam: ${input.scope}.` : '',
+  ].filter(Boolean).join('\n\n');
   const payload = {
     title: input.title.slice(0, 120),
-    description: input.description.slice(0, 1000) || input.title,
+    description: description.slice(0, 1500) || input.title,
     type: 'digital',
     media: [{ type: 'image', url: input.imageUrl, placement: 1 }],
     priceData: { currency: input.currency.toUpperCase(), price },
@@ -79,7 +93,13 @@ export async function createAndMapShopierProduct(
     description: pkg.description || pkg.tagline,
     priceCents: pkg.price_cents,
     currency: pkg.currency,
-    imageUrl: `${config.appUrl}/rook-profile.png`,
+    imageUrl: `${config.appUrl}/hero-arena.webp`,
+    durationDays: pkg.duration_days,
+    scope: pkg.game_key === '*'
+      ? 'Tüm oyunlar'
+      : pkg.game_key
+        ? `Oyun: ${ARCADE_GAME_LIST.find((game) => game.key === pkg.game_key)?.name ?? pkg.game_key}`
+        : 'Tüm oyunlar paketi',
   });
   setPackageShopierProduct(db, pkg.id, created.productId, created.productUrl ?? `https://www.shopier.com/${created.productId}`);
   return { packageId: pkg.id, ...created };
