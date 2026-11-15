@@ -59,6 +59,17 @@ export function ArcadeRoomPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
+  useEffect(() => {
+    if (!slug || (!obs && !overlayOnly)) return;
+    const timer = window.setInterval(() => {
+      api
+        .get<ArcadeRoomPublicDTO>(`/api/arcade/rooms/${encodeURIComponent(slug)}/public`)
+        .then(setData)
+        .catch(() => undefined);
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [slug, obs, overlayOnly]);
+
   if (loading) {
     return (
       <div className="grid min-h-screen place-items-center bg-[#fbf7f0] text-sm text-ink-500">
@@ -206,6 +217,12 @@ function RoomView({
             theme="full"
             botEnabled={data.room.settings.botEnabled === true}
             pro={data.overlayPro === true}
+            layout={data.room.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto'}
+            scale={data.room.settings.overlayScale === 'sm' ? 'sm' : data.room.settings.overlayScale === 'lg' ? 'lg' : 'md'}
+            showGoal={data.room.settings.overlayGoal !== false}
+            showLeaderboard={data.room.settings.overlayLeaderboard !== false}
+            showBot={data.room.settings.overlayBot !== false}
+            showWinner={data.room.settings.overlayWinner !== false}
           />
         </div>
       </div>
@@ -225,6 +242,12 @@ function RoomView({
             theme="full"
             botEnabled={data.room.settings.botEnabled === true}
             pro={data.overlayPro === true}
+            layout={data.room.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto'}
+            scale={data.room.settings.overlayScale === 'sm' ? 'sm' : data.room.settings.overlayScale === 'lg' ? 'lg' : 'md'}
+            showGoal={data.room.settings.overlayGoal !== false}
+            showLeaderboard={data.room.settings.overlayLeaderboard !== false}
+            showBot={data.room.settings.overlayBot !== false}
+            showWinner={data.room.settings.overlayWinner !== false}
           />
         </div>
       </div>
@@ -278,6 +301,12 @@ function RoomView({
                 theme={overlayTheme}
                 botEnabled={data.room.settings.botEnabled === true}
                 pro={data.overlayPro === true}
+                layout={data.room.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto'}
+                scale={data.room.settings.overlayScale === 'sm' ? 'sm' : data.room.settings.overlayScale === 'lg' ? 'lg' : 'md'}
+                showGoal={data.room.settings.overlayGoal !== false}
+                showLeaderboard={data.room.settings.overlayLeaderboard !== false}
+                showBot={data.room.settings.overlayBot !== false}
+                showWinner={data.room.settings.overlayWinner !== false}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[10px] text-ink-400">

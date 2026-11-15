@@ -778,6 +778,18 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - Paket aboneliği ile oyun lisansını aynı modalda ayırma.
 - Tüm işlemler admin API’si ve testlerle doğrulanır.
 
+### Canlı overlay ayarları
+
+Yayın sırasında panelden değiştirilebilenler:
+
+- Overlay konumu: üst köşeler / alt köşeler
+- Overlay boyutu: küçük / orta / büyük
+- Liderlik tablosu, hedef barı, bot ve kazanan kartı aç/kapat
+- Tema: tam overlay / sade sahne
+- TTS ve Meydan Bot
+
+Değişiklikler OBS’teki overlay kaynağına **8 saniye içinde** otomatik yansır; OBS’i yenilemek gerekmez. Panelde iki ayrı OBS URL’si vardır: tam sahne ve şeffaf overlay-only.
+
 ### Canlı önizlemede overlay
 
 Oyun sayfasındaki canlı demo artık overlay katmanını da gösterir. Ziyaretçi:

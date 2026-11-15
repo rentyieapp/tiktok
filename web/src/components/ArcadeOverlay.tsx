@@ -9,6 +9,12 @@ export function ArcadeOverlay({
   theme,
   botEnabled = false,
   pro = false,
+  layout = 'auto',
+  scale = 'md',
+  showGoal = true,
+  showLeaderboard = true,
+  showBot = true,
+  showWinner = true,
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
@@ -17,6 +23,12 @@ export function ArcadeOverlay({
   theme: 'full' | 'minimal';
   botEnabled?: boolean;
   pro?: boolean;
+  layout?: 'auto' | 'bottom';
+  scale?: 'sm' | 'md' | 'lg';
+  showGoal?: boolean;
+  showLeaderboard?: boolean;
+  showBot?: boolean;
+  showWinner?: boolean;
 }) {
   const [flash, setFlash] = useState<{ id: string; text: string } | null>(null);
   const [botLine, setBotLine] = useState<{ id: string; text: string } | null>(null);
@@ -47,9 +59,12 @@ export function ArcadeOverlay({
     return Math.min(100, ((state.now - (state.startedAt ?? state.now)) / 1000) * 2);
   })();
 
+  const topClass = layout === 'bottom' ? 'bottom-14' : 'top-[64px]';
+  const goalClass = layout === 'bottom' ? 'top-[64px]' : 'top-[118px]';
+  const scaleClass = scale === 'sm' ? 'scale-90' : scale === 'lg' ? 'scale-110' : '';
   return (
-    <div className="pointer-events-none absolute inset-0 z-30">
-      <div className="absolute left-2 top-[64px] max-w-[145px]">
+    <div className={`pointer-events-none absolute inset-0 z-30 origin-center ${scaleClass}`}>
+      <div className={`absolute left-2 max-w-[145px] ${topClass}`}>
         <div
           className="rounded-xl border border-white/70 bg-white/85 px-2.5 py-2 shadow-sm backdrop-blur"
           style={{ borderLeftColor: accent, borderLeftWidth: 3 }}
@@ -66,29 +81,44 @@ export function ArcadeOverlay({
 
       {pro ? (
         <>
-          <div className="absolute right-2 top-[64px] w-[155px] rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur">
-            <div className="flex items-center justify-between"><p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p><span className="text-[6px] font-extrabold text-violet-600">PRO</span></div>
-            <div className="mt-1 space-y-1">
-              {leaders.map((player) => (
-                <div key={player.id} className="flex items-center gap-1.5">
-                  <span className="w-3 text-[7px] font-bold text-ink-400">{player.rank}</span>
-                  <span className="h-2 w-2 rounded-full" style={{ background: player.color }} />
-                  <span className="min-w-0 flex-1 truncate text-[8px] font-semibold text-ink-700">{player.name}</span>
-                  <span className="text-[7px] font-bold text-ink-500">{Math.round(player.score)}</span>
-                </div>
-              ))}
+          {showLeaderboard ? (
+            <div className={`absolute right-2 w-[155px] ${topClass} rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur`}>
+              <div className="flex items-center justify-between">
+                <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p>
+                <span className="text-[6px] font-extrabold text-violet-600">PRO</span>
+              </div>
+              <div className="mt-1 space-y-1">
+                {leaders.map((player) => (
+                  <div key={player.id} className="flex items-center gap-1.5">
+                    <span className="w-3 text-[7px] font-bold text-ink-400">{player.rank}</span>
+                    <span className="h-2 w-2 rounded-full" style={{ background: player.color }} />
+                    <span className="min-w-0 flex-1 truncate text-[8px] font-semibold text-ink-700">{player.name}</span>
+                    <span className="text-[7px] font-bold text-ink-500">{Math.round(player.score)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="absolute inset-x-3 top-[118px]">
-            <div className="flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
-              <span className="text-[7px] font-bold uppercase tracking-wider text-ink-400">Hedef</span>
-              <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
-                <span className="block h-full rounded-full" style={{ width: `${Math.min(100, goalPercent)}%`, background: accent }} />
-              </span>
-              <span className="text-[7px] font-bold text-ink-500">{Math.round(goalPercent)}%</span>
+          ) : null}
+          {showGoal ? (
+            <div className={`absolute inset-x-3 ${goalClass}`}>
+              <div className="flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
+                <span className="text-[7px] font-bold uppercase tracking-wider text-ink-400">Hedef</span>
+                <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
+                  <span className="block h-full rounded-full" style={{ width: `${Math.min(100, goalPercent)}%`, background: accent }} />
+                </span>
+                <span className="text-[7px] font-bold text-ink-500">{Math.round(goalPercent)}%</span>
+              </div>
             </div>
-          </div>
+          ) : null}
         </>
+      ) : null}
+
+      {showWinner && state?.phase === 'finished' && state.winner ? (
+        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 rounded-2xl border border-amber-200 bg-[#fffaf0]/95 px-4 py-3 text-center shadow-xl backdrop-blur">
+          <p className="text-[7px] font-extrabold uppercase tracking-[0.16em] text-amber-600">Kazanan</p>
+          <p className="mt-0.5 text-lg font-extrabold text-ink-950">{state.winner.name}</p>
+          <p className="text-[8px] text-ink-500">{state.winner.label}</p>
+        </div>
       ) : null}
 
       {flash ? (
@@ -103,7 +133,7 @@ export function ArcadeOverlay({
         </div>
       ) : null}
 
-      {botEnabled && botLine ? (
+      {botEnabled && showBot && botLine ? (
         <div
           key={`bot-${botLine.id}`}
           className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"

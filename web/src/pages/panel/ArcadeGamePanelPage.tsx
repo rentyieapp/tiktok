@@ -57,6 +57,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const [welcome, setWelcome] = useState('');
   const [accent, setAccent] = useState(game.accent);
   const [overlayTheme, setOverlayTheme] = useState<'full' | 'minimal'>('full');
+  const [overlayLayout, setOverlayLayout] = useState<'auto' | 'bottom'>('auto');
+  const [overlayScale, setOverlayScale] = useState<'sm' | 'md' | 'lg'>('md');
+  const [showGoal, setShowGoal] = useState(true);
+  const [showLeaderboard, setShowLeaderboard] = useState(true);
+  const [showBot, setShowBot] = useState(true);
+  const [showWinner, setShowWinner] = useState(true);
   const [tts, setTts] = useState(false);
   const [botEnabled, setBotEnabled] = useState(false);
   const [language, setLanguage] = useState<ArcadeLocale>('tr');
@@ -80,6 +86,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
         setWelcome(String(foundRoom.settings.welcomeText ?? ''));
         setAccent(String(foundRoom.settings.accent ?? game.accent));
         setOverlayTheme(foundRoom.settings.overlayTheme === 'minimal' ? 'minimal' : 'full');
+        setOverlayLayout(foundRoom.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto');
+        setOverlayScale(foundRoom.settings.overlayScale === 'sm' ? 'sm' : foundRoom.settings.overlayScale === 'lg' ? 'lg' : 'md');
+        setShowGoal(foundRoom.settings.overlayGoal !== false);
+        setShowLeaderboard(foundRoom.settings.overlayLeaderboard !== false);
+        setShowBot(foundRoom.settings.overlayBot !== false);
+        setShowWinner(foundRoom.settings.overlayWinner !== false);
         setTts(foundRoom.settings.ttsEnabled === true);
         setBotEnabled(foundRoom.settings.botEnabled === true);
         const parsed = sanitizeArcadeRoomSettings(foundRoom.settings);
@@ -135,6 +147,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
           welcomeText: welcome,
           accent,
           overlayTheme,
+          overlayLayout,
+          overlayScale,
+          overlayGoal: showGoal,
+          overlayLeaderboard: showLeaderboard,
+          overlayBot: showBot,
+          overlayWinner: showWinner,
           ttsEnabled: tts,
           botEnabled,
           language,
@@ -371,6 +389,26 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                     <option value="minimal">Sade sahne</option>
                   </select>
                 </Field>
+                <Field label="Overlay konumu">
+                  <select className="input" value={overlayLayout} onChange={(event) => setOverlayLayout(event.target.value as 'auto' | 'bottom')}>
+                    <option value="auto">Üst köşeler</option>
+                    <option value="bottom">Alt köşeler</option>
+                  </select>
+                </Field>
+                <Field label="Overlay boyutu">
+                  <select className="input" value={overlayScale} onChange={(event) => setOverlayScale(event.target.value as 'sm' | 'md' | 'lg')}>
+                    <option value="sm">Küçük</option>
+                    <option value="md">Orta</option>
+                    <option value="lg">Büyük</option>
+                  </select>
+                </Field>
+              </div>
+              <div className="grid grid-cols-2 gap-2 rounded-xl border border-ink-100 bg-white p-3 text-[10px] text-ink-600 sm:grid-cols-4">
+                <p className="col-span-full text-[9px] leading-relaxed text-ink-400">Overlay değişiklikleri yayındaki OBS kaynağına 8 saniye içinde otomatik yansır; OBS’i yenilemen gerekmez.</p>
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={showBot} onChange={(event) => setShowBot(event.target.checked)} className="h-3.5 w-3.5 accent-violet-600" /> Bot</label>
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={showLeaderboard} onChange={(event) => setShowLeaderboard(event.target.checked)} className="h-3.5 w-3.5 accent-violet-600" /> Liderlik</label>
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={showGoal} onChange={(event) => setShowGoal(event.target.checked)} className="h-3.5 w-3.5 accent-violet-600" /> Hedef barı</label>
+                <label className="flex items-center gap-1.5"><input type="checkbox" checked={showWinner} onChange={(event) => setShowWinner(event.target.checked)} className="h-3.5 w-3.5 accent-violet-600" /> Kazanan</label>
               </div>
               <div className="rounded-xl border border-ink-100 bg-[#fbf7f0] p-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-ink-400">Oyun dili ve komutları</p>
