@@ -98,41 +98,36 @@ function shadowMesh(radius: number): THREE.Mesh {
 function makeTextTexture(
   name: string,
   color: string,
-  width = 320,
-  height = 76,
+  width = 0,
+  height = 84,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
   const ctx = canvas.getContext('2d')!;
-  const radius = height / 2;
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = 'rgba(255,255,255,0.94)';
+  const label = name.slice(0, 18);
+  const font = '800 38px system-ui, -apple-system, sans-serif';
+  ctx.font = font;
+  const measured = Math.ceil(ctx.measureText(label).width);
+  canvas.width = width > 0 ? width : Math.min(430, Math.max(150, measured + 78));
+  canvas.height = height;
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(255,255,255,0.97)';
   ctx.beginPath();
-  ctx.roundRect(0, 0, width, height, radius);
+  ctx.roundRect(2, 2, w - 4, h - 4, 20);
   ctx.fill();
-  ctx.strokeStyle = `${color}66`;
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = `${color}aa`;
+  ctx.lineWidth = 3;
   ctx.stroke();
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(radius, height / 2, radius - 8, 0, Math.PI * 2);
+  ctx.roundRect(14, 18, 12, h - 36, 6);
   ctx.fill();
-  const initials = name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toLocaleUpperCase('tr');
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '800 26px system-ui, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(initials, radius, height / 2 + 1);
-  ctx.fillStyle = '#2b2a33';
-  ctx.font = '700 24px system-ui, sans-serif';
+  ctx.fillStyle = '#17161d';
+  ctx.font = font;
   ctx.textAlign = 'left';
-  ctx.fillText(name.slice(0, 18), radius + 16, height / 2 + 1);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, 40, h / 2 + 1, w - 54);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
@@ -186,7 +181,10 @@ function addLabel(group: THREE.Object3D, texture: THREE.Texture, y: number, scal
   });
   const sprite = new THREE.Sprite(material);
   sprite.renderOrder = 999;
-  sprite.scale.set(1.85 * scale, 0.44 * scale, 1);
+  const image = texture.image as HTMLCanvasElement | undefined;
+  const aspect = image && image.height > 0 ? image.width / image.height : 3.2;
+  const spriteHeight = 0.54 * scale;
+  sprite.scale.set(spriteHeight * aspect, spriteHeight, 1);
   sprite.position.y = y;
   group.add(sprite);
   return sprite;
@@ -2736,7 +2734,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       group.scale.setScalar(0.7);
     }
 
-    const label = addLabel(group, makeTextTexture(player.name, color), 2.55, 1.08);
+    const label = addLabel(group, makeTextTexture(player.name, color), 2.62, 1.05);
     const { canvas, texture } = makeBarTexture(color);
     const barMaterial = new THREE.SpriteMaterial({
       map: texture,
@@ -2862,7 +2860,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     );
     spoiler.position.set(0, 0.72, 0.58);
     group.add(spoiler);
-    const label = addLabel(group, makeTextTexture(player.name, player.color), 2.05, 0.82);
+    const label = addLabel(group, makeTextTexture(player.name, player.color), 2.15, 0.95);
     return {
       group,
       body,

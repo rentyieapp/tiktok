@@ -290,24 +290,24 @@ export function Arcade3DStage({
           {nameRail.map((player, index) => (
             <span
               key={player.id}
-              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/90 bg-white/95 px-2.5 py-1.5 text-[10px] font-bold text-ink-800 shadow-md backdrop-blur sm:text-[11px]"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/90 bg-white/95 px-3 py-1.5 text-[11px] font-bold text-ink-800 shadow-md backdrop-blur sm:px-3.5 sm:py-2 sm:text-[13px]"
             >
               {player.avatar ? (
                 <img
                   src={player.avatar}
                   alt=""
                   referrerPolicy="no-referrer"
-                  className="h-4 w-4 rounded-full object-cover"
+                  className="h-5 w-5 rounded-full object-cover"
                 />
               ) : (
                 <span
-                  className="grid h-4 w-4 place-items-center rounded-full text-[7px] font-bold text-white"
+                  className="grid h-5 w-5 place-items-center rounded-full text-[8px] font-bold text-white"
                   style={{ background: player.color }}
                 >
                   {index + 1}
                 </span>
               )}
-              <span className="max-w-[96px] truncate">{player.name}</span>
+              <span className="max-w-[120px] truncate">{player.name}</span>
             </span>
           ))}
         </div>
