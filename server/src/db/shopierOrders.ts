@@ -51,6 +51,10 @@ export function insertShopierOrder(db: DB, order: ShopierOrderRow): boolean {
   return result.changes > 0;
 }
 
+export function findShopierOrderByOrderId(db: DB, orderId: string): ShopierOrderRow | undefined {
+  return db.prepare('SELECT * FROM shopier_orders WHERE order_id = ?').get(orderId) as ShopierOrderRow | undefined;
+}
+
 export function listShopierOrders(db: DB, limit = 25): ShopierOrderRow[] {
   const safeLimit = Math.min(100, Math.max(1, limit));
   return db

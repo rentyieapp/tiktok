@@ -15,7 +15,7 @@ import {
   type PackageRow,
   type UserRow,
 } from '../db/repo.js';
-import { insertShopierOrder, updateShopierOrder, type ShopierOrderRow } from '../db/shopierOrders.js';
+import { findShopierOrderByOrderId, insertShopierOrder, updateShopierOrder, type ShopierOrderRow } from '../db/shopierOrders.js';
 import { ARCADE_GAME_LIST } from '../../../shared/arcade.js';
 import type { AppConfig } from '../config.js';
 
@@ -203,7 +203,8 @@ export function handleShopierOrder(db: DB, apiOrder: ShopierApiOrder): { inserte
     processed_at: null,
   };
   const inserted = insertShopierOrder(db, row);
-  if (!inserted) return { inserted: false, status: 'duplicate' };
+  const existing = inserted ? undefined : findShopierOrderByOrderId(db, orderId);
+  if (!inserted && existing?.status === 'activated') return { inserted: false, status: 'activated' };
   if (apiOrder.paymentStatus !== 'paid') {
     updateShopierOrder(db, orderId, { status: 'awaiting_payment', activationMessage: 'Ödeme henüz tamamlanmadı.' });
     return { inserted: true, status: 'awaiting_payment' };
