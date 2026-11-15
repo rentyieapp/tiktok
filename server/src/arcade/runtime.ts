@@ -632,6 +632,30 @@ export class ArcadeRuntime {
       return { accepted: true, reason: 'joined', playerId };
     }
 
+    // Gece Yarısı'na özel, dile göre eşleşen komutlar.
+    if (validCommand === 'hide' || validCommand === 'repair' || validCommand === 'rescue') {
+      if (!existing && room.commands.requireJoin) {
+        return { accepted: false, reason: 'join_required' };
+      }
+      let commandPlayer = existing;
+      if (!commandPlayer) {
+        commandPlayer = addArcadePlayer(room.state, {
+          id: playerId,
+          name: event.viewer.name || `${event.platform} izleyici`,
+          isBot: false,
+          platform: event.platform,
+          now: Date.now(),
+          avatar: event.viewer.avatar,
+        }) ?? undefined;
+      }
+      if (!commandPlayer) return { accepted: false, reason: 'room_full' };
+      if (!room.demo && room.state.phase === 'lobby') this.startRound(room);
+      const internal = validCommand === 'hide' ? '!hide' : validCommand === 'repair' ? '!repair' : '!rescue';
+      const result = arcadeAction(room.state, playerId, 'comment', internal, Date.now());
+      this.broadcast(room);
+      return { accepted: result.ok, reason: result.message, playerId };
+    }
+
     if (!existing && event.kind === 'comment' && room.commands.requireJoin) {
       return { accepted: false, reason: 'join_required' };
     }

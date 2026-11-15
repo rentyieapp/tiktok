@@ -1,4 +1,5 @@
 import { ARCADE_GAME_LIST } from '../shared/arcade';
+import { DEFAULT_ARCADE_COMMANDS, matchArcadeCommand, commandAppliesToGame } from '../shared/arcadeSettings';
 import { afterEach, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
 import {
@@ -311,5 +312,17 @@ describe('Gece Yarısı komutları', () => {
     expect(arcadeAction(state, 'p1', 'comment', '!kurtar', now + 2_000).ok).toBe(true);
     expect(player.eliminated).toBe(false);
     expect(player.hp).toBeGreaterThanOrEqual(40);
+  });
+});
+
+
+describe('Gece Yarısı dil komutları', () => {
+  it('saklan/tamir/kurtar komutlarını dile göre eşler', () => {
+    expect(matchArcadeCommand('saklan', DEFAULT_ARCADE_COMMANDS.tr)).toBe('hide');
+    expect(matchArcadeCommand('tamir', DEFAULT_ARCADE_COMMANDS.tr)).toBe('repair');
+    expect(matchArcadeCommand('kurtar', DEFAULT_ARCADE_COMMANDS.tr)).toBe('rescue');
+    expect(matchArcadeCommand('hide', DEFAULT_ARCADE_COMMANDS.en)).toBe('hide');
+    expect(commandAppliesToGame('hide', 'manor')).toBe(true);
+    expect(commandAppliesToGame('hide', 'dance')).toBe(false);
   });
 });

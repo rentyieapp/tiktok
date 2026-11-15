@@ -9,6 +9,9 @@ export interface ArcadeCommandSettings {
   blue: string;
   girls: string;
   boys: string;
+  hide: string;
+  repair: string;
+  rescue: string;
   requireJoin: boolean;
 }
 
@@ -26,14 +29,14 @@ export const ARCADE_LOCALES: Array<{ code: ArcadeLocale; label: string; flag: st
 ];
 
 export const DEFAULT_ARCADE_COMMANDS: Record<ArcadeLocale, ArcadeCommandSettings> = {
-  tr: { join: 'katıl', leave: 'ayrıl', red: 'kırmızı', blue: 'mavi', girls: 'kızlar', boys: 'erkekler', requireJoin: false },
-  en: { join: 'join', leave: 'leave', red: 'red', blue: 'blue', girls: 'girls', boys: 'boys', requireJoin: false },
-  es: { join: 'unirse', leave: 'salir', red: 'rojo', blue: 'azul', girls: 'chicas', boys: 'chicos', requireJoin: false },
-  de: { join: 'beitreten', leave: 'verlassen', red: 'rot', blue: 'blau', girls: 'mädchen', boys: 'jungen', requireJoin: false },
-  fr: { join: 'rejoindre', leave: 'quitter', red: 'rouge', blue: 'bleu', girls: 'filles', boys: 'garçons', requireJoin: false },
+  tr: { join: 'katıl', leave: 'ayrıl', red: 'kırmızı', blue: 'mavi', girls: 'kızlar', boys: 'erkekler', hide: 'saklan', repair: 'tamir', rescue: 'kurtar', requireJoin: false },
+  en: { join: 'join', leave: 'leave', red: 'red', blue: 'blue', girls: 'girls', boys: 'boys', hide: 'hide', repair: 'repair', rescue: 'rescue', requireJoin: false },
+  es: { join: 'unirse', leave: 'salir', red: 'rojo', blue: 'azul', girls: 'chicas', boys: 'chicos', hide: 'esconderse', repair: 'reparar', rescue: 'rescatar', requireJoin: false },
+  de: { join: 'beitreten', leave: 'verlassen', red: 'rot', blue: 'blau', girls: 'mädchen', boys: 'jungen', hide: 'verstecken', repair: 'reparieren', rescue: 'retten', requireJoin: false },
+  fr: { join: 'rejoindre', leave: 'quitter', red: 'rouge', blue: 'bleu', girls: 'filles', boys: 'garçons', hide: 'cacher', repair: 'reparer', rescue: 'sauver', requireJoin: false },
 };
 
-export const ARCADE_COMMAND_KEYS = ['join', 'leave', 'red', 'blue', 'girls', 'boys'] as const;
+export const ARCADE_COMMAND_KEYS = ['join', 'leave', 'red', 'blue', 'girls', 'boys', 'hide', 'repair', 'rescue'] as const;
 export type ArcadeCommandKey = (typeof ARCADE_COMMAND_KEYS)[number];
 
 export function normalizeArcadeCommand(value: string): string {
@@ -82,6 +85,9 @@ export function commandAppliesToGame(command: ArcadeCommandKey, gameKey: ArcadeK
   if (command === 'join' || command === 'leave') return true;
   if (command === 'red' || command === 'blue') {
     return ARCADE_GAMES[gameKey].mode === 'tug';
+  }
+  if (command === 'hide' || command === 'repair' || command === 'rescue') {
+    return gameKey === 'manor';
   }
   return ARCADE_GAMES[gameKey].mode === 'versus';
 }

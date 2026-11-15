@@ -471,6 +471,19 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                       <input className="input" value={game.mode === 'tug' ? commands.blue : commands.boys} maxLength={24} onChange={(event) => setCommands((current) => game.mode === 'tug' ? { ...current, blue: event.target.value } : { ...current, boys: event.target.value })} />
                     </Field>
                   ) : null}
+                  {game.key === 'manor' ? (
+                    <>
+                      <Field label="Saklanma komutu">
+                        <input className="input" value={commands.hide} maxLength={24} onChange={(event) => setCommands((current) => ({ ...current, hide: event.target.value }))} placeholder="saklan" />
+                      </Field>
+                      <Field label="Tamir komutu">
+                        <input className="input" value={commands.repair} maxLength={24} onChange={(event) => setCommands((current) => ({ ...current, repair: event.target.value }))} placeholder="tamir" />
+                      </Field>
+                      <Field label="Kurtarma komutu">
+                        <input className="input" value={commands.rescue} maxLength={24} onChange={(event) => setCommands((current) => ({ ...current, rescue: event.target.value }))} placeholder="kurtar" />
+                      </Field>
+                    </>
+                  ) : null}
                 </div>
                 <label className="mt-2 flex cursor-pointer items-start gap-2 text-[10px] text-ink-500">
                   <input type="checkbox" checked={commands.requireJoin} onChange={(event) => setCommands((current) => ({ ...current, requireJoin: event.target.checked }))} className="mt-0.5 h-4 w-4 accent-emerald-600" />

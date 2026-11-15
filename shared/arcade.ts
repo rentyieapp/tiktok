@@ -1999,18 +1999,18 @@ export function arcadeAction(
   // comment
   if (state.key === 'manor') {
     const command = payload.trim().toLocaleLowerCase('tr');
-    if (command === '!saklan') {
+    if (['!saklan', '!hide'].includes(command)) {
       player.shieldUntil = Math.max(player.shieldUntil ?? 0, now + 8000);
       feed(state, `${player.name} dolaba saklandı ve kalkan kazandı.`, 'answer', now);
       return { ok: true };
     }
-    if (command === '!tamir') {
+    if (['!tamir', '!repair'].includes(command)) {
       player.hp = Math.min(player.maxHp, player.hp + 24);
       player.score += 2;
       feed(state, `${player.name} jeneratörü onardı.`, 'answer', now);
       return { ok: true };
     }
-    if (command === '!kurtar') {
+    if (['!kurtar', '!rescue'].includes(command)) {
       const revived = player.eliminated;
       player.eliminated = false;
       player.hp = Math.max(player.hp, 40);
