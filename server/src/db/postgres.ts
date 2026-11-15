@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import type { Client, QueryResult } from 'pg';
 
-const require = createRequire(import.meta.url);
+const require = createRequire(`${process.cwd()}/package.json`);
 const pg = require('pg') as typeof import('pg');
 const ClientCtor = pg.Client;
 const deasync = require('deasync') as { loopWhile: (predicate: () => boolean) => void };
