@@ -64,7 +64,7 @@ export function ArcadeOverlay({
   const scaleClass = scale === 'sm' ? 'scale-90' : scale === 'lg' ? 'scale-110' : '';
   return (
     <div className={`pointer-events-none absolute inset-0 z-30 origin-center ${scaleClass}`}>
-      <div className={`absolute left-2 max-w-[145px] ${topClass}`}>
+      <div data-overlay-part="room" className={`absolute left-2 max-w-[145px] ${topClass}`}>
         <div
           className="rounded-xl border border-white/70 bg-white/85 px-2.5 py-2 shadow-sm backdrop-blur"
           style={{ borderLeftColor: accent, borderLeftWidth: 3 }}
@@ -82,7 +82,7 @@ export function ArcadeOverlay({
       {pro ? (
         <>
           {showLeaderboard ? (
-            <div className={`absolute right-2 w-[155px] ${topClass} rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur`}>
+            <div data-overlay-part="leaderboard" className={`absolute right-2 w-[155px] ${topClass} rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur`}>
               <div className="flex items-center justify-between">
                 <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p>
                 <span className="text-[6px] font-extrabold text-violet-600">PRO</span>
@@ -100,7 +100,7 @@ export function ArcadeOverlay({
             </div>
           ) : null}
           {showGoal ? (
-            <div className={`absolute inset-x-3 ${goalClass}`}>
+            <div data-overlay-part="goal" className={`absolute inset-x-3 ${goalClass}`}>
               <div className="flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
                 <span className="text-[7px] font-bold uppercase tracking-wider text-ink-400">Hedef</span>
                 <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
@@ -114,7 +114,7 @@ export function ArcadeOverlay({
       ) : null}
 
       {showWinner && state?.phase === 'finished' && state.winner ? (
-        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 rounded-2xl border border-amber-200 bg-[#fffaf0]/95 px-4 py-3 text-center shadow-xl backdrop-blur">
+        <div data-overlay-part="winner" className="absolute inset-x-4 top-1/2 -translate-y-1/2 rounded-2xl border border-amber-200 bg-[#fffaf0]/95 px-4 py-3 text-center shadow-xl backdrop-blur">
           <p className="text-[7px] font-extrabold uppercase tracking-[0.16em] text-amber-600">Kazanan</p>
           <p className="mt-0.5 text-lg font-extrabold text-ink-950">{state.winner.name}</p>
           <p className="text-[8px] text-ink-500">{state.winner.label}</p>
@@ -124,7 +124,7 @@ export function ArcadeOverlay({
       {flash ? (
         <div
           key={flash.id}
-          className="absolute right-2 top-[190px] max-w-[150px] animate-[fadeIn_0.25s_ease-out] rounded-xl border border-amber-200 bg-[#fffaf0]/95 px-2.5 py-2 shadow-lg backdrop-blur"
+          data-overlay-part="flash" className="absolute right-2 top-[190px] max-w-[150px] animate-[fadeIn_0.25s_ease-out] rounded-xl border border-amber-200 bg-[#fffaf0]/95 px-2.5 py-2 shadow-lg backdrop-blur"
         >
           <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-amber-600">Son olay</p>
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug text-amber-950">
@@ -136,7 +136,7 @@ export function ArcadeOverlay({
       {botEnabled && showBot && botLine ? (
         <div
           key={`bot-${botLine.id}`}
-          className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
+          data-overlay-part="bot" className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
         >
           <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-500">🤖 Meydan Bot</p>
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug">{botLine.text}</p>
