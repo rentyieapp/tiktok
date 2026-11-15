@@ -140,8 +140,8 @@ export function AdminShopierPage() {
     }
     setCreatingProduct(true);
     try {
-      const result = await api.post<{ productId: string; productUrl: string | null }>('/api/admin/shopier/products', { packageId: mapPackageId });
-      success('Shopier ürünü oluşturuldu', `Ürün ID: ${result.productId} · paketle eşleştirildi.`);
+      const result = await api.post<{ productId: string; productUrl: string | null; existing?: boolean }>('/api/admin/shopier/products', { packageId: mapPackageId });
+      success(result.existing ? 'Ürün zaten eşleşmiş' : 'Shopier ürünü oluşturuldu', `Ürün ID: ${result.productId}`);
       await load();
     } catch (caught) {
       toastError('Ürün oluşturulamadı', caught instanceof ApiError ? caught.firstDetail() ?? caught.message : 'Shopier ürün API’sini kontrol et.');

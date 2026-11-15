@@ -66,9 +66,12 @@ export async function createAndMapShopierProduct(
   db: DB,
   config: AppConfig,
   packageId: string,
-): Promise<{ packageId: string; productId: string; productUrl: string | null }> {
+): Promise<{ packageId: string; productId: string; productUrl: string | null; existing?: boolean }> {
   const pkg = findPackageById(db, packageId);
   if (!pkg || pkg.is_active !== 1) throw new ShopierProductError('Aktif paket bulunamadı.', 404);
+  if (pkg.shopier_product_id) {
+    return { packageId: pkg.id, productId: pkg.shopier_product_id, productUrl: null, existing: true };
+  }
   const created = await createShopierProduct(config, {
     title: pkg.name,
     description: pkg.description || pkg.tagline,
