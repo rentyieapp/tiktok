@@ -3,7 +3,7 @@ import { EN_TEXT } from './en';
 
 export type Locale = 'tr' | 'en';
 
-const STORAGE_KEY = 'meydan_locale';
+const STORAGE_KEY = 'rookworks_locale';
 
 interface LanguageContextValue {
   locale: Locale;
@@ -26,7 +26,7 @@ function initialLocale(): Locale {
 }
 
 const OVERRIDES: Record<string, string> = {
-  Meydan: 'Meydan',
+  'Rook Works': 'Rook Works',
   'Taraftar Savaşı': 'Fan Battle',
   'Taraftar Savaşı 3D': 'Fan Battle 3D',
   'Sahne 90': 'Stage 90',

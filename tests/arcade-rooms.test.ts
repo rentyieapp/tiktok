@@ -517,7 +517,7 @@ describe('yayıncıya özel arcade odaları', () => {
       method: 'POST',
       url: '/api/billing/checkout',
       headers: { cookie: user.cookie },
-      payload: { packageId: 'offer_bundle_all_1d', couponCode: 'MEYDAN10' },
+      payload: { packageId: 'offer_bundle_all_1d', couponCode: 'ROOK10' },
     });
     expect(checkout.statusCode).toBe(201);
     expect(checkout.json().payment.amountCents).toBe(17910);

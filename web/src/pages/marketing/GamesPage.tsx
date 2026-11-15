@@ -30,7 +30,7 @@ export function GamesPage() {
   const [offers, setOffers] = useState<PackageDTO[]>([]);
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem('meydan_favorites') ?? '[]') as string[];
+      return JSON.parse(localStorage.getItem('rookworks_favorites') ?? '[]') as string[];
     } catch {
       return [];
     }
@@ -60,7 +60,7 @@ export function GamesPage() {
         ? current.filter((entry) => entry !== key)
         : [...current, key];
       try {
-        localStorage.setItem('meydan_favorites', JSON.stringify(next));
+        localStorage.setItem('rookworks_favorites', JSON.stringify(next));
       } catch {
         /* yoksay */
       }

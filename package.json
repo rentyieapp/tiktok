@@ -1,8 +1,8 @@
 {
-  "name": "meydan",
+  "name": "rookworks",
   "private": true,
   "version": "1.0.0",
-  "description": "Meydan oyun platformu: oyun bazli lisanslar, yayinci odalari ve 3D arcade sahneleri",
+  "description": "Rook Works oyun platformu: oyun bazli lisanslar, yayinci odalari ve 3D arcade sahneleri",
   "type": "module",
   "engines": {
     "node": ">=22"

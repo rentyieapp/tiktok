@@ -91,7 +91,7 @@ export function LivePage() {
           {error ? <p className="mt-2 text-xs text-red-300/70">{error}</p> : null}
         </div>
         <Link to="/" className="text-xs font-medium text-brand-300 hover:text-brand-200">
-          Meydan ana sayfa
+          Rook Works ana sayfa
         </Link>
       </div>
     );

@@ -1,12 +1,12 @@
 # PostgreSQL ve Coolify production
 
-Meydan production ortamı Coolify üzerinde görünür bir uygulama + PostgreSQL 18 kaynağı olarak çalışır.
+Rook Works production ortamı Coolify üzerinde görünür bir uygulama + PostgreSQL 18 kaynağı olarak çalışır.
 
 ## Kaynaklar
 
 - Coolify paneli: `http://173.212.247.226:8000`
-- Proje: **Meydan** → `production`
-- Uygulama: **Meydan** (Dockerfile build pack)
+- Proje: **Rook Works** → `production`
+- Uygulama: **Rook Works** (Dockerfile build pack)
 - PostgreSQL: **postgresql-database-ge2d…** (Coolify Database kaynağı)
 - Public URL: `https://n142zj82jmky6axi2dupiqka.173.212.247.226.sslip.io`
 

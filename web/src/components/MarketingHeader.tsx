@@ -134,7 +134,7 @@ export function MarketingFooter() {
           <Link to="/giris" className="hover:text-ink-900">
             Yayıncı girişi
           </Link>
-          <span className="text-ink-300">© {new Date().getFullYear()} Meydan</span>
+          <span className="text-ink-300">© {new Date().getFullYear()} Rook Works</span>
         </div>
       </div>
       <div className="container-page mt-7 border-t border-[#e4dccf] pt-4 text-[10px] leading-relaxed text-ink-400">

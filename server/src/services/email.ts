@@ -49,16 +49,16 @@ export async function sendMail(
 export function verificationMail(displayName: string, url: string): MailInput {
   return {
     to: '',
-    subject: 'Meydan hesabını doğrula',
-    text: `Merhaba ${displayName},\n\nMeydan hesabını doğrulamak için: ${url}\n\nBu bağlantı 24 saat geçerlidir.`,
-    html: `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#17161d"><h2>Meydan hesabını doğrula</h2><p>Merhaba ${displayName},</p><p>Hesabını doğrulamak için aşağıdaki bağlantıya tıkla.</p><p><a href="${url}" style="display:inline-block;background:#0f8a72;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none">E-postamı doğrula</a></p><p style="color:#6b7280;font-size:12px">Bu bağlantı 24 saat geçerlidir. Bu isteği sen yapmadıysan e-postayı yok say.</p></div>`,
+    subject: 'Rook Works hesabını doğrula',
+    text: `Merhaba ${displayName},\n\nRook Works hesabını doğrulamak için: ${url}\n\nBu bağlantı 24 saat geçerlidir.`,
+    html: `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#17161d"><h2>Rook Works hesabını doğrula</h2><p>Merhaba ${displayName},</p><p>Hesabını doğrulamak için aşağıdaki bağlantıya tıkla.</p><p><a href="${url}" style="display:inline-block;background:#0f8a72;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none">E-postamı doğrula</a></p><p style="color:#6b7280;font-size:12px">Bu bağlantı 24 saat geçerlidir. Bu isteği sen yapmadıysan e-postayı yok say.</p></div>`,
   };
 }
 
 export function resetMail(displayName: string, url: string): MailInput {
   return {
     to: '',
-    subject: 'Meydan şifre sıfırlama',
+    subject: 'Rook Works şifre sıfırlama',
     text: `Merhaba ${displayName},\n\nŞifreni sıfırlamak için: ${url}\n\nBu bağlantı 1 saat geçerlidir.`,
     html: `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#17161d"><h2>Şifreni sıfırla</h2><p>Merhaba ${displayName},</p><p>Yeni şifre belirlemek için aşağıdaki bağlantıya tıkla.</p><p><a href="${url}" style="display:inline-block;background:#0f8a72;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none">Şifremi sıfırla</a></p><p style="color:#6b7280;font-size:12px">Bu bağlantı 1 saat geçerlidir. Bu isteği sen yapmadıysan e-postayı yok say.</p></div>`,
   };

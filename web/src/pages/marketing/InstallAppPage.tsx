@@ -46,13 +46,13 @@ export function InstallAppPage() {
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.8fr]">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-[#e4dccf] bg-white px-3.5 py-1.5 text-[11px] font-semibold text-ink-600">
-                <Download size={12} className="text-brand-600" /> Meydan uygulaması
+                <Download size={12} className="text-brand-600" /> Rook Works uygulaması
               </span>
               <h1 className="mt-5 max-w-2xl text-balance font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink-950 sm:text-5xl">
                 Tarayıcıda kal, uygulama gibi kullan.
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink-500 sm:text-base">
-                Ayrı bir .exe indirmeden Meydan’ı masaüstüne veya telefonuna yükle. Oyun
+                Ayrı bir .exe indirmeden Rook Works’ı masaüstüne veya telefonuna yükle. Oyun
                 penceresi tam ekran açılır, OBS bağlantın değişmez.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -77,7 +77,7 @@ export function InstallAppPage() {
                 <div className="flex items-center gap-2">
                   <img src="/icon-192.png" alt="" className="h-8 w-8 rounded-xl" />
                   <div>
-                    <p className="text-[11px] font-bold">Meydan</p>
+                    <p className="text-[11px] font-bold">Rook Works</p>
                     <p className="text-[8px] text-ink-400">Oyun Platformu</p>
                   </div>
                 </div>

@@ -132,7 +132,7 @@ export function SetupGuidePage() {
                 <div className="mt-3 aspect-[9/16] max-h-[300px] overflow-hidden rounded-xl bg-[#fffaf4]">
                   <div className="flex h-full flex-col">
                     <div className="flex items-center justify-between bg-white px-3 py-2">
-                      <span className="text-[9px] font-bold text-ink-800">Meydan · Sahne 90</span>
+                      <span className="text-[9px] font-bold text-ink-800">Rook Works · Sahne 90</span>
                       <span className="text-[8px] text-ink-400">CANLI</span>
                     </div>
                     <div className="flex flex-1 items-center justify-center bg-[radial-gradient(circle_at_50%_20%,#ffe6f1,#f7efe4)]">

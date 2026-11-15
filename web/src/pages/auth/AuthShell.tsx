@@ -49,7 +49,7 @@ export function AuthShell({
         </div>
 
         <p className="text-center text-[10px] text-ink-400 lg:text-left">
-          © {new Date().getFullYear()} Meydan · Oyun platformu
+          © {new Date().getFullYear()} Rook Works · Interactive Live Games
         </p>
       </div>
 

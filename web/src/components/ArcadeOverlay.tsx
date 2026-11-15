@@ -24,7 +24,7 @@ export function ArcadeOverlay({
   showBot = true,
   showWinner = true,
   positions,
-  themeId = 'meydan',
+  themeId = 'rookworks',
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
@@ -161,7 +161,7 @@ export function ArcadeOverlay({
           key={`bot-${botLine.id}`}
           data-overlay-part="bot" style={customStyle('bot')} className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
         >
-          <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-500">🤖 Meydan Bot</p>
+          <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-500">🤖 Rook Bot</p>
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug">{botLine.text}</p>
         </div>
       ) : null}

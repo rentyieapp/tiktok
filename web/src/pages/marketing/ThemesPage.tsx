@@ -25,7 +25,7 @@ export function ThemesPage() {
               <div className={`relative h-40 ${theme.className}`} style={{ background: theme.background }}>
                 <div className="absolute left-4 top-4 w-28 rounded-lg border border-white/70 bg-white/90 p-2 shadow-sm">
                   <p className="text-[6px] font-bold uppercase tracking-wider text-ink-400">Oda</p>
-                  <p className="truncate text-[8px] font-semibold text-ink-800">Meydan canlı</p>
+                  <p className="truncate text-[8px] font-semibold text-ink-800">Rook Works canlı</p>
                 </div>
                 <div className="absolute bottom-4 right-4 w-24 rounded-lg border border-white/70 bg-white/90 p-2 shadow-sm">
                   <p className="text-[6px] font-bold uppercase tracking-wider text-ink-400">Hedef</p>

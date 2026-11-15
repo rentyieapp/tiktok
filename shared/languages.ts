@@ -141,7 +141,7 @@ const LIVE_UI: Record<Locale, LiveUiStrings> = {
     send: 'Gönder',
     live: 'CANLI',
     offline: 'YAYIN KAPALI',
-    poweredBy: 'Meydan',
+    poweredBy: 'Rook Works',
     hp: 'Can',
     joinWith: 'Katılmak için',
     matchNotRunning: 'Maç başlamadı',

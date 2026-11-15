@@ -124,7 +124,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     shopierPollSeconds: numberFromEnv(env.SHOPIER_POLL_SECONDS, 10),
     youtubeApiKey: env.YOUTUBE_API_KEY || '',
     resendApiKey: env.RESEND_API_KEY || '',
-    mailFrom: env.MAIL_FROM || 'Meydan <no-reply@meydan.local>',
+    mailFrom: env.MAIL_FROM || 'Rook Works <no-reply@rookworks.tr>',
     requireEmailVerification: env.REQUIRE_EMAIL_VERIFICATION === 'true',
     adminEmail: (env.ADMIN_EMAIL || '').trim().toLowerCase(),
     adminPassword: env.ADMIN_PASSWORD || '',

@@ -28,7 +28,7 @@ export async function getShopierApiStatus(pat: string): Promise<ShopierApiStatus
         headers: {
           Authorization: `Bearer ${pat}`,
           Accept: 'application/json',
-          'User-Agent': 'Meydan/1.0',
+          'User-Agent': 'Rook Works/1.0',
         },
         signal: AbortSignal.timeout(12_000),
       },

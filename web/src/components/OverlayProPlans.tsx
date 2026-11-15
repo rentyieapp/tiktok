@@ -61,7 +61,7 @@ export function OverlayProPlans() {
             <ul className="mt-3 space-y-2 text-[11px] text-ink-500">
               <li className="flex gap-2"><Layers3 size={13} className="text-brand-600" /> Oda adı, oyuncu sayısı, tur</li>
               <li className="flex gap-2"><ListOrdered size={13} className="text-brand-600" /> Son olay kartı</li>
-              <li className="flex gap-2"><Bot size={13} className="text-brand-600" /> Meydan Bot temel duyurusu</li>
+              <li className="flex gap-2"><Bot size={13} className="text-brand-600" /> Rook Bot temel duyurusu</li>
             </ul>
           </div>
           <div className="rounded-2xl border border-violet-300 bg-white p-5 shadow-[0_18px_50px_-30px_rgba(109,40,217,0.5)]">
@@ -71,7 +71,7 @@ export function OverlayProPlans() {
               <span className="flex gap-1.5"><Crown size={13} className="text-violet-600" /> Liderlik tablosu</span>
               <span className="flex gap-1.5"><Target size={13} className="text-violet-600" /> Canlı hedef barı</span>
               <span className="flex gap-1.5"><Sparkles size={13} className="text-violet-600" /> Kazanan kartı</span>
-              <span className="flex gap-1.5"><Bot size={13} className="text-violet-600" /> Meydan Bot</span>
+              <span className="flex gap-1.5"><Bot size={13} className="text-violet-600" /> Rook Bot</span>
               <span className="flex gap-1.5"><Volume2 size={13} className="text-violet-600" /> TTS ile uyumlu</span>
               <span className="flex gap-1.5"><Layers3 size={13} className="text-violet-600" /> Gelişmiş katmanlar</span>
             </div>

@@ -447,7 +447,7 @@ function GameView({ game }: { game: ArcadeGameDef }) {
                     <ArcadeOverlay
                       game={game}
                       state={state}
-                      roomName="Meydan canlı önizleme"
+                      roomName="Rook Works canlı önizleme"
                       accent={game.accent}
                       theme="full"
                       botEnabled

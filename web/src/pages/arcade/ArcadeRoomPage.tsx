@@ -156,8 +156,8 @@ function RoomView({
   const locale = roomSettings.language;
   const commandHints = roomSettings.commands;
   const overlayPositions = data.room.settings.overlayPositions as OverlayPositions | undefined;
-  const requestedTheme = overlayThemeById(typeof data.room.settings.overlayThemeId === 'string' ? data.room.settings.overlayThemeId : 'meydan');
-  const effectiveThemeId = requestedTheme.pro && !data.overlayPro ? 'meydan' : requestedTheme.id;
+  const requestedTheme = overlayThemeById(typeof data.room.settings.overlayThemeId === 'string' ? data.room.settings.overlayThemeId : 'rookworks');
+  const effectiveThemeId = requestedTheme.pro && !data.overlayPro ? 'rookworks' : requestedTheme.id;
   const ttsEnabled =
     data.room.settings.ttsEnabled === true ||
     new URLSearchParams(window.location.search).get('tts') === '1';

@@ -251,7 +251,7 @@ export function seedOverlayOffers(db: DB): void {
       'Liderlik tablosu, hedef barı, kazanan kartı, bot ve gelişmiş overlay katmanları.',
       offer.price,
       offer.days,
-      JSON.stringify(['Liderlik tablosu', 'Hedef barı', 'Kazanan kartı', 'Meydan Bot', 'Gelişmiş overlay']),
+      JSON.stringify(['Liderlik tablosu', 'Hedef barı', 'Kazanan kartı', 'Rook Bot', 'Gelişmiş overlay']),
       offer.order,
     );
   }
@@ -488,6 +488,6 @@ export function seedCoupons(db: DB): void {
     `INSERT OR IGNORE INTO coupons (
       id, code, percent_off, fixed_off_cents, active, max_uses, used_count,
       expires_at, created_at, updated_at
-    ) VALUES ('coupon_meydan10', 'MEYDAN10', 10, 0, 1, 1000, 0, NULL, ?, ?)`,
+    ) VALUES ('coupon_rook10', 'ROOK10', 10, 0, 1, 1000, 0, NULL, ?, ?)`,
   ).run(now, now);
 }

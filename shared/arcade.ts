@@ -1527,7 +1527,7 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
                 : state.key === 'circle'
                   ? 'Halkanın kalbi'
                   : state.key === 'horon'
-                    ? 'Meydanın yıldızı'
+                    ? 'Rook Works’un yıldızı'
                     : state.key === 'sira'
                       ? 'Gecenin sesi'
                       : state.key === 'latina'
@@ -1561,7 +1561,7 @@ function finishArcadeRound(state: ArcadeState, now: number): void {
                             : ['gold', 'chest'].includes(state.key)
                               ? 'Altın avcısı'
                               : state.key === 'clash'
-                                ? 'Meydanın fatihi'
+                                ? 'Rook Works’un fatihi'
                                 : state.key === 'wheel'
                     ? 'Çarkın şanslısı'
                     : state.key === 'tug'

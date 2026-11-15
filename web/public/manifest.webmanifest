@@ -1,13 +1,13 @@
 {
-  "name": "Meydan — Oyun Platformu",
-  "short_name": "Meydan",
+  "name": "Rook Works — Interactive Live Games",
+  "short_name": "Rook Works",
   "description": "Yayıncılar için oyun bazlı canlı yayın platformu.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fffaf4",
-  "theme_color": "#10b981",
+  "theme_color": "#6d5ae6",
   "lang": "tr",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },

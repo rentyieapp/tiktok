@@ -34,7 +34,7 @@ const SECTIONS = [
   {
     title: 'Bağımsızlık ve marka',
     items: [
-      'Meydan bağımsız bir hizmettir; TikTok, YouTube, Twitch veya Google ile bağlantılı değildir.',
+      'Rook Works bağımsız bir hizmettir; TikTok, YouTube, Twitch veya Google ile bağlantılı değildir.',
       'Tüm oyun adları, görselleri ve metinleri bu proje için özgün olarak üretilmiştir.',
       'Üçüncü taraf platformların markaları yalnızca uyumluluk açıklaması amacıyla anılır.',
       'Hizmet kullanımı, yürürlükteki mevzuat ve platform koşullarına uygun olmalıdır.',

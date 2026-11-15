@@ -1,6 +1,6 @@
 import { api } from './api';
 
-const KEY = 'meydan_coupon';
+const KEY = 'rookworks_coupon';
 
 export function getStoredCoupon(): string {
   try {

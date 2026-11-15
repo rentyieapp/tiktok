@@ -59,7 +59,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const [welcome, setWelcome] = useState('');
   const [accent, setAccent] = useState(game.accent);
   const [overlayTheme, setOverlayTheme] = useState<'full' | 'minimal'>('full');
-  const [overlayThemeId, setOverlayThemeId] = useState('meydan');
+  const [overlayThemeId, setOverlayThemeId] = useState('rookworks');
   const [overlayLayout, setOverlayLayout] = useState<'auto' | 'bottom'>('auto');
   const [overlayScale, setOverlayScale] = useState<'sm' | 'md' | 'lg'>('md');
   const [showGoal, setShowGoal] = useState(true);
@@ -97,7 +97,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
         setWelcome(String(foundRoom.settings.welcomeText ?? ''));
         setAccent(String(foundRoom.settings.accent ?? game.accent));
         setOverlayTheme(foundRoom.settings.overlayTheme === 'minimal' ? 'minimal' : 'full');
-        setOverlayThemeId(typeof foundRoom.settings.overlayThemeId === 'string' ? foundRoom.settings.overlayThemeId : 'meydan');
+        setOverlayThemeId(typeof foundRoom.settings.overlayThemeId === 'string' ? foundRoom.settings.overlayThemeId : 'rookworks');
         setOverlayLayout(foundRoom.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto');
         setOverlayScale(foundRoom.settings.overlayScale === 'sm' ? 'sm' : foundRoom.settings.overlayScale === 'lg' ? 'lg' : 'md');
         setShowGoal(foundRoom.settings.overlayGoal !== false);
@@ -490,7 +490,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
               </label>
               <label className="flex cursor-pointer items-start gap-2 text-[11px] text-ink-600">
                 <input type="checkbox" checked={botEnabled} onChange={(event) => setBotEnabled(event.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
-                <span>Meydan Bot overlay duyuruları <span className="block text-[9px] text-ink-400">Katılım, hediye ve kazanan olaylarını OBS overlay’inde bot kartı olarak gösterir.</span></span>
+                <span>Rook Bot overlay duyuruları <span className="block text-[9px] text-ink-400">Katılım, hediye ve kazanan olaylarını OBS overlay’inde bot kartı olarak gösterir.</span></span>
               </label>
               <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-violet-700">Overlay yerleşimi</p>

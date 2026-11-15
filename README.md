@@ -1,4 +1,4 @@
-# Meydan — Oyun Platformu
+# Rook Works — Interactive Live Games
 
 Çok kiracılı (multi-tenant) bir canlı yayın oyun platformu. Yayıncılar kendi hesapları,
 takımları, komutları ve kalıcı OBS bağlantılarıyla çalışır; izleyiciler yorum, beğeni ve
@@ -765,7 +765,7 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
   aynı odaya kendi platform sohbetini bağlar.
 - **PWA:** `/uygulama` üzerinden masaüstü/mobil uygulama gibi yükleme; ayrı Windows launcher
   yerine tarayıcı tabanlı PWA.
-- **Kupon:** `MEYDAN10` %10 indirim; kupon kodu mağaza ve panelden girilir, ödeme tutarı
+- **Kupon:** `ROOK10` %10 indirim; kupon kodu mağaza ve panelden girilir, ödeme tutarı
   sunucuda düşürülür.
 - **WhatsApp destek:** `VITE_SUPPORT_WHATSAPP` tanımlanınca site genelinde canlı destek butonu.
 - **Moderasyon:** canlı oyuncu listesi, odadan çıkarma ve **kalıcı ban/blocklist**;
@@ -786,7 +786,7 @@ Yayın sırasında panelden değiştirilebilenler:
 - Overlay boyutu: küçük / orta / büyük
 - Liderlik tablosu, hedef barı, bot ve kazanan kartı aç/kapat
 - Tema: tam overlay / sade sahne
-- TTS ve Meydan Bot
+- TTS ve Rook Bot
 
 Değişiklikler OBS’teki overlay kaynağına **8 saniye içinde** otomatik yansır; OBS’i yenilemek gerekmez. Panelde iki ayrı OBS URL’si vardır: tam sahne ve şeffaf overlay-only.
 
@@ -820,7 +820,7 @@ Overlay Pro aktifse şeffaf modda liderlik tablosu, hedef barı, kazanan kartı 
 
 - Oyun lisansından bağımsız satılan OBS overlay katmanı.
 - **Aylık ₺149**, **yıllık ₺1.299**.
-- Liderlik tablosu, canlı hedef barı, kazanan kartı ve Meydan Bot duyuruları.
+- Liderlik tablosu, canlı hedef barı, kazanan kartı ve Rook Bot duyuruları.
 - Oyun lisansı veya Tüm Oyunlar paketine dahil değildir; mevcut oyun lisansıyla birlikte kullanılır.
 - Satın alma sonrası `overlay_pro` lisansı açılır; yayın odası public endpoint’i `overlayPro` alanını döndürür.
 
@@ -830,7 +830,7 @@ Overlay Pro aktifse şeffaf modda liderlik tablosu, hedef barı, kazanan kartı 
 - Combo serisi ve hediye seviyesi (küçük/orta/büyük) görsel yoğunluğu değiştirir.
 - Tur hedefi barı, katılım kartı ve kazanan anı (avatar, taç, konfeti) tüm oyunlarda ortaktır.
 - Egg Smash’te çatlak/sarsıntı, Midnight Manor’da koruma kalkanı gibi oyuna özel efektler vardır.
-- Yayıncı odasında OBS overlay’i, TTS ve “Meydan Bot” overlay duyuruları panelden açılır. Platform sohbetine bot mesajı göndermek, platformların yazma API’si/izinleri gerektirir.
+- Yayıncı odasında OBS overlay’i, TTS ve “Rook Bot” overlay duyuruları panelden açılır. Platform sohbetine bot mesajı göndermek, platformların yazma API’si/izinleri gerektirir.
 
 ### Oyun sayfası içerikleri
 
