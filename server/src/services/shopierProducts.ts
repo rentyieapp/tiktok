@@ -40,6 +40,7 @@ export async function createShopierProduct(
     input.description,
     input.durationDays ? `Lisans süresi: ${input.durationDays} gün.` : '',
     input.scope ? `Kapsam: ${input.scope}.` : '',
+    'Satın alma sırasında "Satıcıya Not" alanına Rook Works hesap e-postanızı yazın.',
   ].filter(Boolean).join('\n\n');
   const payload = {
     title: input.title.slice(0, 120),

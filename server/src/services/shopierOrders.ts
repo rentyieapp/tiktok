@@ -39,6 +39,7 @@ export interface ShopierApiOrder {
   paymentStatus?: string;
   currency?: string;
   dateCreated?: string;
+  note?: string;
   totals?: { total?: string };
   billingInfo?: ShopierAddress;
   shippingInfo?: ShopierAddress;
@@ -65,7 +66,12 @@ function parseAmountCents(value: string | undefined): number | null {
 
 function normalizeEmail(order: ShopierApiOrder): string | null {
   const raw = order.billingInfo?.email ?? order.shippingInfo?.email;
-  return typeof raw === 'string' && raw.trim() ? raw.trim().toLowerCase() : null;
+  if (typeof raw === 'string' && raw.trim()) return raw.trim().toLowerCase();
+  // Shopier misafir checkout e-posta sormuyor. Satıcıya not alanına yazılan
+  // Rook Works hesap e-postasını güvenli bir eşleştirme anahtarı olarak kullan.
+  const note = typeof order.note === 'string' ? order.note : '';
+  const match = note.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  return match ? match[0].toLowerCase() : null;
 }
 
 function productIds(order: ShopierApiOrder): string[] {
