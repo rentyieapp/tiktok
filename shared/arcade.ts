@@ -1116,6 +1116,7 @@ export interface ArcadePlayer {
   x: number;
   y: number;
   wins: number;
+  combo?: number;
 }
 
 export interface ArcadePrompt {
@@ -1218,6 +1219,9 @@ export interface ArcadeState {
     id: string;
     playerId: string;
     kind: 'like' | 'gift' | 'comment';
+    tier: 1 | 2 | 3;
+    combo: number;
+    giftName?: string;
     at: number;
   };
 }
@@ -1426,6 +1430,7 @@ function nextWordPrompt(state: ArcadeState, now: number): void {
 export function startArcadeRound(state: ArcadeState, now = Date.now()): void {
   if (state.players.length === 0) return;
   state.phase = 'running';
+  state.players.forEach((player) => { player.combo = 0; });
   state.round = state.round || 1;
   state.startedAt = now;
   state.endsAt = now + ARCADE_GAMES[state.key].durationSec * 1000;
@@ -1840,11 +1845,16 @@ export function arcadeAction(
   if (!player) return { ok: false, message: 'Önce oyuna katıl.' };
   if (state.phase !== 'running') return { ok: false, message: 'Tur henüz başlamadı.' };
   if (now - player.lastActionAt < 350) return { ok: false, message: 'Biraz yavaş.' };
+  const combo = now - player.lastActionAt < 4500 ? Math.min(99, (player.combo ?? 0) + 1) : 1;
+  player.combo = combo;
   player.lastActionAt = now;
   state.lastAction = {
     id: `act_${now}_${player.id}_${action}`,
     playerId: player.id,
     kind: action,
+    tier: action === 'gift' ? 3 : action === 'like' ? 1 : 2,
+    combo,
+    giftName: action === 'gift' && payload.trim() ? payload.trim().slice(0, 40) : undefined,
     at: now,
   };
 

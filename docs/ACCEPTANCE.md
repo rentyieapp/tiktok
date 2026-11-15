@@ -28,6 +28,7 @@ Tüm otomatik testler `npm test` ile çalışır; son sonuç **90/90 geçti**.
 | 18 | Arcade 5 dil, özel katılım/ayrılma/takım komutları ve OBS HUD çevirisi | ✅ Tamam | `arcade-rooms.test.ts`, oyun paneli |
 | 19 | Tüm arayüz için TR/EN dil değiştirici ve İngilizce vitrin/panel | ✅ Tamam | Tarayıcı görsel kontrolü |
 | 20 | Admin oyun lisansı CRUD: oluştur, listele, süre ekle, iptal et | ✅ Tamam | `admin-catalog.test.ts` |
+| 21 | Tüm oyunlarda aksiyon efekti, combo, hedef barı, katılım ve kazanan anı | ✅ Tamam | `arcade.test.ts`, canlı sahne |
 
 Her faz sonunda tip kontrolü, testler ve tarayıcı görsel kontrolü yapıldı. Mevcut
 özellikler sonraki fazlarda bozulmadı; test paketi bunu doğrular.

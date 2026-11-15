@@ -778,6 +778,14 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - Paket aboneliği ile oyun lisansını aynı modalda ayırma.
 - Tüm işlemler admin API’si ve testlerle doğrulanır.
 
+### Aksiyon geri bildirimi ve overlay
+
+- Her beğeni, hediye ve yorum `lastAction` olayına dönüşür; 3D sahnede halka/parçacık, HUD’da canlı bildirim oluşur.
+- Combo serisi ve hediye seviyesi (küçük/orta/büyük) görsel yoğunluğu değiştirir.
+- Tur hedefi barı, katılım kartı ve kazanan anı (avatar, taç, konfeti) tüm oyunlarda ortaktır.
+- Egg Smash’te çatlak/sarsıntı, Midnight Manor’da koruma kalkanı gibi oyuna özel efektler vardır.
+- Yayıncı odasında OBS overlay’i, TTS ve “Meydan Bot” overlay duyuruları panelden açılır. Platform sohbetine bot mesajı göndermek, platformların yazma API’si/izinleri gerektirir.
+
 ### Oyun sayfası içerikleri
 
 Her oyun sayfasında artık şu bölümler var:

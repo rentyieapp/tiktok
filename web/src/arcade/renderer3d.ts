@@ -3013,14 +3013,15 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const color = new THREE.Color(player.color);
     const group = new THREE.Group();
     group.position.copy(origin);
+    const tier = action.tier ?? (action.kind === 'gift' ? 3 : 1);
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.55, 0.05, 8, 32),
+      new THREE.TorusGeometry(tier === 3 ? 0.7 : 0.55, tier === 3 ? 0.07 : 0.05, 8, 32),
       new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthTest: false }),
     );
     ring.rotation.x = Math.PI / 2;
     ring.renderOrder = 900;
     group.add(ring);
-    const count = action.kind === 'gift' ? 12 : action.kind === 'like' ? 7 : 4;
+    const count = tier === 3 ? 18 : tier === 2 ? 10 : 5;
     for (let index = 0; index < count; index += 1) {
       const particle = new THREE.Mesh(
         new THREE.SphereGeometry(action.kind === 'gift' ? 0.09 : 0.06, 6, 6),
@@ -3036,7 +3037,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       group.add(particle);
     }
     this.scene.add(group);
-    this.actionEffects.push({ group, born: this.clock.elapsedTime, life: action.kind === 'gift' ? 1.15 : 0.8 });
+    this.actionEffects.push({ group, born: this.clock.elapsedTime, life: tier === 3 ? 1.3 : 0.85 });
   }
 
   private updateActionEffects(time: number): void {

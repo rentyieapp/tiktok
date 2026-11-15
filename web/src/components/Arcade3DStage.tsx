@@ -69,6 +69,40 @@ export function Arcade3DStage({
   const actionPlayer = lastAction ? state?.players.find((player) => player.id === lastAction.playerId) : null;
   const showAction = Boolean(lastAction && actionPlayer && (state?.now ?? 0) - lastAction.at < 2800);
   const actionLabel = lastAction?.kind === 'gift' ? 'hediye gönderdi' : lastAction?.kind === 'like' ? 'beğeni gönderdi' : 'yorum yaptı';
+  const [joinCard, setJoinCard] = useState<{ id: string; name: string; color: string; avatar?: string } | null>(null);
+  const knownIds = useRef<Set<string> | null>(null);
+  const joinTimer = useRef<number | null>(null);
+  const winnerPlayer = state?.winner ? state.players.find((player) => player.id === state.winner?.playerId) : null;
+
+  useEffect(() => {
+    if (!state) return;
+    const ids = new Set(state.players.map((player) => player.id));
+    if (knownIds.current === null) {
+      knownIds.current = ids;
+      return;
+    }
+    const newcomer = state.players.find((player) => !knownIds.current?.has(player.id));
+    knownIds.current = ids;
+    if (!newcomer) return;
+    setJoinCard({ id: newcomer.id, name: newcomer.name, color: newcomer.color, avatar: newcomer.avatar });
+    if (joinTimer.current) window.clearTimeout(joinTimer.current);
+    joinTimer.current = window.setTimeout(() => setJoinCard(null), 2400);
+  }, [state]);
+
+  useEffect(() => () => { if (joinTimer.current) window.clearTimeout(joinTimer.current); }, []);
+
+  const goal = (() => {
+    if (!state) return { label: 'Tur hedefi', percent: 0 };
+    const maxProgress = Math.max(0, ...state.players.map((player) => player.progress));
+    if (['kart', 'hill', 'grandprix', 'animal', 'crowd', 'balloon', 'town', 'brick'].includes(state.key)) {
+      return { label: 'Bitişe ilerleme', percent: maxProgress };
+    }
+    if (state.key === 'melon' || state.key === 'egg') return { label: state.key === 'egg' ? 'Çatlak / patlama' : 'Karpuz gerginliği', percent: state.melon?.tension ?? 0 };
+    if (state.key === 'gold' || state.key === 'chest') return { label: 'Hazine ilerlemesi', percent: state.gold?.pulled ?? 0 };
+    const remaining = state.endsAt ? Math.max(0, state.endsAt - state.now) : 0;
+    const total = Math.max(1, (state.endsAt ?? 0) - (state.startedAt ?? state.now));
+    return { label: 'Tur ilerlemesi', percent: Math.min(100, ((total - remaining) / total) * 100) };
+  })();
   const copy = {
     tr: { live: 'CANLI', demo: 'DEMO', broadcast: 'YAYIN', players: 'oyuncu', round: 'Tur', remaining: 'kalan süre', lobby: 'lobi', lobbyTitle: 'Sahne hazırlanıyor', lobbySub: 'tur birazdan başlıyor', ready: 'Yayın hazır', wait: 'İlk izleyiciyi bekle', waitSub: 'Platform sohbeti bağlıysa ilk yorum, beğeni veya hediye turu otomatik başlatır.', winner: 'yeni tur birazdan', score: 'puan' },
     en: { live: 'LIVE', demo: 'DEMO', broadcast: 'LIVE', players: 'players', round: 'Round', remaining: 'time left', lobby: 'lobby', lobbyTitle: 'Stage is getting ready', lobbySub: 'round starts soon', ready: 'Ready to broadcast', wait: 'Wait for the first viewer', waitSub: 'Once chat is connected, the first comment, like or gift starts the round.', winner: 'next round soon', score: 'pts' },
@@ -86,10 +120,31 @@ export function Arcade3DStage({
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_20%,transparent_55%,rgba(50,35,45,0.12))]" />
 
+      {state?.phase === 'running' ? (
+        <div className="pointer-events-none absolute inset-x-3 top-[58px] z-20 flex items-center gap-2 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur sm:top-[62px]">
+          <span className="shrink-0 text-[8px] font-extrabold uppercase tracking-[0.12em] text-ink-400">{goal.label}</span>
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
+            <span className="block h-full rounded-full transition-[width] duration-300" style={{ width: `${Math.max(0, Math.min(100, goal.percent))}%`, background: game.accent }} />
+          </span>
+          <span className="w-7 text-right text-[9px] font-bold text-ink-500">{Math.round(goal.percent)}%</span>
+        </div>
+      ) : null}
+
+      {joinCard ? (
+        <div key={joinCard.id} className="action-pop pointer-events-none absolute inset-x-3 top-28 z-30 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/95 px-3.5 py-2 text-[11px] font-bold text-ink-900 shadow-lg backdrop-blur">
+            <span className="grid h-6 w-6 place-items-center rounded-full text-[8px] font-extrabold text-white" style={{ background: joinCard.color }}>
+              {joinCard.avatar ? <img src={joinCard.avatar} alt="" className="h-6 w-6 rounded-full object-cover" /> : joinCard.name.slice(0, 2).toLocaleUpperCase('tr')}
+            </span>
+            {joinCard.name} <span className="font-medium text-ink-400">sahneye katıldı</span>
+          </span>
+        </div>
+      ) : null}
+
       {showAction && lastAction && actionPlayer ? (
         <div
           key={lastAction.id}
-          className="action-pop pointer-events-none absolute inset-x-0 top-16 z-30 flex justify-center px-3"
+          className="action-pop pointer-events-none absolute inset-x-0 top-24 z-30 flex justify-center px-3"
         >
           <span
             className="inline-flex max-w-[92%] items-center gap-1.5 rounded-full border border-white/80 bg-white/95 px-3.5 py-2 text-[11px] font-bold text-ink-900 shadow-lg backdrop-blur"
@@ -98,8 +153,9 @@ export function Arcade3DStage({
             <span className="h-2 w-2 rounded-full" style={{ background: actionPlayer.color }} />
             <span className="truncate">{actionPlayer.name}</span>
             <span className="font-medium text-ink-500">{actionLabel}</span>
+            {lastAction.giftName ? <span className="max-w-[90px] truncate text-ink-400">· {lastAction.giftName}</span> : null}
             <span className="rounded-full px-1.5 py-0.5 text-[9px] font-extrabold text-white" style={{ background: actionPlayer.color }}>
-              {lastAction.kind === 'gift' ? '+10' : lastAction.kind === 'like' ? '+1' : '★'}
+              {lastAction.combo > 1 ? `x${lastAction.combo}` : lastAction.kind === 'gift' ? '+10' : lastAction.kind === 'like' ? '+1' : '★'}
             </span>
           </span>
         </div>
@@ -232,17 +288,35 @@ export function Arcade3DStage({
 
       {state?.phase === 'finished' && state.winner ? (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#fffaf4]/35">
-          <div className="mx-5 w-full max-w-[320px] rounded-[28px] border border-white/80 bg-white/90 p-6 text-center shadow-float backdrop-blur-md">
+          {[...Array(14)].map((_, index) => (
+            <span
+              key={index}
+              className="winner-confetti pointer-events-none absolute h-2 w-2 rounded-sm"
+              style={{
+                left: `${6 + (index * 7) % 88}%`,
+                top: `${12 + (index * 13) % 48}%`,
+                background: [game.accent, '#fbbf24', '#f472b6', '#38bdf8'][index % 4],
+                animationDelay: `${index * 0.06}s`,
+              }}
+            />
+          ))}
+          <div className="relative mx-5 w-full max-w-[320px] rounded-[28px] border border-white/80 bg-white/95 p-6 text-center shadow-float backdrop-blur-md">
+            <div className="mx-auto -mt-11 grid h-20 w-20 place-items-center rounded-full border-4 border-white text-2xl font-extrabold text-white shadow-lg" style={{ background: winnerPlayer?.color ?? game.accent }}>
+              {winnerPlayer?.avatar ? <img src={winnerPlayer.avatar} alt="" className="h-full w-full rounded-full object-cover" /> : state.winner.name.slice(0, 2).toLocaleUpperCase('tr')}
+            </div>
+            <div className="mt-2 text-3xl">👑</div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: game.accent }}>
               {state.winner.label}
             </p>
-            <p className="mt-2 text-3xl font-extrabold tracking-tight text-ink-950">
+            <p className="mt-1 text-3xl font-extrabold tracking-tight text-ink-950">
               {state.winner.name}
             </p>
             <p className="mt-1 text-[11px] text-ink-500">
               {Math.round(state.winner.score)} {copy.score} · {copy.winner}
             </p>
-            <div className="mt-4 text-3xl">🏆</div>
+            <p className="mt-3 rounded-full bg-[#f7f2e9] px-3 py-1.5 text-[10px] font-bold text-ink-500">
+              Tur {state.round + 1} birazdan
+            </p>
           </div>
         </div>
       ) : null}

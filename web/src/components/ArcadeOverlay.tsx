@@ -7,14 +7,17 @@ export function ArcadeOverlay({
   roomName,
   accent,
   theme,
+  botEnabled = false,
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
   roomName: string;
   accent: string;
   theme: 'full' | 'minimal';
+  botEnabled?: boolean;
 }) {
   const [flash, setFlash] = useState<{ id: string; text: string } | null>(null);
+  const [botLine, setBotLine] = useState<{ id: string; text: string } | null>(null);
   const [lastAt, setLastAt] = useState(0);
 
   useEffect(() => {
@@ -26,6 +29,8 @@ export function ArcadeOverlay({
       setFlash({ id: latest.id, text: latest.text });
       window.setTimeout(() => setFlash(null), 4200);
     }
+    setBotLine({ id: latest.id, text: latest.text });
+    window.setTimeout(() => setBotLine(null), 4200);
   }, [state, lastAt]);
 
   if (theme === 'minimal') return null;
@@ -56,6 +61,16 @@ export function ArcadeOverlay({
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug text-amber-950">
             {flash.text}
           </p>
+        </div>
+      ) : null}
+
+      {botEnabled && botLine ? (
+        <div
+          key={`bot-${botLine.id}`}
+          className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
+        >
+          <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-500">🤖 Meydan Bot</p>
+          <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug">{botLine.text}</p>
         </div>
       ) : null}
     </div>

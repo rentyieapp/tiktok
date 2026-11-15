@@ -662,7 +662,7 @@ export class ArcadeRuntime {
       return { accepted: result.ok, reason: result.message, playerId };
     }
     // gift, follow ve share oyun içinde hediye etkisi olarak işlenir.
-    const result = arcadeAction(room.state, playerId, 'gift', '', Date.now());
+    const result = arcadeAction(room.state, playerId, 'gift', event.giftName ?? '', Date.now());
     this.broadcast(room);
     return { accepted: result.ok, reason: result.message, playerId };
   }

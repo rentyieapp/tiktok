@@ -236,6 +236,8 @@ describe('arcade motoru', () => {
     const result = arcadeAction(egg, 'p1', 'gift', '', 1_400);
     expect(result.ok).toBe(true);
     expect(egg.lastAction?.kind).toBe('gift');
+    expect(egg.lastAction?.tier).toBe(3);
+    expect(egg.lastAction?.combo).toBeGreaterThan(0);
     expect(egg.lastAction?.playerId).toBe('p1');
     expect(egg.melon!.tension).toBeGreaterThan(0);
 

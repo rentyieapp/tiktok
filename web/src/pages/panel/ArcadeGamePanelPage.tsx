@@ -58,6 +58,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const [accent, setAccent] = useState(game.accent);
   const [overlayTheme, setOverlayTheme] = useState<'full' | 'minimal'>('full');
   const [tts, setTts] = useState(false);
+  const [botEnabled, setBotEnabled] = useState(false);
   const [language, setLanguage] = useState<ArcadeLocale>('tr');
   const [commands, setCommands] = useState<ArcadeCommandSettings>(DEFAULT_ARCADE_COMMANDS.tr);
 
@@ -80,6 +81,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
         setAccent(String(foundRoom.settings.accent ?? game.accent));
         setOverlayTheme(foundRoom.settings.overlayTheme === 'minimal' ? 'minimal' : 'full');
         setTts(foundRoom.settings.ttsEnabled === true);
+        setBotEnabled(foundRoom.settings.botEnabled === true);
         const parsed = sanitizeArcadeRoomSettings(foundRoom.settings);
         setLanguage(parsed.language);
         setCommands(parsed.commands);
@@ -134,6 +136,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
           accent,
           overlayTheme,
           ttsEnabled: tts,
+          botEnabled,
           language,
           commands: { ...commands, requireJoin: Boolean(commands.requireJoin) },
         },
@@ -405,6 +408,10 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
               <label className="flex cursor-pointer items-center gap-2 text-[11px] text-ink-600">
                 <input type="checkbox" checked={tts} onChange={(event) => setTts(event.target.checked)} className="h-4 w-4 accent-emerald-600" />
                 Türkçe sesli sunucu (TTS)
+              </label>
+              <label className="flex cursor-pointer items-start gap-2 text-[11px] text-ink-600">
+                <input type="checkbox" checked={botEnabled} onChange={(event) => setBotEnabled(event.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
+                <span>Meydan Bot overlay duyuruları <span className="block text-[9px] text-ink-400">Katılım, hediye ve kazanan olaylarını OBS overlay’inde bot kartı olarak gösterir.</span></span>
               </label>
               <Button variant="brand" size="sm" icon={<Save size={13} />} loading={working} onClick={() => void save()}>
                 Değişiklikleri kaydet

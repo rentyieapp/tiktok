@@ -225,3 +225,11 @@
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 .action-pop { animation: action-pop 0.45s ease-out both; }
+
+
+@keyframes winner-fall {
+  0% { opacity: 0; transform: translateY(-16px) rotate(0deg); }
+  30% { opacity: 1; }
+  100% { opacity: 0.85; transform: translateY(90px) rotate(220deg); }
+}
+.winner-confetti { animation: winner-fall 1.4s ease-out infinite; }
