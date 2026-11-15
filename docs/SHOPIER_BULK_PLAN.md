@@ -91,6 +91,12 @@ Durum: **ONAY BEKLİYOR — hiçbir yeni ürün oluşturulmadı.**
 6. Batch öncesi ve sonrası eşleşmiş ID sayısı raporlanır; mevcut eşleşmiş ürünlere dokunulmaz.
 7. Ürün adları benzersizdir; paket adı doğrudan ürün başlığı olarak kullanılır.
 
+## Önerilen fazlama
+
+- **Faz 1:** 14 genel/bundle ürünü (11 genel + 3 tüm oyunlar)
+- **Faz 2:** 90 oyun ürünü (30 oyun × 3 süre)
+- **Faz 3:** 2 Overlay Pro ürünü (ayrı lisans tipi tamamlandıktan sonra)
+
 ## Onay
 
 Onay verirsen bu plandaki **104** oyun/bundle ürünü oluşturulur. Overlay Pro 2 ürünü ayrı ele alınır. Test1 (`52980546`) mevcut ürün olduğu için tekrar oluşturulmaz.
