@@ -53,6 +53,9 @@ export function AdminShopierPage() {
   const [mapPackageId, setMapPackageId] = useState('');
   const [mapProductId, setMapProductId] = useState('');
   const [mapping, setMapping] = useState(false);
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [importingProducts, setImportingProducts] = useState(false);
+  const [catalogMessage, setCatalogMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -113,6 +116,37 @@ export function AdminShopierPage() {
       toastError('Eşleştirilemedi', caught instanceof ApiError ? caught.firstDetail() ?? caught.message : 'Tekrar dene.');
     } finally {
       setMapping(false);
+    }
+  };
+
+  const importProducts = async () => {
+    setImportingProducts(true);
+    try {
+      const result = await api.post<{ matched: number; message: string }>('/api/admin/shopier/products/import', {});
+      setCatalogMessage(result.message);
+      success('Shopier ürünleri tarandı', result.matched > 0 ? `${result.matched} paket eşleştirildi.` : 'Eşleşen yeni ürün yok.');
+      await load();
+    } catch (caught) {
+      toastError('Ürünler içe aktarılamadı', caught instanceof ApiError ? caught.firstDetail() ?? caught.message : 'Tekrar dene.');
+    } finally {
+      setImportingProducts(false);
+    }
+  };
+
+  const createProduct = async () => {
+    if (!mapPackageId) {
+      toastError('Paket seç', 'Önce Shopier ürünü oluşturulacak paketi seç.');
+      return;
+    }
+    setCreatingProduct(true);
+    try {
+      const result = await api.post<{ productId: string; productUrl: string | null }>('/api/admin/shopier/products', { packageId: mapPackageId });
+      success('Shopier ürünü oluşturuldu', `Ürün ID: ${result.productId} · paketle eşleştirildi.`);
+      await load();
+    } catch (caught) {
+      toastError('Ürün oluşturulamadı', caught instanceof ApiError ? caught.firstDetail() ?? caught.message : 'Shopier ürün API’sini kontrol et.');
+    } finally {
+      setCreatingProduct(false);
     }
   };
 
@@ -179,8 +213,16 @@ export function AdminShopierPage() {
             <Field label="Shopier ürün ID veya link" hint="Örn. 52979758 veya https://www.shopier.com/rookworks/52979758">
               <input className="input text-xs" value={mapProductId} onChange={(event) => setMapProductId(event.target.value)} placeholder="52979758" />
             </Field>
-            <Button variant="brand" icon={<Link2 size={14} />} loading={mapping} onClick={() => void mapProduct()}>Eşleştir</Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="brand" icon={<Link2 size={14} />} loading={mapping} onClick={() => void mapProduct()}>Eşleştir</Button>
+              <Button variant="secondary" icon={<ShoppingBag size={14} />} loading={creatingProduct} onClick={() => void createProduct()}>Shopier’de oluştur</Button>
+              <Button variant="secondary" icon={<RefreshCw size={14} />} loading={importingProducts} onClick={() => void importProducts()}>Ürünleri içe aktar</Button>
+            </div>
           </div>
+          {catalogMessage ? <p className="mt-2 text-[10px] text-ink-500">{catalogMessage}</p> : null}
+          <p className="mt-3 text-[10px] leading-relaxed text-ink-400">
+            Oluşturma Shopier’in <code>POST /v1/products</code> ucuyla yapılır ve dönen ürün ID’si otomatik yazılır. Shopier’in ürün listeleme/güncelleme uçları ayrı izinlere tabidir.
+          </p>
         </SectionCard>
       </div>
 

@@ -30,6 +30,7 @@ import {
   adminGameLicenseCreateSchema,
   adminGameLicenseUpdateSchema,
   shopierProductMapSchema,
+  shopierProductCreateSchema,
   parseBody,
 } from '../lib/schemas.js';
 import { rowToGameProduct, rowToPackage } from '../game/mappers.js';
@@ -47,6 +48,8 @@ import {
 } from '../services/admin.js';
 import { getAnalytics } from '../services/analytics.js';
 import { getShopierApiStatus } from '../services/shopier.js';
+import { createAndMapShopierProduct, ShopierProductError } from '../services/shopierProducts.js';
+import { listShopierProducts, matchPackagesToProducts } from '../services/shopierCatalog.js';
 import { syncShopierOrders } from '../services/shopierOrders.js';
 import { listShopierOrders } from '../db/shopierOrders.js';
 
@@ -311,6 +314,42 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
   app.post('/api/admin/shopier/sync', async (request, reply) => {
     adminUser(request);
     return reply.send(await syncShopierOrders(db, config));
+  });
+
+  app.get('/api/admin/shopier/products', async (request, reply) => {
+    adminUser(request);
+    return reply.send(await listShopierProducts(config));
+  });
+
+  app.post('/api/admin/shopier/products/import', async (request, reply) => {
+    adminUser(request);
+    const catalog = await listShopierProducts(config);
+    const matches = matchPackagesToProducts(
+      listPackages(db, false).map((pkg) => ({
+        id: pkg.id,
+        name: pkg.name,
+        shopier_product_id: pkg.shopier_product_id,
+      })),
+      catalog.products,
+    );
+    for (const match of matches) setPackageShopierProductId(db, match.packageId, match.productId);
+    return reply.send({ ...catalog, matched: matches.length, matches });
+  });
+
+  app.post('/api/admin/shopier/products', async (request, reply) => {
+    adminUser(request);
+    const body = parseBody(shopierProductCreateSchema, request.body);
+    try {
+      return reply.send(await createAndMapShopierProduct(db, config, body.packageId));
+    } catch (error) {
+      if (error instanceof ShopierProductError) {
+        return reply.code(error.status >= 400 && error.status < 600 ? error.status : 502).send({
+          error: 'SHOPIER_PRODUCT_CREATE_FAILED',
+          message: error.message,
+        });
+      }
+      throw error;
+    }
   });
 
   app.put('/api/admin/shopier/map', async (request, reply) => {

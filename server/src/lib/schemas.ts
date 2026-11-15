@@ -259,6 +259,12 @@ export const shopierProductMapSchema = z
   })
   .strict();
 
+export const shopierProductCreateSchema = z
+  .object({
+    packageId: z.string().trim().min(1).max(80),
+  })
+  .strict();
+
 export const adminSettingsSchema = z
   .object({
     shopierStoreUrl: z
