@@ -5,6 +5,7 @@ import { ARCADE_GAMES } from '@shared/arcade';
 import { Logo } from '../../components/Logo';
 import { LanguageSwitcher } from '../../i18n';
 import { GameArt } from '../../components/GameArt';
+import { ARCADE_GAME_LIST } from '@shared/arcade';
 
 export function AuthShell({
   title,
@@ -60,7 +61,7 @@ export function AuthShell({
           <div className="flex justify-end">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#e4dccf] bg-white px-3.5 py-1.5 text-[11px] font-semibold text-ink-500">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-              Otuz oyunlu platform
+              {ARCADE_GAME_LIST.length} oyunlu platform
             </span>
           </div>
 
@@ -79,7 +80,7 @@ export function AuthShell({
               Sohbetin hazır. Sahne senin.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-ink-500">
-              Otuz oyun, tek hesap ve kalıcı yayın bağlantısı. Oyunu seç, OBS’e ekle, yayını
+              {ARCADE_GAME_LIST.length} oyun, tek hesap ve kalıcı yayın bağlantısı. Oyunu seç, OBS’e ekle, yayını
               başlat.
             </p>
 
