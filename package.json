@@ -11,14 +11,15 @@
     "dev": "concurrently -k -n server,web -c cyan,magenta \"npm:dev:server\" \"npm:dev:web\"",
     "dev:server": "tsx watch server/src/index.ts",
     "dev:web": "vite --config web/vite.config.ts",
-    "build": "npm run build:web",
+    "build": "npm run build:web && npm run build:server",
     "build:web": "vite build --config web/vite.config.ts",
     "start": "tsx server/src/index.ts",
-    "start:prod": "NODE_ENV=production tsx server/src/index.ts",
+    "start:prod": "node dist-server/server/src/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:demo": "tsx scripts/seed-demo.ts"
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "build:server": "tsc -p tsconfig.server.json"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.5",

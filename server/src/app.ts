@@ -228,7 +228,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
     time: nowIso(),
   }));
 
-  const webDist = fileURLToPath(new URL('../../web/dist', import.meta.url));
+  const webDist = process.env.WEB_DIST
+    ? fileURLToPath(new URL(`file://${process.env.WEB_DIST}`))
+    : fileURLToPath(new URL('../../web/dist', import.meta.url));
   const hasWebBuild = existsSync(`${webDist}/index.html`);
   if (hasWebBuild) {
     await app.register(fastifyStatic, {

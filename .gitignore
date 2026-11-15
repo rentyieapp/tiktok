@@ -9,3 +9,5 @@ data/*.db-*
 *.log
 
 data/uploads/
+
+dist-server
