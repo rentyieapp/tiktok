@@ -45,11 +45,14 @@ import {
 } from '../services/admin.js';
 import { getAnalytics } from '../services/analytics.js';
 import { getShopierApiStatus } from '../services/shopier.js';
+import { syncShopierOrders } from '../services/shopierOrders.js';
+import { listShopierOrders } from '../db/shopierOrders.js';
 
 function toAdminPackage(row: PackageRow) {
   return {
     ...rowToPackage(row),
     shopierUrl: row.shopier_url,
+    shopierProductId: row.shopier_product_id,
     isActive: row.is_active === 1,
     gameKey: row.game_key,
   };
@@ -166,6 +169,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
       sort_order: body.sortOrder,
       is_active: body.isActive ? 1 : 0,
       shopier_url: body.shopierUrl?.trim() ? body.shopierUrl : null,
+      shopier_product_id: body.shopierProductId?.trim() ? body.shopierProductId.trim() : null,
       game_key: null,
     };
     createPackage(db, row);
@@ -191,6 +195,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
       sortOrder: body.sortOrder,
       isActive: body.isActive,
       shopierUrl: body.shopierUrl?.trim() ? body.shopierUrl : null,
+      shopierProductId: body.shopierProductId?.trim() ? body.shopierProductId.trim() : null,
       gameKey: existing.game_key,
     });
     return reply.send({ package: toAdminPackage(findPackageById(db, id)!) });
@@ -277,6 +282,33 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
   app.get('/api/admin/shopier/status', async (request, reply) => {
     adminUser(request);
     return reply.send(await getShopierApiStatus(config.shopierPat));
+  });
+
+  app.get('/api/admin/shopier/orders', async (request, reply) => {
+    adminUser(request);
+    return reply.send({
+      orders: listShopierOrders(db, 25).map((order) => ({
+        id: order.id,
+        orderId: order.order_id,
+        email: order.email,
+        buyerName: order.buyer_name,
+        status: order.status,
+        paymentStatus: order.payment_status,
+        amountCents: order.amount_cents,
+        currency: order.currency,
+        productIds: JSON.parse(order.product_ids_json || '[]') as string[],
+        productTitles: JSON.parse(order.product_titles_json || '[]') as string[],
+        matchedPackageId: order.matched_package_id,
+        matchedUserId: order.matched_user_id,
+        activationMessage: order.activation_message,
+        receivedAt: order.received_at,
+      })),
+    });
+  });
+
+  app.post('/api/admin/shopier/sync', async (request, reply) => {
+    adminUser(request);
+    return reply.send(await syncShopierOrders(db, config));
   });
 
   app.get('/api/admin/health', async (request, reply) => {

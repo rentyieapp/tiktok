@@ -330,6 +330,7 @@ export function getCatalog(db: DB) {
     packages: packages.map((pkg) => ({
       ...rowToPackage(pkg),
       shopierUrl: pkg.shopier_url,
+      shopierProductId: pkg.shopier_product_id,
       isActive: pkg.is_active === 1,
     })),
     durations,

@@ -191,6 +191,7 @@ export interface PackageDTO {
   sortOrder: number;
   /** Admin tarafından yönetilen Shopier ürün bağlantısı (public DTO'da opsiyonel). */
   shopierUrl?: string | null;
+  shopierProductId?: string | null;
   isActive?: boolean;
   gameKey?: string | null;
 }

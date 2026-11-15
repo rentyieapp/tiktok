@@ -93,6 +93,7 @@ export function rowToPackage(row: PackageRow): PackageDTO {
     highlight: row.highlight === 1,
     sortOrder: row.sort_order,
     shopierUrl: row.shopier_url,
+    shopierProductId: row.shopier_product_id,
     isActive: row.is_active === 1,
     gameKey: row.game_key,
   };

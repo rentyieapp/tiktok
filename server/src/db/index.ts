@@ -373,6 +373,31 @@ const MIGRATIONS: string[] = [
   CREATE INDEX IF NOT EXISTS idx_activity_user_time ON activity_events (user_id, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_activity_time ON activity_events (created_at DESC);
   `,
+  `
+  ALTER TABLE packages ADD COLUMN shopier_product_id TEXT;
+
+  CREATE TABLE IF NOT EXISTS shopier_orders (
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL UNIQUE,
+    email TEXT,
+    buyer_name TEXT,
+    status TEXT NOT NULL DEFAULT 'received',
+    payment_status TEXT,
+    order_status TEXT,
+    currency TEXT,
+    amount_cents INTEGER,
+    product_ids_json TEXT NOT NULL DEFAULT '[]',
+    product_titles_json TEXT NOT NULL DEFAULT '[]',
+    raw_json TEXT NOT NULL DEFAULT '{}',
+    matched_package_id TEXT,
+    matched_user_id TEXT,
+    activation_message TEXT,
+    received_at TEXT NOT NULL,
+    processed_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_shopier_orders_received ON shopier_orders (received_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_shopier_orders_status ON shopier_orders (status);
+  `,
 ];
 
 export function openDatabase(path: string): DB {

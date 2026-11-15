@@ -25,6 +25,7 @@ export interface AppConfig {
   liveWebhookSecret: string;
   shopierWebhookToken: string;
   shopierPat: string;
+  shopierPollSeconds: number;
   youtubeApiKey: string;
   resendApiKey: string;
   mailFrom: string;
@@ -120,6 +121,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     liveWebhookSecret: env.LIVE_WEBHOOK_SECRET || 'live-webhook-secret',
     shopierWebhookToken: env.SHOPIER_WEBHOOK_TOKEN || '',
     shopierPat: env.SHOPIER_PAT || '',
+    shopierPollSeconds: numberFromEnv(env.SHOPIER_POLL_SECONDS, 10),
     youtubeApiKey: env.YOUTUBE_API_KEY || '',
     resendApiKey: env.RESEND_API_KEY || '',
     mailFrom: env.MAIL_FROM || 'Meydan <no-reply@meydan.local>',

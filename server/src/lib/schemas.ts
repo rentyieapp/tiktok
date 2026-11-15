@@ -248,6 +248,7 @@ export const adminPackageSchema = z
     sortOrder: z.number().int().min(0).max(999).default(0),
     isActive: z.boolean().default(true),
     shopierUrl: optionalHttpsUrl,
+    shopierProductId: z.string().trim().max(80).optional(),
   })
   .strict();
 

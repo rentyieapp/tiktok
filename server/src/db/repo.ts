@@ -31,6 +31,7 @@ export interface PackageRow {
   sort_order: number;
   is_active: number;
   shopier_url: string | null;
+  shopier_product_id: string | null;
   game_key: string | null;
 }
 
@@ -285,6 +286,12 @@ export function listPackages(db: DB, activeOnly = true): PackageRow[] {
   return db
     .prepare(`SELECT * FROM packages ${where} ORDER BY sort_order ASC, price_cents ASC`)
     .all() as PackageRow[];
+}
+
+export function findPackageByShopierProductId(db: DB, productId: string): PackageRow | undefined {
+  return db
+    .prepare('SELECT * FROM packages WHERE shopier_product_id = ? AND is_active = 1 ORDER BY sort_order ASC LIMIT 1')
+    .get(productId) as PackageRow | undefined;
 }
 
 export function findPackageById(db: DB, id: string): PackageRow | undefined {
@@ -1075,8 +1082,8 @@ export function createPackage(db: DB, pkg: PackageRow): void {
   db.prepare(
     `INSERT INTO packages (
       id, code, name, tagline, description, price_cents, currency, max_teams, duration_days,
-      features_json, highlight, sort_order, is_active, shopier_url, game_key
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      features_json, highlight, sort_order, is_active, shopier_url, shopier_product_id, game_key
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     pkg.id,
     pkg.code,
@@ -1092,6 +1099,7 @@ export function createPackage(db: DB, pkg: PackageRow): void {
     pkg.sort_order,
     pkg.is_active,
     pkg.shopier_url,
+    pkg.shopier_product_id,
     pkg.game_key,
   );
 }
@@ -1112,6 +1120,7 @@ export function updatePackage(
     sortOrder: number;
     isActive: boolean;
     shopierUrl: string | null;
+    shopierProductId: string | null;
     gameKey: string | null;
   },
 ): boolean {
@@ -1119,7 +1128,7 @@ export function updatePackage(
     .prepare(
       `UPDATE packages SET name = ?, tagline = ?, description = ?, price_cents = ?,
         currency = ?, max_teams = ?, duration_days = ?, features_json = ?, highlight = ?,
-        sort_order = ?, is_active = ?, shopier_url = ?, game_key = ? WHERE id = ?`,
+        sort_order = ?, is_active = ?, shopier_url = ?, shopier_product_id = ?, game_key = ? WHERE id = ?`,
     )
     .run(
       fields.name,
@@ -1134,6 +1143,7 @@ export function updatePackage(
       fields.sortOrder,
       fields.isActive ? 1 : 0,
       fields.shopierUrl,
+      fields.shopierProductId,
       fields.gameKey,
       id,
     );

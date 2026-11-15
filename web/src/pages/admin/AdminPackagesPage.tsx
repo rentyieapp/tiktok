@@ -39,6 +39,7 @@ interface PackageForm {
   sortOrder: number;
   isActive: boolean;
   shopierUrl: string;
+  shopierProductId: string;
 }
 
 const EMPTY_FORM: PackageForm = {
@@ -54,6 +55,7 @@ const EMPTY_FORM: PackageForm = {
   sortOrder: 20,
   isActive: true,
   shopierUrl: '',
+  shopierProductId: '',
 };
 
 function formFromPackage(pkg: PackageDTO): PackageForm {
@@ -71,6 +73,7 @@ function formFromPackage(pkg: PackageDTO): PackageForm {
     sortOrder: pkg.sortOrder,
     isActive: pkg.isActive !== false,
     shopierUrl: pkg.shopierUrl ?? '',
+    shopierProductId: pkg.shopierProductId ?? '',
   };
 }
 
@@ -158,6 +161,7 @@ export function AdminPackagesPage() {
         sortOrder: form.sortOrder,
         isActive: form.isActive,
         shopierUrl: form.shopierUrl.trim() || null,
+        shopierProductId: form.shopierProductId.trim() || null,
       };
       if (form.id) {
         await api.put(`/api/admin/packages/${form.id}`, payload);
@@ -475,6 +479,16 @@ export function AdminPackagesPage() {
                   setForm((current) => ({ ...current, shopierUrl: event.target.value }))
                 }
                 placeholder="https://shopier.com/..."
+              />
+            </Field>
+            <Field label="Shopier ürün ID" hint="10 sn’lik sipariş eşleştirmesi için ürünün sayısal ID’si.">
+              <input
+                className="input text-xs"
+                value={form.shopierProductId}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, shopierProductId: event.target.value }))
+                }
+                placeholder="48260043"
               />
             </Field>
             <Field label="Sıralama">

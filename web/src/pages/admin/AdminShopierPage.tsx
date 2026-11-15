@@ -27,12 +27,29 @@ import {
   StatusBadge,
 } from '../../components/ui';
 
+interface ShopierOrder {
+  id: string;
+  orderId: string;
+  email: string | null;
+  buyerName: string | null;
+  status: string;
+  paymentStatus: string | null;
+  amountCents: number | null;
+  currency: string | null;
+  productIds: string[];
+  productTitles: string[];
+  activationMessage: string | null;
+  receivedAt: string;
+}
+
 export function AdminShopierPage() {
   const { success, error: toastError } = useToast();
   const [settings, setSettings] = useState<AdminSettingsDTO | null>(null);
   const [packages, setPackages] = useState<PackageDTO[]>([]);
   const [storeUrl, setStoreUrl] = useState('');
   const [apiStatus, setApiStatus] = useState<{ configured: boolean; connected: boolean; orderCount: number; message: string } | null>(null);
+  const [orders, setOrders] = useState<ShopierOrder[]>([]);
+  const [syncing, setSyncing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -55,8 +72,33 @@ export function AdminShopierPage() {
     }
   };
 
+  const loadOrders = async () => {
+    try {
+      const result = await api.get<{ orders: ShopierOrder[] }>('/api/admin/shopier/orders');
+      setOrders(result.orders);
+    } catch {
+      /* sayfa ilk yüklemede bildirir */
+    }
+  };
+
+  const syncNow = async () => {
+    setSyncing(true);
+    try {
+      await api.post('/api/admin/shopier/sync', {});
+      await loadOrders();
+      success('Shopier kontrol edildi', 'Son siparişler güncellendi.');
+    } catch (caught) {
+      toastError('Shopier kontrol edilemedi', caught instanceof ApiError ? caught.message : 'Tekrar dene.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   useEffect(() => {
     void load();
+    void loadOrders();
+    const timer = window.setInterval(() => void loadOrders(), 10_000);
+    return () => window.clearInterval(timer);
   }, []);
 
   const save = async () => {
@@ -97,6 +139,37 @@ export function AdminShopierPage() {
           </Link>
           ile aktive edebilirsin. Mağazayı açman sorun değil; bu ekran yalnızca hazırlık içindir.
         </span>
+      </div>
+
+      <div className="mb-5">
+        <SectionCard
+          title="Shopier siparişleri · 10 saniyelik kontrol"
+          description="Webhook olmadan yeni siparişleri 10 saniyede bir çeker; ürün ID eşleşirse lisansı otomatik açar."
+          icon={<BadgeCheck size={16} />}
+          action={<Button variant="secondary" size="sm" icon={<RefreshCw size={13} />} loading={syncing} onClick={() => void syncNow()}>Şimdi kontrol et</Button>}
+          bodyClassName="p-0"
+        >
+          {orders.length === 0 ? (
+            <div className="p-5 text-[11px] text-ink-400">Henüz Shopier siparişi görünmüyor.</div>
+          ) : (
+            <div className="table-wrap border-0 shadow-none">
+              <table className="table-base min-w-0">
+                <thead><tr><th>Sipariş</th><th>Alıcı</th><th>Ürün</th><th>Tutar</th><th>Durum</th></tr></thead>
+                <tbody>
+                  {orders.slice(0, 10).map((order) => (
+                    <tr key={order.id}>
+                      <td className="whitespace-nowrap font-mono text-[10px]">{order.orderId}<p className="mt-1 text-[9px] text-ink-400">{new Date(order.receivedAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}</p></td>
+                      <td className="text-[10px]">{order.email ?? '—'}</td>
+                      <td className="max-w-[180px] truncate text-[10px]">{order.productTitles.join(', ') || order.productIds.join(', ') || '—'}</td>
+                      <td className="whitespace-nowrap text-[10px]">{order.amountCents === null ? '—' : formatPrice(order.amountCents, order.currency ?? 'TRY')}</td>
+                      <td><StatusBadge status={order.status === 'activated' ? 'ok' : order.status === 'failed' ? 'bad' : 'warn'}>{order.status === 'activated' ? 'Lisans açıldı' : order.status === 'failed' ? 'Hata' : order.status === 'awaiting_payment' ? 'Ödeme bekliyor' : 'Eşleşme bekliyor'}</StatusBadge>{order.activationMessage ? <p className="mt-1 max-w-[180px] text-[9px] leading-snug text-ink-400">{order.activationMessage}</p> : null}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </SectionCard>
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">

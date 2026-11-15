@@ -33,6 +33,7 @@ import { adminRoutes } from './routes/admin.js';
 import { arcadeRoutes } from './routes/arcade.js';
 import { arcadeRoomRoutes } from './routes/arcadeRooms.js';
 import { ensureAdminUser } from './services/bootstrap.js';
+import { startShopierOrderSync } from './services/shopierOrders.js';
 
 export interface BuiltApp {
   app: FastifyInstance;
@@ -258,7 +259,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
 
 
 
+  let stopShopierSync: (() => void) | null = null;
+
   app.addHook('onClose', async () => {
+    stopShopierSync?.();
     runtime.shutdown();
     arcade.shutdown();
     platformHub.shutdown();
@@ -270,6 +274,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
   });
 
   platformHub.start(listActivePlatformConnections(db));
+  stopShopierSync = startShopierOrderSync(db, config);
 
   if (config.seedDemo) {
     try {
