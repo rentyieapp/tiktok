@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { AppConfig } from '../config.js';
 import type { DB } from '../db/index.js';
 import { findUserById, type UserRow } from '../db/repo.js';
-import { unauthorized } from '../lib/errors.js';
+import { forbidden, unauthorized } from '../lib/errors.js';
 import { createSessionToken, verifySessionToken } from '../lib/tokens.js';
 
 export const SESSION_COOKIE = 'tt_session';
@@ -45,5 +45,8 @@ export function requireUser(request: FastifyRequest, db: DB, config: AppConfig):
   const user = findUserById(db, userId);
   if (!user) throw unauthorized('Oturum bulunamadı. Lütfen yeniden giriş yap.');
   if (user.status !== 'active') throw unauthorized('Hesabın askıya alınmış.');
+  if (config.requireEmailVerification && !user.email_verified_at) {
+    throw forbidden('E-posta adresin henüz doğrulanmadı. Gelen kutunu kontrol et.');
+  }
   return user;
 }

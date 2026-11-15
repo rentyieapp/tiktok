@@ -68,6 +68,10 @@ export function LoginPage() {
           </div>
         ) : null}
 
+        <div className="flex justify-end">
+          <Link to="/sifremi-unuttum" className="text-[11px] font-semibold text-brand-700 hover:text-brand-600">Şifremi unuttum</Link>
+        </div>
+
         <Field label="E-posta" htmlFor="email">
           <div className="relative">
             <Mail size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />

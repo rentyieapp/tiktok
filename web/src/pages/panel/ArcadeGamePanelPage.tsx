@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -36,6 +36,8 @@ import { useToast } from '../../lib/toast';
 import { startCheckout } from '../../lib/checkout';
 import { formatDate, formatPrice } from '../../lib/format';
 import { GameArt } from '../../components/GameArt';
+import type { OverlayPositions } from '../../components/ArcadeOverlay';
+import { OVERLAY_THEMES } from '@shared/overlayThemes';
 import { Button, Field, PageHeader, Spinner } from '../../components/ui';
 
 export function ArcadeGamePanelPage() {
@@ -57,12 +59,21 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const [welcome, setWelcome] = useState('');
   const [accent, setAccent] = useState(game.accent);
   const [overlayTheme, setOverlayTheme] = useState<'full' | 'minimal'>('full');
+  const [overlayThemeId, setOverlayThemeId] = useState('meydan');
   const [overlayLayout, setOverlayLayout] = useState<'auto' | 'bottom'>('auto');
   const [overlayScale, setOverlayScale] = useState<'sm' | 'md' | 'lg'>('md');
   const [showGoal, setShowGoal] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(true);
   const [showBot, setShowBot] = useState(true);
   const [showWinner, setShowWinner] = useState(true);
+  const [positions, setPositions] = useState<OverlayPositions>({
+    room: { x: 2, y: 8 },
+    leaderboard: { x: 72, y: 8 },
+    goal: { x: 2, y: 26 },
+    bot: { x: 25, y: 86 },
+  });
+  const [dragging, setDragging] = useState<keyof OverlayPositions | null>(null);
+  const dragArea = useRef<HTMLDivElement>(null);
   const [tts, setTts] = useState(false);
   const [botEnabled, setBotEnabled] = useState(false);
   const [language, setLanguage] = useState<ArcadeLocale>('tr');
@@ -86,12 +97,17 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
         setWelcome(String(foundRoom.settings.welcomeText ?? ''));
         setAccent(String(foundRoom.settings.accent ?? game.accent));
         setOverlayTheme(foundRoom.settings.overlayTheme === 'minimal' ? 'minimal' : 'full');
+        setOverlayThemeId(typeof foundRoom.settings.overlayThemeId === 'string' ? foundRoom.settings.overlayThemeId : 'meydan');
         setOverlayLayout(foundRoom.settings.overlayLayout === 'bottom' ? 'bottom' : 'auto');
         setOverlayScale(foundRoom.settings.overlayScale === 'sm' ? 'sm' : foundRoom.settings.overlayScale === 'lg' ? 'lg' : 'md');
         setShowGoal(foundRoom.settings.overlayGoal !== false);
         setShowLeaderboard(foundRoom.settings.overlayLeaderboard !== false);
         setShowBot(foundRoom.settings.overlayBot !== false);
         setShowWinner(foundRoom.settings.overlayWinner !== false);
+        const savedPositions = foundRoom.settings.overlayPositions as OverlayPositions | undefined;
+        if (savedPositions && typeof savedPositions === 'object') {
+          setPositions((current) => ({ ...current, ...savedPositions }));
+        }
         setTts(foundRoom.settings.ttsEnabled === true);
         setBotEnabled(foundRoom.settings.botEnabled === true);
         const parsed = sanitizeArcadeRoomSettings(foundRoom.settings);
@@ -147,12 +163,14 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
           welcomeText: welcome,
           accent,
           overlayTheme,
+          overlayThemeId,
           overlayLayout,
           overlayScale,
           overlayGoal: showGoal,
           overlayLeaderboard: showLeaderboard,
           overlayBot: showBot,
           overlayWinner: showWinner,
+          overlayPositions: positions,
           ttsEnabled: tts,
           botEnabled,
           language,
@@ -166,6 +184,14 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
     } finally {
       setWorking(false);
     }
+  };
+
+  const movePart = (part: keyof OverlayPositions, clientX: number, clientY: number) => {
+    const rect = dragArea.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.max(0, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+    setPositions((current) => ({ ...current, [part]: { x: Math.round(x), y: Math.round(y) } }));
   };
 
   const startTrial = async () => {
@@ -389,6 +415,11 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                     <option value="minimal">Sade sahne</option>
                   </select>
                 </Field>
+                <Field label="Tema">
+                  <select className="input" value={overlayThemeId} onChange={(event) => setOverlayThemeId(event.target.value)}>
+                    {OVERLAY_THEMES.map((theme) => <option key={theme.id} value={theme.id}>{theme.pro ? 'PRO · ' : ''}{theme.name}</option>)}
+                  </select>
+                </Field>
                 <Field label="Overlay konumu">
                   <select className="input" value={overlayLayout} onChange={(event) => setOverlayLayout(event.target.value as 'auto' | 'bottom')}>
                     <option value="auto">Üst köşeler</option>
@@ -461,6 +492,39 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                 <input type="checkbox" checked={botEnabled} onChange={(event) => setBotEnabled(event.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-600" />
                 <span>Meydan Bot overlay duyuruları <span className="block text-[9px] text-ink-400">Katılım, hediye ve kazanan olaylarını OBS overlay’inde bot kartı olarak gösterir.</span></span>
               </label>
+              <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-violet-700">Overlay yerleşimi</p>
+                <p className="mt-1 text-[9px] leading-relaxed text-ink-400">Kutuları sürükleyerek konumlandır. Yayındaki overlay’e 8 saniye içinde yansır.</p>
+                <div ref={dragArea} className="relative mx-auto mt-3 aspect-[9/16] w-full max-w-[230px] overflow-hidden rounded-xl border-2 border-dashed border-violet-200 bg-white">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,#eef7ff,transparent_65%)]" />
+                  {([
+                    ['room', 'Oda'],
+                    ['leaderboard', 'Liderlik'],
+                    ['goal', 'Hedef'],
+                    ['bot', 'Bot'],
+                  ] as const).map(([part, label]) => (
+                    <button
+                      key={part}
+                      type="button"
+                      onPointerDown={(event) => {
+                        setDragging(part);
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                      }}
+                      onPointerMove={(event) => {
+                        if (dragging === part) movePart(part, event.clientX, event.clientY);
+                      }}
+                      onPointerUp={() => setDragging(null)}
+                      onPointerCancel={() => setDragging(null)}
+                      className={`absolute cursor-grab touch-none rounded-lg border px-2 py-1 text-[8px] font-bold shadow-sm active:cursor-grabbing ${
+                        part === 'leaderboard' ? 'border-violet-300 bg-violet-100 text-violet-700' : 'border-ink-200 bg-white/95 text-ink-700'
+                      }`}
+                      style={{ left: `${positions[part]?.x ?? 0}%`, top: `${positions[part]?.y ?? 0}%` }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <Button variant="brand" size="sm" icon={<Save size={13} />} loading={working} onClick={() => void save()}>
                 Değişiklikleri kaydet
               </Button>

@@ -53,6 +53,7 @@ export async function runDemoSeed({ db, config }: { db: DB; config: AppConfig })
     email: DEMO_EMAIL,
     passwordHash,
     displayName: 'Ahmet Yılmaz',
+    emailVerifiedAt: now,
     now,
   });
   const pkg = findPackageByCode(db, 'pro');

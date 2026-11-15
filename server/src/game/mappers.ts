@@ -73,6 +73,7 @@ export function rowToUser(row: UserRow): UserDTO {
     displayName: row.display_name,
     role: row.role,
     status: row.status,
+    emailVerified: Boolean(row.email_verified_at),
     createdAt: row.created_at,
   };
 }

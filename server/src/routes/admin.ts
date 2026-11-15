@@ -43,6 +43,7 @@ import {
   listAdminPublishers,
   requireAdmin,
 } from '../services/admin.js';
+import { getAnalytics } from '../services/analytics.js';
 
 function toAdminPackage(row: PackageRow) {
   return {
@@ -248,6 +249,12 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
     const { id } = request.params as { id: string };
     revokeAdminGameLicense(db, id);
     return reply.send({ ok: true, revoked: true });
+  });
+
+  app.get('/api/admin/analytics', async (request, reply) => {
+    adminUser(request);
+    const { days } = request.query as { days?: string };
+    return reply.send(getAnalytics(db, Number(days) || 30));
   });
 
   /* ------------------------------- Ayarlar ------------------------------ */

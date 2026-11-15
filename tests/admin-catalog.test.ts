@@ -345,6 +345,22 @@ describe('manuel lisans ve Shopier hazırlığı', () => {
     expect(after.json().licenses.find((row: any) => row.id === license.id)?.status).toBe('revoked');
   });
 
+  it('admin retention ve analitik metriklerini görür', async () => {
+    const { app: server } = await app();
+    const admin = await adminCookie(server);
+    await registerUser(server);
+    const analytics = await server.inject({
+      method: 'GET',
+      url: '/api/admin/analytics?days=30',
+      headers: { cookie: admin },
+    });
+    expect(analytics.statusCode).toBe(200);
+    expect(analytics.json().totals.users).toBeGreaterThan(0);
+    expect(analytics.json().daily).toHaveLength(30);
+    expect(Array.isArray(analytics.json().retention)).toBe(true);
+    expect(analytics.json().recentActivity.length).toBeGreaterThan(0);
+  });
+
   it('Shopier mağaza adresi yalnızca admin tarafından kaydedilir', async () => {
     const { app: server } = await app();
     const admin = await adminCookie(server);

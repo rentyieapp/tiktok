@@ -3,6 +3,7 @@ import { HttpError, badRequest, notFound } from '../lib/errors.js';
 import {
   cancelOtherSubscriptions,
   createGameLicense,
+  trackActivity,
   createPayment,
   createSubscription,
   findActiveGameLicense,
@@ -304,6 +305,7 @@ export function processPaymentWebhook(
         /* kupon meta verisi yoksa yoksay */
       }
     })();
+    if (changed) trackActivity(db, payment.user_id, 'payment', now, { amountCents: payment.amount_cents });
     markWebhookEvent(db, webhookRowId, changed ? 'processed' : 'ignored', now);
     return {
       duplicate: false,
@@ -321,6 +323,7 @@ export function processPaymentWebhook(
 
   if (verification.status === 'failed') {
     const changed = markPaymentStatus(db, payment.id, 'pending', 'failed', now, null);
+    if (changed) trackActivity(db, payment.user_id, 'payment', now, { amountCents: payment.amount_cents });
     markWebhookEvent(db, webhookRowId, changed ? 'processed' : 'ignored', now);
     return {
       duplicate: false,

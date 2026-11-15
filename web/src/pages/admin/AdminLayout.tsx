@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowUpRight,
+  BarChart3,
   CreditCard,
   Gamepad2,
   LayoutDashboard,
@@ -20,6 +21,7 @@ import { LanguageSwitcher } from '../../i18n';
 
 const ADMIN_NAV = [
   { to: '/admin', label: 'Genel bakış', icon: LayoutDashboard, end: true },
+  { to: '/admin/analitik', label: 'Retention & analitik', icon: BarChart3 },
   { to: '/admin/oyunlar', label: 'Oyun kataloğu', icon: Gamepad2 },
   { to: '/admin/paketler', label: 'Paketler ve fiyatlar', icon: CreditCard },
   { to: '/admin/odemeler', label: 'Ödemeler', icon: ReceiptText },

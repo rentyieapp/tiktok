@@ -61,7 +61,7 @@ npm run dev          # sunucu + Vite birlikte
 npm run dev:server   # yalnız Fastify + WebSocket (:8787)
 npm run dev:web      # yalnız Vite (:5173, /api ve /ws proxy)
 npm run seed:demo    # demo yayıncı/oyun/geçmiş verisi
-npm test             # 91 entegrasyon + birim testi
+npm test             # 94 entegrasyon + birim testi
 npm run typecheck    # tüm TS projesi
 npm run build        # web production build (web/dist)
 npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
@@ -172,7 +172,7 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │   ├── src/game/           # Taraftar Savaşı Three.js renderer + OBS overlay
 │   ├── src/arcade/         # 30 oyunun Three.js sahne renderer'ı
 │   ├── src/components/     # Arcade3DStage, 2D fallback, GameArt, panel layout
-├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (91)
+├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (94)
 └── scripts/seed-demo.ts
 ```
 
@@ -464,7 +464,7 @@ Tüm sorgular `game_id` ile sınırlıdır. İki yayıncının verisi birbirine 
 npm test
 ```
 
-**91 test**, 8 dosya:
+**94 test**, 8 dosya:
 
 | Dosya | Kapsam |
 | --- | --- |

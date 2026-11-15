@@ -25,6 +25,9 @@ export interface AppConfig {
   liveWebhookSecret: string;
   shopierWebhookToken: string;
   youtubeApiKey: string;
+  resendApiKey: string;
+  mailFrom: string;
+  requireEmailVerification: boolean;
   rateLimitEnabled: boolean;
   allowViewerCommands: boolean;
   adminEmail: string;
@@ -116,6 +119,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     liveWebhookSecret: env.LIVE_WEBHOOK_SECRET || 'live-webhook-secret',
     shopierWebhookToken: env.SHOPIER_WEBHOOK_TOKEN || '',
     youtubeApiKey: env.YOUTUBE_API_KEY || '',
+    resendApiKey: env.RESEND_API_KEY || '',
+    mailFrom: env.MAIL_FROM || 'Meydan <no-reply@meydan.local>',
+    requireEmailVerification: env.REQUIRE_EMAIL_VERIFICATION === 'true',
     adminEmail: (env.ADMIN_EMAIL || '').trim().toLowerCase(),
     adminPassword: env.ADMIN_PASSWORD || '',
     rateLimitEnabled: env.RATE_LIMIT_ENABLED !== 'false' && !isTest,

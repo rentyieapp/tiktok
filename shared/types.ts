@@ -224,6 +224,7 @@ export interface UserDTO {
   displayName: string;
   role: UserRole;
   status: 'active' | 'suspended';
+  emailVerified: boolean;
   createdAt: string;
 }
 

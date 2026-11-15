@@ -294,3 +294,19 @@ export const adminGameLicenseUpdateSchema = z
   .refine((value) => value.durationDays !== undefined || value.expiresAt !== undefined || value.status !== undefined, {
     message: 'Güncelleme için en az bir alan gerekli.',
   });
+
+
+export const verifyEmailSchema = z
+  .object({ token: z.string().trim().min(20).max(200) })
+  .strict();
+
+export const emailRequestSchema = z
+  .object({ email: emailSchema })
+  .strict();
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().trim().min(20).max(200),
+    password: passwordSchema,
+  })
+  .strict();

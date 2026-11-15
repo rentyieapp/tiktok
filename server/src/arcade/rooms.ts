@@ -28,6 +28,7 @@ import {
 import { nowIso } from '../db/index.js';
 import { badRequest, conflict, forbidden, notFound } from '../lib/errors.js';
 import { randomId } from '../lib/tokens.js';
+import { trackActivity } from '../db/repo.js';
 import { slugifyBase } from '../../../shared/defaults.js';
 import {
   ARCADE_GAMES,
@@ -151,6 +152,7 @@ export function createPublisherRoom(
     updated_at: now,
   };
   createArcadeRoom(db, row);
+  trackActivity(db, user.id, 'room_created', now, { gameKey: game.key, roomId: row.id });
   return roomToDTO(row, config);
 }
 

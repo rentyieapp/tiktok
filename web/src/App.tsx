@@ -7,6 +7,9 @@ import { RequireAuth } from './components/RequireAuth';
 import { PanelLayout } from './components/PanelLayout';
 import { PlatformHomePage } from './pages/marketing/PlatformHomePage';
 import { LoginPage } from './pages/auth/LoginPage';
+import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { TestPaymentPage } from './pages/billing/TestPaymentPage';
 import { PaymentSuccessPage } from './pages/billing/PaymentSuccessPage';
@@ -30,6 +33,7 @@ import { GamesPage } from './pages/marketing/GamesPage';
 import { BuyPage } from './pages/marketing/BuyPage';
 import { WarningsPage } from './pages/marketing/WarningsPage';
 import { SetupGuidePage } from './pages/marketing/SetupGuidePage';
+import { ThemesPage } from './pages/marketing/ThemesPage';
 import { LeaderboardPage } from './pages/marketing/LeaderboardPage';
 import { InstallAppPage } from './pages/marketing/InstallAppPage';
 import { ArcadeGamePage } from './pages/arcade/ArcadeGamePage';
@@ -40,6 +44,7 @@ import { AdminGamesPage } from './pages/admin/AdminGamesPage';
 import { AdminPackagesPage } from './pages/admin/AdminPackagesPage';
 import { AdminPaymentsPage } from './pages/admin/AdminPaymentsPage';
 import { AdminPublishersPage } from './pages/admin/AdminPublishersPage';
+import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
 import { AdminShopierPage } from './pages/admin/AdminShopierPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { SupportButton } from './components/SupportButton';
@@ -71,6 +76,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<PlatformHomePage />} />
             <Route path="/giris" element={<LoginPage />} />
+              <Route path="/eposta-dogrula" element={<VerifyEmailPage />} />
+              <Route path="/sifremi-unuttum" element={<ForgotPasswordPage />} />
+              <Route path="/sifre-sifirla" element={<ResetPasswordPage />} />
             <Route path="/kayit" element={<RegisterPage />} />
             <Route path="/oyunlar" element={<GamesPage />} />
             <Route path="/oyun/:slug" element={<ArcadeGamePage />} />
@@ -78,6 +86,7 @@ export default function App() {
             <Route path="/satin-al" element={<BuyPage />} />
             <Route path="/uyarilar" element={<WarningsPage />} />
             <Route path="/kurulum" element={<SetupGuidePage />} />
+              <Route path="/temalar" element={<ThemesPage />} />
             <Route path="/liderlik" element={<LeaderboardPage />} />
             <Route path="/uygulama" element={<InstallAppPage />} />
             <Route
@@ -130,6 +139,7 @@ export default function App() {
             >
               <Route index element={<AdminDashboardPage />} />
               <Route path="oyunlar" element={<AdminGamesPage />} />
+              <Route path="analitik" element={<AdminAnalyticsPage />} />
               <Route path="paketler" element={<AdminPackagesPage />} />
               <Route path="odemeler" element={<AdminPaymentsPage />} />
               <Route path="yayincilar" element={<AdminPublishersPage />} />

@@ -2,7 +2,20 @@ import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
-export type DB = Database.Database;
+import { PostgresDatabase } from './postgres.js';
+
+/** Mevcut senkron repo API'si; SQLite ve PostgreSQL adaptörleri aynı arayüzü kullanır. */
+export interface DB {
+  prepare<Row = any>(sql: string): {
+    run: (...params: unknown[]) => { changes: number; lastInsertRowid: number };
+    get: (...params: unknown[]) => Row | undefined;
+    all: (...params: unknown[]) => Row[];
+  };
+  exec(sql: string): void;
+  transaction<T>(fn: () => T): () => T;
+  pragma(statement: string, options?: { simple?: boolean }): unknown;
+  close(): void;
+}
 
 const MIGRATIONS: string[] = [
   `
@@ -333,9 +346,41 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_arcade_room_bans_room ON arcade_room_bans (room_id, created_at DESC);
   `,
+  `
+  ALTER TABLE users ADD COLUMN email_verified_at TEXT;
+
+  CREATE TABLE IF NOT EXISTS email_tokens (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    type TEXT NOT NULL CHECK (type IN ('verify_email', 'reset_password')),
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_email_tokens_hash ON email_tokens (token_hash);
+  CREATE INDEX IF NOT EXISTS idx_email_tokens_user ON email_tokens (user_id, type);
+
+  UPDATE users SET email_verified_at = created_at WHERE email_verified_at IS NULL;
+
+  CREATE TABLE IF NOT EXISTS activity_events (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    event TEXT NOT NULL,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_activity_user_time ON activity_events (user_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_activity_time ON activity_events (created_at DESC);
+  `,
 ];
 
 export function openDatabase(path: string): DB {
+  const databaseUrl = process.env.DATABASE_URL || '';
+  if (process.env.DB_DRIVER === 'postgres' || databaseUrl.startsWith('postgres://') || databaseUrl.startsWith('postgresql://')) {
+    if (!databaseUrl) throw new Error('PostgreSQL için DATABASE_URL gerekli.');
+    return new PostgresDatabase(databaseUrl) as unknown as DB;
+  }
   if (path !== ':memory:') {
     mkdirSync(dirname(path), { recursive: true });
   }
@@ -343,21 +388,16 @@ export function openDatabase(path: string): DB {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.pragma('busy_timeout = 5000');
-  return db;
+  return db as unknown as DB;
 }
 
 export function migrate(db: DB): void {
   const current = Number(db.pragma('user_version', { simple: true }) ?? 0);
   for (let index = current; index < MIGRATIONS.length; index += 1) {
-    db.exec('BEGIN');
-    try {
+    db.transaction(() => {
       db.exec(MIGRATIONS[index]);
       db.pragma(`user_version = ${index + 1}`);
-      db.exec('COMMIT');
-    } catch (error) {
-      db.exec('ROLLBACK');
-      throw error;
-    }
+    })();
   }
 }
 

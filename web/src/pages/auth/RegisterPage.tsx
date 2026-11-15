@@ -38,14 +38,7 @@ export function RegisterPage() {
     submitted.current = true;
     try {
       await register(email.trim(), password, displayName.trim());
-      if (next) {
-        navigate(next, { replace: true });
-      } else {
-        navigate(
-          `/panel/odeme${packageId ? `?paket=${encodeURIComponent(packageId)}` : ''}`,
-          { replace: true },
-        );
-      }
+      navigate(`/eposta-dogrula?sent=1&email=${encodeURIComponent(email.trim())}`, { replace: true });
     } catch (caught) {
       submitted.current = false;
       setError(

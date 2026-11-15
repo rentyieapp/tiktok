@@ -10,6 +10,7 @@ const NAV = [
   { to: '/oyunlar', label: 'Oyunlar' },
   { to: '/#kategoriler', label: 'Kategoriler' },
   { to: '/satin-al', label: 'Mağaza' },
+  { to: '/temalar', label: 'Temalar' },
   { to: '/kurulum', label: 'Kurulum' },
   { to: '/liderlik', label: 'Liderlik' },
   { to: '/uyarilar', label: 'Uyarılar' },
@@ -120,6 +121,9 @@ export function MarketingFooter() {
           </Link>
           <Link to="/liderlik" className="hover:text-ink-900">
             Liderlik
+          </Link>
+          <Link to="/temalar" className="hover:text-ink-900">
+            Temalar
           </Link>
           <Link to="/uygulama" className="hover:text-ink-900">
             Uygulama

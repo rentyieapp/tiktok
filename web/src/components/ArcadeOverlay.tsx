@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { ArcadeGameDef, ArcadeStateView } from '@shared/arcade';
+import { overlayThemeById } from '@shared/overlayThemes';
+
+export interface OverlayPositions {
+  room?: { x: number; y: number };
+  leaderboard?: { x: number; y: number };
+  goal?: { x: number; y: number };
+  bot?: { x: number; y: number };
+}
 
 export function ArcadeOverlay({
   game,
@@ -15,6 +23,8 @@ export function ArcadeOverlay({
   showLeaderboard = true,
   showBot = true,
   showWinner = true,
+  positions,
+  themeId = 'meydan',
 }: {
   game: ArcadeGameDef;
   state: ArcadeStateView | null;
@@ -29,6 +39,8 @@ export function ArcadeOverlay({
   showLeaderboard?: boolean;
   showBot?: boolean;
   showWinner?: boolean;
+  positions?: OverlayPositions;
+  themeId?: string;
 }) {
   const [flash, setFlash] = useState<{ id: string; text: string } | null>(null);
   const [botLine, setBotLine] = useState<{ id: string; text: string } | null>(null);
@@ -62,8 +74,19 @@ export function ArcadeOverlay({
   const topClass = layout === 'bottom' ? 'bottom-14' : 'top-[64px]';
   const goalClass = layout === 'bottom' ? 'bottom-14' : 'top-[150px]';
   const scaleClass = scale === 'sm' ? 'scale-90' : scale === 'lg' ? 'scale-110' : '';
+  const overlayTheme = overlayThemeById(themeId);
+  const posStyle = (part: keyof OverlayPositions, axis: 'x' | 'y') => {
+    const point = positions?.[part];
+    if (!point) return undefined;
+    return axis === 'x' ? `${Math.max(0, Math.min(92, point.x))}%` : `${Math.max(0, Math.min(92, point.y))}%`;
+  };
+  const customStyle = (part: keyof OverlayPositions): React.CSSProperties | undefined => {
+    const point = positions?.[part];
+    if (!point) return undefined;
+    return { left: `${Math.max(0, Math.min(92, point.x))}%`, top: `${Math.max(0, Math.min(92, point.y))}%`, right: 'auto', bottom: 'auto' };
+  };
   return (
-    <div className={`pointer-events-none absolute inset-0 z-30 origin-center ${scaleClass}`}>
+    <div className={`pointer-events-none absolute inset-0 z-30 origin-center ${scaleClass} ${overlayTheme.className}`}>
       <div data-overlay-part="room" className={`absolute left-2 max-w-[145px] ${topClass}`}>
         <div
           className="rounded-xl border border-white/70 bg-white/85 px-2.5 py-2 shadow-sm backdrop-blur"
@@ -82,7 +105,7 @@ export function ArcadeOverlay({
       {pro ? (
         <>
           {showLeaderboard ? (
-            <div data-overlay-part="leaderboard" className={`absolute right-2 w-[155px] ${topClass} rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur`}>
+            <div data-overlay-part="leaderboard" style={customStyle('leaderboard')} className={`absolute right-2 w-[155px] ${topClass} rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur`}>
               <div className="flex items-center justify-between">
                 <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p>
                 <span className="text-[6px] font-extrabold text-violet-600">PRO</span>
@@ -100,7 +123,7 @@ export function ArcadeOverlay({
             </div>
           ) : null}
           {showGoal ? (
-            <div data-overlay-part="goal" className={`absolute inset-x-3 ${goalClass}`}>
+            <div data-overlay-part="goal" className={`absolute inset-x-3 ${goalClass}`} style={customStyle('goal')}>
               <div className="flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
                 <span className="text-[7px] font-bold uppercase tracking-wider text-ink-400">Hedef</span>
                 <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
@@ -136,7 +159,7 @@ export function ArcadeOverlay({
       {botEnabled && showBot && botLine ? (
         <div
           key={`bot-${botLine.id}`}
-          data-overlay-part="bot" className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
+          data-overlay-part="bot" style={customStyle('bot')} className="absolute bottom-12 left-2 right-2 mx-auto max-w-[180px] rounded-xl border border-violet-200 bg-violet-50/95 px-2.5 py-2 text-violet-950 shadow-md backdrop-blur"
         >
           <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-500">🤖 Meydan Bot</p>
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug">{botLine.text}</p>

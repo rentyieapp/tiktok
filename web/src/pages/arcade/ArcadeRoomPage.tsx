@@ -21,7 +21,8 @@ import type { ArcadeRoomPublicDTO, LivePlatform } from '@shared/types';
 import { api } from '../../lib/api';
 import { useArcadeSocket } from '../../lib/useArcadeSocket';
 import { ArcadeLiveStage } from '../../components/ArcadeLiveStage';
-import { ArcadeOverlay } from '../../components/ArcadeOverlay';
+import { ArcadeOverlay, type OverlayPositions } from '../../components/ArcadeOverlay';
+import { overlayThemeById } from '@shared/overlayThemes';
 import { useArcadeTTS } from '../../lib/useArcadeTTS';
 import { sanitizeArcadeRoomSettings } from '@shared/arcadeSettings';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
@@ -154,6 +155,9 @@ function RoomView({
   const roomSettings = sanitizeArcadeRoomSettings(data.room.settings);
   const locale = roomSettings.language;
   const commandHints = roomSettings.commands;
+  const overlayPositions = data.room.settings.overlayPositions as OverlayPositions | undefined;
+  const requestedTheme = overlayThemeById(typeof data.room.settings.overlayThemeId === 'string' ? data.room.settings.overlayThemeId : 'meydan');
+  const effectiveThemeId = requestedTheme.pro && !data.overlayPro ? 'meydan' : requestedTheme.id;
   const ttsEnabled =
     data.room.settings.ttsEnabled === true ||
     new URLSearchParams(window.location.search).get('tts') === '1';
@@ -223,6 +227,8 @@ function RoomView({
             showLeaderboard={data.room.settings.overlayLeaderboard !== false}
             showBot={data.room.settings.overlayBot !== false}
             showWinner={data.room.settings.overlayWinner !== false}
+            positions={overlayPositions}
+            themeId={effectiveThemeId}
           />
         </div>
       </div>
@@ -248,6 +254,8 @@ function RoomView({
             showLeaderboard={data.room.settings.overlayLeaderboard !== false}
             showBot={data.room.settings.overlayBot !== false}
             showWinner={data.room.settings.overlayWinner !== false}
+            positions={overlayPositions}
+            themeId={effectiveThemeId}
           />
         </div>
       </div>
@@ -307,6 +315,8 @@ function RoomView({
                 showLeaderboard={data.room.settings.overlayLeaderboard !== false}
                 showBot={data.room.settings.overlayBot !== false}
                 showWinner={data.room.settings.overlayWinner !== false}
+                positions={overlayPositions}
+                themeId={effectiveThemeId}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[10px] text-ink-400">

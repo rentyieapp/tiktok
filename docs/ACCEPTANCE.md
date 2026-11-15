@@ -3,7 +3,7 @@
 Tarih: 2026-11-14 · Sürüm: MVP 1.0
 
 Bu belge, proje brief'indeki 17 kabul senaryosunu ve 12 fazın durumunu özetler.
-Tüm otomatik testler `npm test` ile çalışır; son sonuç **91/91 geçti**.
+Tüm otomatik testler `npm test` ile çalışır; son sonuç **94/94 geçti**.
 
 ## Faz durumu
 

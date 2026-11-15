@@ -25,6 +25,7 @@ export async function ensureAdminUser(db: DB, config: AppConfig): Promise<void> 
     passwordHash,
     displayName: 'Platform Yöneticisi',
     role: 'admin',
+    emailVerifiedAt: now,
     now,
   });
 }

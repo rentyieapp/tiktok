@@ -16,7 +16,7 @@ export function AuthShell({
   title: string;
   subtitle: string;
   children: ReactNode;
-  footer: ReactNode;
+  footer?: ReactNode;
   eyebrow?: string;
 }) {
   return (

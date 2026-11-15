@@ -233,3 +233,11 @@
   100% { opacity: 0.85; transform: translateY(90px) rotate(220deg); }
 }
 .winner-confetti { animation: winner-fall 1.4s ease-out infinite; }
+
+
+.overlay-theme-neon [data-overlay-part] { background: rgba(18,11,36,0.94) !important; border-color: rgba(168,85,247,0.55) !important; color: #f5d0fe !important; }
+.overlay-theme-neon [data-overlay-part] p, .overlay-theme-neon [data-overlay-part] span { color: #e9d5ff !important; }
+.overlay-theme-stadium [data-overlay-part] { background: rgba(240,253,244,0.96) !important; border-color: rgba(22,163,74,0.45) !important; }
+.overlay-theme-wedding [data-overlay-part] { background: rgba(255,251,235,0.96) !important; border-color: rgba(217,119,6,0.45) !important; }
+.overlay-theme-midnight [data-overlay-part] { background: rgba(17,24,39,0.95) !important; border-color: rgba(220,38,38,0.55) !important; color: #fecaca !important; }
+.overlay-theme-midnight [data-overlay-part] p, .overlay-theme-midnight [data-overlay-part] span { color: #fecaca !important; }

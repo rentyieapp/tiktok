@@ -11,6 +11,7 @@ export interface UserRow {
   display_name: string;
   role: 'publisher' | 'admin';
   status: 'active' | 'suspended';
+  email_verified_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -174,12 +175,13 @@ export function createUser(
     displayName: string;
     now: string;
     role?: 'publisher' | 'admin';
+    emailVerifiedAt?: string | null;
   },
 ): UserRow {
   db.prepare(
-    `INSERT INTO users (id, email, password_hash, display_name, role, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, COALESCE(?, 'publisher'), 'active', ?, ?)`,
-  ).run(user.id, user.email, user.passwordHash, user.displayName, user.role ?? null, user.now, user.now);
+    `INSERT INTO users (id, email, password_hash, display_name, role, status, email_verified_at, created_at, updated_at)
+     VALUES (?, ?, ?, ?, COALESCE(?, 'publisher'), 'active', ?, ?, ?)`,
+  ).run(user.id, user.email, user.passwordHash, user.displayName, user.role ?? null, user.emailVerifiedAt ?? null, user.now, user.now);
   return findUserById(db, user.id)!;
 }
 
@@ -1762,4 +1764,91 @@ export function removeArcadeRoomBan(db: DB, roomId: string, viewerId: string): b
   return db
     .prepare('DELETE FROM arcade_room_bans WHERE room_id = ? AND viewer_id = ?')
     .run(roomId, viewerId).changes > 0;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* E-posta doğrulama / şifre sıfırlama                                 */
+/* ------------------------------------------------------------------ */
+
+export interface EmailTokenRow {
+  id: string;
+  user_id: string;
+  token_hash: string;
+  type: 'verify_email' | 'reset_password';
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
+}
+
+export function createEmailToken(
+  db: DB,
+  row: {
+    id: string;
+    userId: string;
+    tokenHash: string;
+    type: 'verify_email' | 'reset_password';
+    expiresAt: string;
+    now: string;
+  },
+): void {
+  db.prepare(
+    `INSERT INTO email_tokens (id, user_id, token_hash, type, expires_at, used_at, created_at)
+     VALUES (?, ?, ?, ?, ?, NULL, ?)`,
+  ).run(row.id, row.userId, row.tokenHash, row.type, row.expiresAt, row.now);
+}
+
+export function findValidEmailToken(
+  db: DB,
+  tokenHash: string,
+  type: 'verify_email' | 'reset_password',
+  now: string,
+): EmailTokenRow | undefined {
+  return db
+    .prepare(
+      `SELECT * FROM email_tokens
+       WHERE token_hash = ? AND type = ? AND used_at IS NULL AND expires_at > ?
+       LIMIT 1`,
+    )
+    .get(tokenHash, type, now) as EmailTokenRow | undefined;
+}
+
+export function markEmailTokenUsed(db: DB, id: string, now: string): void {
+  db.prepare('UPDATE email_tokens SET used_at = ? WHERE id = ?').run(now, id);
+}
+
+export function deleteEmailTokens(db: DB, userId: string, type: 'verify_email' | 'reset_password'): void {
+  db.prepare('DELETE FROM email_tokens WHERE user_id = ? AND type = ?').run(userId, type);
+}
+
+export function markUserEmailVerified(db: DB, userId: string, now: string): void {
+  db.prepare('UPDATE users SET email_verified_at = ?, updated_at = ? WHERE id = ?').run(now, now, userId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Aktivite olayları / retention                                       */
+/* ------------------------------------------------------------------ */
+
+export interface ActivityEventRow {
+  id: string;
+  user_id: string;
+  event: string;
+  metadata_json: string;
+  created_at: string;
+}
+
+export function trackActivity(
+  db: DB,
+  userId: string,
+  event: string,
+  now: string,
+  metadata: Record<string, unknown> = {},
+): void {
+  db.prepare(
+    'INSERT INTO activity_events (id, user_id, event, metadata_json, created_at) VALUES (?, ?, ?, ?, ?)',
+  ).run(`evt_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`, userId, event, JSON.stringify(metadata), now);
+}
+
+export function listActivityEvents(db: DB): ActivityEventRow[] {
+  return db.prepare('SELECT * FROM activity_events ORDER BY created_at DESC').all() as ActivityEventRow[];
 }
