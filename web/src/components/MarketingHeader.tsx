@@ -22,7 +22,7 @@ export function MarketingHeader() {
     <header className="sticky top-0 z-50 border-b border-[#e9e3d9] bg-[#fffaf4]/90 backdrop-blur-xl">
       <div className="container-page flex h-16 items-center justify-between">
         <Logo />
-        <nav className="hidden items-center gap-7 text-[13px] font-medium text-ink-500 md:flex">
+        <nav className="hidden items-center gap-7 text-[13px] font-medium text-ink-500 lg:flex">
           {NAV.map((item) => (
             <Link key={item.to} to={item.to} className="transition hover:text-ink-950">
               {item.label}
@@ -30,7 +30,7 @@ export function MarketingHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <div className="hidden min-[380px]:block"><LanguageSwitcher /></div>
           {me ? (
             <Link to={me.user.role === 'admin' ? '/admin' : '/panel'}>
               <Button variant="brand" size="sm" className="px-4">
@@ -54,14 +54,14 @@ export function MarketingHeader() {
               </Link>
               <Link to="/kayit">
                 <Button variant="brand" size="sm" className="px-4">
-                  Ücretsiz başla
+                  <span className="hidden sm:inline">Ücretsiz başla</span><span className="sm:hidden">Başla</span>
                 </Button>
               </Link>
             </>
           )}
           <button
             type="button"
-            className="rounded-lg border border-[#e6dfd4] p-2 text-ink-600 md:hidden"
+            className="rounded-lg border border-[#e6dfd4] p-2 text-ink-600 lg:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-label="Menüyü aç"
           >
@@ -70,7 +70,7 @@ export function MarketingHeader() {
         </div>
       </div>
       {open ? (
-        <div className="border-t border-[#eee7dc] bg-[#fffaf4] px-5 py-3 md:hidden">
+        <div className="border-t border-[#eee7dc] bg-[#fffaf4] px-5 py-3 lg:hidden">
           <div className="flex flex-col gap-1">
             {NAV.map((item) => (
               <Link

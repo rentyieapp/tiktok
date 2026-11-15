@@ -162,7 +162,7 @@ export function AdminLayout() {
         </div>
       ) : null}
 
-      <main className="lg:pl-[264px]">
+      <main className="min-w-0 lg:pl-[264px]">
         <div className="mx-auto min-h-screen w-full max-w-[1320px] px-4 py-6 sm:px-8 lg:px-10">
           <Outlet />
         </div>

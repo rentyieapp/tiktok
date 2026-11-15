@@ -467,12 +467,12 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-ink-100 bg-white p-4">
+          <div className="min-w-0 space-y-4">
+            <div className="min-w-0 rounded-2xl border border-ink-100 bg-white p-4">
               <h3 className="text-sm font-bold text-ink-950">OBS bağlantısı</h3>
               <p className="mt-1 text-[10px] leading-relaxed text-ink-400">Bu URL yayın boyunca sabit kalır.</p>
               <p className="mt-2 text-[9px] font-bold uppercase tracking-wider text-ink-400">Tam sahne</p>
-              <code className="mt-1 block truncate rounded-lg bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600">{room.obsUrl}</code>
+              <code className="mt-1 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-[#f7f2e9] px-2.5 py-2 text-[9px] text-ink-600">{room.obsUrl}</code>
               <div className="mt-2 flex gap-1.5">
                 <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyObs()}>Kopyala</Button>
                 <a href={room.obsUrl} target="_blank" rel="noreferrer">
@@ -480,7 +480,7 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
                 </a>
               </div>
               <p className="mt-3 text-[9px] font-bold uppercase tracking-wider text-violet-500">Sadece overlay (şeffaf)</p>
-              <code className="mt-1 block truncate rounded-lg bg-violet-50 px-2.5 py-2 text-[9px] text-violet-700">{room.overlayUrl}</code>
+              <code className="mt-1 block max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-violet-50 px-2.5 py-2 text-[9px] text-violet-700">{room.overlayUrl}</code>
               <div className="mt-2 flex gap-1.5">
                 <Button variant="secondary" size="sm" icon={<Copy size={12} />} onClick={() => void copyOverlay()}>Kopyala</Button>
                 <a href={room.overlayUrl} target="_blank" rel="noreferrer">
