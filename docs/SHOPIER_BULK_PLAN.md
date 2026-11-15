@@ -16,9 +16,9 @@ Durum: **ONAY BEKLİYOR — hiçbir yeni ürün oluşturulmadı.**
 
 ## Eşleşmiş paket
 
-| Paket | Kod | Fiyat | Shopier ürün ID |
-|---|---|---:|---|
-| Başlangıç | `starter` | 299,00 TRY | `52981076` |
+| Paket | Kod | Fiyat | Shopier ürün ID | Satış URL |
+|---|---|---:|---|---|
+| Başlangıç | `starter` | 299,00 TRY | `52981076` | https://www.shopier.com/52981076 |
 
 ## Genel / bundle paketleri (eşleşmemiş)
 
