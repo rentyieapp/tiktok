@@ -49,7 +49,7 @@ export function ArcadeOverlay({
 
   return (
     <div className="pointer-events-none absolute inset-0 z-30">
-      <div className="absolute left-2 top-1/3 max-w-[145px]">
+      <div className="absolute left-2 top-[64px] max-w-[145px]">
         <div
           className="rounded-xl border border-white/70 bg-white/85 px-2.5 py-2 shadow-sm backdrop-blur"
           style={{ borderLeftColor: accent, borderLeftWidth: 3 }}
@@ -66,11 +66,8 @@ export function ArcadeOverlay({
 
       {pro ? (
         <>
-          <div className="absolute right-2 top-2 rounded-full border border-violet-200 bg-violet-50/95 px-2 py-1 text-[7px] font-extrabold uppercase tracking-[0.14em] text-violet-700 shadow-sm">
-            ✦ Overlay Pro
-          </div>
-          <div className="absolute right-2 top-[14%] w-[155px] rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur">
-            <p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p>
+          <div className="absolute right-2 top-[64px] w-[155px] rounded-xl border border-white/80 bg-white/90 p-2 shadow-sm backdrop-blur">
+            <div className="flex items-center justify-between"><p className="text-[7px] font-extrabold uppercase tracking-[0.14em] text-ink-400">Liderlik</p><span className="text-[6px] font-extrabold text-violet-600">PRO</span></div>
             <div className="mt-1 space-y-1">
               {leaders.map((player) => (
                 <div key={player.id} className="flex items-center gap-1.5">
@@ -82,7 +79,7 @@ export function ArcadeOverlay({
               ))}
             </div>
           </div>
-          <div className="absolute inset-x-3 bottom-3">
+          <div className="absolute inset-x-3 top-[118px]">
             <div className="flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
               <span className="text-[7px] font-bold uppercase tracking-wider text-ink-400">Hedef</span>
               <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-100">
@@ -97,7 +94,7 @@ export function ArcadeOverlay({
       {flash ? (
         <div
           key={flash.id}
-          className="absolute right-2 top-[28%] max-w-[150px] animate-[fadeIn_0.25s_ease-out] rounded-xl border border-amber-200 bg-[#fffaf0]/95 px-2.5 py-2 shadow-lg backdrop-blur"
+          className="absolute right-2 top-[190px] max-w-[150px] animate-[fadeIn_0.25s_ease-out] rounded-xl border border-amber-200 bg-[#fffaf0]/95 px-2.5 py-2 shadow-lg backdrop-blur"
         >
           <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-amber-600">Son olay</p>
           <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-snug text-amber-950">
