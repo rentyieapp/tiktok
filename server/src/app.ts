@@ -224,7 +224,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
 
   app.get('/api/health', async () => ({
     ok: true,
-    service: 'taraftar-savasi',
+    service: 'meydan',
     time: nowIso(),
   }));
 

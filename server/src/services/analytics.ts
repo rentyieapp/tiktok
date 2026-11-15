@@ -79,9 +79,9 @@ export function getAnalytics(db: DB, rangeDays = 30): AnalyticsDTO {
   const payments = db.prepare("SELECT user_id, amount_cents, status, created_at FROM payments WHERE status = 'succeeded'").all() as PaymentLite[];
   const sessions = db.prepare('SELECT game_key, started_at, player_count FROM arcade_sessions').all() as SessionLite[];
   const activity = db.prepare('SELECT user_id, event, created_at FROM activity_events').all() as ActivityLite[];
-  const subscriptionCount = (db.prepare("SELECT COUNT(*) AS count FROM subscriptions WHERE status = 'active' AND expires_at > ?").get(new Date().toISOString()) as { count: number }).count;
-  const gameLicenseCount = (db.prepare("SELECT COUNT(*) AS count FROM game_licenses WHERE status = 'active' AND expires_at > ?").get(new Date().toISOString()) as { count: number }).count;
-  const roomCount = (db.prepare('SELECT COUNT(*) AS count FROM arcade_rooms').get() as { count: number }).count;
+  const subscriptionCount = Number((db.prepare("SELECT COUNT(*) AS count FROM subscriptions WHERE status = 'active' AND expires_at > ?").get(new Date().toISOString()) as { count: number | string }).count);
+  const gameLicenseCount = Number((db.prepare("SELECT COUNT(*) AS count FROM game_licenses WHERE status = 'active' AND expires_at > ?").get(new Date().toISOString()) as { count: number | string }).count);
+  const roomCount = Number((db.prepare('SELECT COUNT(*) AS count FROM arcade_rooms').get() as { count: number | string }).count);
 
   const payingUserIds = new Set(payments.map((payment) => payment.user_id));
   const activeUserIds = new Set(activity.filter((event) => event.created_at >= sinceIso).map((event) => event.user_id));
