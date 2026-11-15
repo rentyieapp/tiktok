@@ -231,7 +231,34 @@ export function seedPackages(db: DB): void {
   tx();
 }
 
+export function seedOverlayOffers(db: DB): void {
+  const insert = db.prepare(
+    `INSERT OR IGNORE INTO packages (
+      id, code, name, tagline, description, price_cents, currency, max_teams,
+      duration_days, features_json, highlight, sort_order, is_active, shopier_url, game_key
+    ) VALUES (?, ?, ?, ?, ?, ?, 'TRY', 8, ?, ?, 0, ?, 1, NULL, 'overlay_pro')`,
+  );
+  const offers = [
+    { id: 'overlay_pro_30d', name: 'Overlay Pro · Aylık', days: 30, price: 14900, order: 5 },
+    { id: 'overlay_pro_365d', name: 'Overlay Pro · Yıllık', days: 365, price: 129900, order: 6 },
+  ];
+  for (const offer of offers) {
+    insert.run(
+      offer.id,
+      offer.id,
+      offer.name,
+      'OBS overlay paketi',
+      'Liderlik tablosu, hedef barı, kazanan kartı, bot ve gelişmiş overlay katmanları.',
+      offer.price,
+      offer.days,
+      JSON.stringify(['Liderlik tablosu', 'Hedef barı', 'Kazanan kartı', 'Meydan Bot', 'Gelişmiş overlay']),
+      offer.order,
+    );
+  }
+}
+
 /**
+ * Oyun bazlı 1 gün / 30 gün lisansları./**
  * Oyun bazlı 1 gün / 30 gün lisansları. Bunlar ayrı `packages` satırlarıdır;
  * `game_key` dolu olduğu için platform aboneliği sayılmaz, oyun lisansı açar.
  */

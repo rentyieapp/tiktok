@@ -280,8 +280,9 @@ export async function arcadeRoomRoutes(app: FastifyInstance, ctx: AppContext): P
       | { id: string }
       | undefined;
     const licensed = Boolean(owner && findActiveGameLicense(db, owner.id, room.game_key, nowIso()));
+    const overlayPro = Boolean(owner && findActiveGameLicense(db, owner.id, 'overlay_pro', nowIso()));
     const data = getPublicRoom(db, config, arcade, slug);
-    return reply.send({ ...data, licensed: data.licensed && licensed });
+    return reply.send({ ...data, licensed: data.licensed && licensed, overlayPro });
   });
 
   app.get('/api/arcade/rooms/:id/sessions', async (request, reply) => {

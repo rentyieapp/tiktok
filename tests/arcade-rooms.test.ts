@@ -301,6 +301,20 @@ describe('yayıncıya özel arcade odaları', () => {
     expect(afterIgnored.json().room.settings.commands.join).toBe('gel');
   });
 
+  it('Overlay Pro ayrı ürün olarak satın alınır', async () => {
+    built = await makeApp();
+    const { app: server } = built;
+    const owner = await registerUser(server);
+    await buyGame(server, owner.cookie, 'overlay_pro_30d');
+    const access = await server.inject({
+      method: 'GET',
+      url: '/api/arcade/access',
+      headers: { cookie: owner.cookie },
+    });
+    expect(access.statusCode).toBe(200);
+    expect(access.json().licenses.some((license: any) => license.gameKey === 'overlay_pro')).toBe(true);
+  });
+
   it('yayıncı Bilgi Arenası için özel soru havuzu kaydeder', async () => {
     built = await makeApp();
     const { app: server } = built;

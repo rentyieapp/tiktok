@@ -593,6 +593,7 @@ export interface ArcadeRoomPublicDTO {
   room: ArcadeRoomDTO;
   game: import('./arcade.js').ArcadeGameDef;
   licensed: boolean;
+  overlayPro?: boolean;
   connections: Array<Pick<PlatformConnectionDTO, 'platform' | 'channel' | 'status'>>;
   activePlayers: number;
 }

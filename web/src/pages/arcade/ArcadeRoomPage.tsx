@@ -185,6 +185,7 @@ function RoomView({
             accent={accent}
             theme={overlayTheme}
             botEnabled={data.room.settings.botEnabled === true}
+            pro={data.overlayPro === true}
           />
         </div>
       </div>
@@ -237,6 +238,7 @@ function RoomView({
                 accent={accent}
                 theme={overlayTheme}
                 botEnabled={data.room.settings.botEnabled === true}
+                pro={data.overlayPro === true}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[10px] text-ink-400">

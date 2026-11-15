@@ -61,7 +61,7 @@ npm run dev          # sunucu + Vite birlikte
 npm run dev:server   # yalnız Fastify + WebSocket (:8787)
 npm run dev:web      # yalnız Vite (:5173, /api ve /ws proxy)
 npm run seed:demo    # demo yayıncı/oyun/geçmiş verisi
-npm test             # 90 entegrasyon + birim testi
+npm test             # 91 entegrasyon + birim testi
 npm run typecheck    # tüm TS projesi
 npm run build        # web production build (web/dist)
 npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
@@ -172,7 +172,7 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │   ├── src/game/           # Taraftar Savaşı Three.js renderer + OBS overlay
 │   ├── src/arcade/         # 30 oyunun Three.js sahne renderer'ı
 │   ├── src/components/     # Arcade3DStage, 2D fallback, GameArt, panel layout
-├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (90)
+├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (91)
 └── scripts/seed-demo.ts
 ```
 
@@ -464,7 +464,7 @@ Tüm sorgular `game_id` ile sınırlıdır. İki yayıncının verisi birbirine 
 npm test
 ```
 
-**90 test**, 8 dosya:
+**91 test**, 8 dosya:
 
 | Dosya | Kapsam |
 | --- | --- |
@@ -777,6 +777,14 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - Lisansları listeleme, süre ekleme ve iptal etme.
 - Paket aboneliği ile oyun lisansını aynı modalda ayırma.
 - Tüm işlemler admin API’si ve testlerle doğrulanır.
+
+### Overlay Pro (ayrı ürün)
+
+- Oyun lisansından bağımsız satılan OBS overlay katmanı.
+- **Aylık ₺149**, **yıllık ₺1.299**.
+- Liderlik tablosu, canlı hedef barı, kazanan kartı ve Meydan Bot duyuruları.
+- Oyun lisansı veya Tüm Oyunlar paketine dahil değildir; mevcut oyun lisansıyla birlikte kullanılır.
+- Satın alma sonrası `overlay_pro` lisansı açılır; yayın odası public endpoint’i `overlayPro` alanını döndürür.
 
 ### Aksiyon geri bildirimi ve overlay
 

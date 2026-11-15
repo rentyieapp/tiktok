@@ -10,7 +10,7 @@ import fastifyStatic from '@fastify/static';
 import websocket from '@fastify/websocket';
 import { loadConfig, type AppConfig } from './config.js';
 import { migrate, nowIso, openDatabase, type DB } from './db/index.js';
-import { seedAppSettings, seedCoupons, seedGameOffers, seedGameProducts, seedPackages } from './db/seed.js';
+import { seedAppSettings, seedCoupons, seedGameOffers, seedGameProducts, seedOverlayOffers, seedPackages } from './db/seed.js';
 import { listActivePlatformConnections, markAllRunningSessionsAbandoned } from './db/repo.js';
 import { GameRuntime } from './game/runtime.js';
 import { ArcadeRuntime } from './arcade/runtime.js';
@@ -56,6 +56,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
   migrate(db);
   seedPackages(db);
   seedGameOffers(db);
+  seedOverlayOffers(db);
   seedCoupons(db);
   seedGameProducts(db);
   seedAppSettings(db);

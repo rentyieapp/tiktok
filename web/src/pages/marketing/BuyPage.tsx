@@ -4,6 +4,7 @@ import { Button } from '../../components/ui';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
 import { GameStoreGrid } from '../../components/GameStoreGrid';
 import { BundlePlans } from '../../components/BundlePlans';
+import { OverlayProPlans } from '../../components/OverlayProPlans';
 
 export function BuyPage() {
   return (
@@ -40,6 +41,8 @@ export function BuyPage() {
       <section className="container-page pt-10 sm:pt-12">
         <BundlePlans />
       </section>
+
+      <OverlayProPlans />
 
       <section className="container-page py-12 sm:py-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">

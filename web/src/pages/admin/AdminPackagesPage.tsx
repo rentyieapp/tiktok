@@ -269,7 +269,7 @@ export function AdminPackagesPage() {
                             <p className="text-[12px] font-semibold text-ink-900">{pkg.name}</p>
                             <p className="text-[10px] text-ink-400">{pkg.tagline}</p>
                             <span className="mt-1 inline-flex rounded-full bg-ink-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-ink-400">
-                              {!pkg.gameKey ? '3D Stüdyo paketi' : pkg.gameKey === '*' ? 'Tüm Oyunlar' : 'Oyun lisansı'}
+                              {!pkg.gameKey ? '3D Stüdyo paketi' : pkg.gameKey === '*' ? 'Tüm Oyunlar' : pkg.gameKey === 'overlay_pro' ? 'Overlay Pro' : 'Oyun lisansı'}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-[12px] font-semibold text-ink-800">
