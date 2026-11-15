@@ -64,7 +64,7 @@ export function Arcade3DStage({
   const mm = Math.floor(remaining / 60);
   const ss = remaining % 60;
   const prompt = state?.prompt;
-  const topPlayers = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 3);
+  const nameRail = [...(state?.players ?? [])].sort((a, b) => a.rank - b.rank).slice(0, 12);
   const copy = {
     tr: { live: 'CANLI', demo: 'DEMO', broadcast: 'YAYIN', players: 'oyuncu', round: 'Tur', remaining: 'kalan süre', lobby: 'lobi', lobbyTitle: 'Sahne hazırlanıyor', lobbySub: 'tur birazdan başlıyor', ready: 'Yayın hazır', wait: 'İlk izleyiciyi bekle', waitSub: 'Platform sohbeti bağlıysa ilk yorum, beğeni veya hediye turu otomatik başlatır.', winner: 'yeni tur birazdan', score: 'puan' },
     en: { live: 'LIVE', demo: 'DEMO', broadcast: 'LIVE', players: 'players', round: 'Round', remaining: 'time left', lobby: 'lobby', lobbyTitle: 'Stage is getting ready', lobbySub: 'round starts soon', ready: 'Ready to broadcast', wait: 'Wait for the first viewer', waitSub: 'Once chat is connected, the first comment, like or gift starts the round.', winner: 'next round soon', score: 'pts' },
@@ -285,29 +285,29 @@ export function Arcade3DStage({
         </div>
       ) : null}
 
-      {topPlayers.length > 0 && state?.phase !== 'finished' ? (
-        <div className="absolute inset-x-3 bottom-3 z-20 flex justify-center gap-1.5">
-          {topPlayers.map((player, index) => (
+      {nameRail.length > 0 && state?.phase !== 'finished' ? (
+        <div className="absolute inset-x-2 bottom-2 z-30 flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none]">
+          {nameRail.map((player, index) => (
             <span
               key={player.id}
-              className="inline-flex max-w-[120px] items-center gap-1 rounded-full border border-white/80 bg-white/85 px-2 py-1 text-[8px] font-semibold text-ink-600 shadow-sm backdrop-blur"
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/90 bg-white/95 px-2.5 py-1.5 text-[10px] font-bold text-ink-800 shadow-md backdrop-blur sm:text-[11px]"
             >
               {player.avatar ? (
                 <img
                   src={player.avatar}
                   alt=""
                   referrerPolicy="no-referrer"
-                  className="h-3.5 w-3.5 rounded-full object-cover"
+                  className="h-4 w-4 rounded-full object-cover"
                 />
               ) : (
                 <span
-                  className="grid h-3.5 w-3.5 place-items-center rounded-full text-[6px] font-bold text-white"
+                  className="grid h-4 w-4 place-items-center rounded-full text-[7px] font-bold text-white"
                   style={{ background: player.color }}
                 >
                   {index + 1}
                 </span>
               )}
-              <span className="truncate">{player.name}</span>
+              <span className="max-w-[96px] truncate">{player.name}</span>
             </span>
           ))}
         </div>

@@ -98,8 +98,8 @@ function shadowMesh(radius: number): THREE.Mesh {
 function makeTextTexture(
   name: string,
   color: string,
-  width = 256,
-  height = 64,
+  width = 320,
+  height = 76,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -125,14 +125,14 @@ function makeTextTexture(
     .slice(0, 2)
     .toLocaleUpperCase('tr');
   ctx.fillStyle = '#ffffff';
-  ctx.font = '800 18px system-ui, sans-serif';
+  ctx.font = '800 26px system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(initials, radius, height / 2 + 1);
   ctx.fillStyle = '#2b2a33';
-  ctx.font = '700 18px system-ui, sans-serif';
+  ctx.font = '700 24px system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(name.slice(0, 16), radius + 14, height / 2 + 1);
+  ctx.fillText(name.slice(0, 18), radius + 16, height / 2 + 1);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
@@ -182,9 +182,11 @@ function addLabel(group: THREE.Object3D, texture: THREE.Texture, y: number, scal
     map: texture,
     transparent: true,
     depthWrite: false,
+    depthTest: false,
   });
   const sprite = new THREE.Sprite(material);
-  sprite.scale.set(1.45 * scale, 0.36 * scale, 1);
+  sprite.renderOrder = 999;
+  sprite.scale.set(1.85 * scale, 0.44 * scale, 1);
   sprite.position.y = y;
   group.add(sprite);
   return sprite;
@@ -2508,6 +2510,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
         this.actors.set(player.id, actor);
         this.scene.add(actor.group);
       }
+      actor.label.position.y = 2.55 + (index % 2) * 0.38;
       if (actor.labelText !== player.name) {
         actor.labelText = player.name;
         const old = actor.label.material.map;
@@ -2524,16 +2527,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       }
       actor.bar.visible = this.game.mode === 'battle' && !player.eliminated;
       actor.group.visible = !player.eliminated || this.game.mode === 'battle';
-      actor.label.visible =
-        (this.game.mode !== 'tug' && this.game.mode !== 'versus') &&
-        !player.eliminated &&
-        (this.game.mode === 'dance'
-          ? index < 4
-          : this.game.mode === 'battle' || this.game.mode === 'circle'
-            ? index < 6
-            : this.game.mode === 'quiz' || this.game.mode === 'word'
-              ? index < 4
-              : true);
+      actor.label.visible = !player.eliminated;
       actor.group.scale.setScalar(actor.baseScale * (player.eliminated ? 0.6 : 1));
       if (player.eliminated) actor.group.rotation.z = Math.PI / 2;
       else actor.group.rotation.z = 0;
@@ -2548,11 +2542,12 @@ class Arcade3DRenderer implements Arcade3DHandle {
 
   private syncKarts(state: ArcadeStateView): void {
     const seen = new Set<string>();
-    state.players.forEach((player) => {
+    state.players.forEach((player, index) => {
       seen.add(player.id);
       let kart = this.karts.get(player.id);
       if (!kart) {
         kart = this.createKart(player);
+        kart.label.position.y = 2.05 + (index % 2) * 0.38;
         this.karts.set(player.id, kart);
         this.scene.add(kart.group);
       }
@@ -2741,7 +2736,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       group.scale.setScalar(0.7);
     }
 
-    const label = addLabel(group, makeTextTexture(player.name, color), 2.18, 0.72);
+    const label = addLabel(group, makeTextTexture(player.name, color), 2.55, 1.08);
     const { canvas, texture } = makeBarTexture(color);
     const barMaterial = new THREE.SpriteMaterial({
       map: texture,
@@ -2867,7 +2862,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
     );
     spoiler.position.set(0, 0.72, 0.58);
     group.add(spoiler);
-    const label = addLabel(group, makeTextTexture(player.name, player.color), 1.65, 0.7);
+    const label = addLabel(group, makeTextTexture(player.name, player.color), 2.05, 0.82);
     return {
       group,
       body,
