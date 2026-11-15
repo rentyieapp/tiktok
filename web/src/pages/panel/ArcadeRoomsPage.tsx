@@ -31,6 +31,7 @@ import { Button, Field, Modal, PageHeader, SectionCard, Spinner } from '../../co
 import { api, ApiError } from '../../lib/api';
 import { startCheckout } from '../../lib/checkout';
 import { useToast } from '../../lib/toast';
+import { copyText } from '../../lib/clipboard';
 
 interface LicenseRow {
   gameKey: string;
@@ -129,8 +130,9 @@ export function ArcadeRoomsPage() {
 
   const copy = async (value: string) => {
     try {
-      await navigator.clipboard.writeText(value);
-      success('Kopyalandı', value);
+      const ok = await copyText(value);
+      if (ok) success('Kopyalandı', value);
+      else toastError('Kopyalanamadı', 'Adresi manuel seçebilirsin.');
     } catch {
       toastError('Kopyalanamadı', 'Adresi manuel seçebilirsin.');
     }

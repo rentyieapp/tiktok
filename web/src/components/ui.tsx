@@ -9,6 +9,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Check, Copy, Loader2, X } from 'lucide-react';
 import { initials } from '../lib/format';
+import { copyText } from '../lib/clipboard';
 
 /* ------------------------------------------------------------------ */
 /* Button                                                              */
@@ -496,19 +497,8 @@ export function CopyButton({
 }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = value;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-    }
-    setCopied(true);
+    const ok = await copyText(value);
+    setCopied(ok);
     window.setTimeout(() => setCopied(false), 1800);
   };
   return (

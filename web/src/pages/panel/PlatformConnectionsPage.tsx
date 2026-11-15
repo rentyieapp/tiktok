@@ -20,6 +20,7 @@ import type { ArcadeRoomDTO, LivePlatform, PlatformConnectionDTO } from '@shared
 import { api, ApiError } from '../../lib/api';
 import { useToast } from '../../lib/toast';
 import { Button, PageHeader, SectionCard, Spinner, StatusBadge } from '../../components/ui';
+import { copyText } from '../../lib/clipboard';
 
 const PLATFORM_META: Record<LivePlatform, { label: string; icon: typeof Twitch; help: string }> = {
   twitch: {
@@ -158,8 +159,9 @@ export function PlatformConnectionsPage() {
 
   const copy = async (value: string) => {
     try {
-      await navigator.clipboard.writeText(value);
-      success('Kopyalandı', value);
+      const ok = await copyText(value);
+      if (ok) success('Kopyalandı', value);
+      else toastError('Kopyalanamadı', 'Adresi manuel seç.');
     } catch {
       toastError('Kopyalanamadı', 'Adresi manuel seç.');
     }

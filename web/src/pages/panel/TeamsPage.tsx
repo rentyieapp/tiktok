@@ -18,6 +18,7 @@ import { api, ApiError } from '../../lib/api';
 import { useToast } from '../../lib/toast';
 import { Button, Modal, PageHeader, SectionCard, TeamCrest } from '../../components/ui';
 import { TeamEditor, TeamSummaryCard } from '../../components/TeamEditor';
+import { copyText } from '../../lib/clipboard';
 
 export function TeamsPage() {
   const { game, commands, refresh, pendingApply } = useStudio();
@@ -116,7 +117,7 @@ export function TeamsPage() {
       .map((team) => `${team.name}: !${team.joinCommand}`)
       .join('\n');
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       success('Komutlar kopyalandı', 'Yayın açıklamasına ekleyebilirsin.');
     } catch {
       toastError('Kopyalanamadı', 'Tarayıcı izinlerini kontrol et.');
@@ -204,10 +205,11 @@ export function TeamsPage() {
             language={game.language}
             onEdit={() => openEditor(team.slot)}
             onCopy={() => {
-              void navigator.clipboard
-                .writeText(`!${team.joinCommand}`)
-                .then(() => success('Komut kopyalandı', `!${team.joinCommand}`))
-                .catch(() => toastError('Kopyalanamadı'));
+              void copyText(`!${team.joinCommand}`).then((ok) =>
+                ok
+                  ? success('Komut kopyalandı', `!${team.joinCommand}`)
+                  : toastError('Kopyalanamadı'),
+              );
             }}
           />
         ))}

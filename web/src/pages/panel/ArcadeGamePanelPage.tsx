@@ -39,6 +39,7 @@ import { GameArt } from '../../components/GameArt';
 import type { OverlayPositions } from '../../components/ArcadeOverlay';
 import { OVERLAY_THEMES } from '@shared/overlayThemes';
 import { Button, Field, PageHeader, Spinner } from '../../components/ui';
+import { copyText } from '../../lib/clipboard';
 
 export function ArcadeGamePanelPage() {
   const { gameKey } = useParams<{ gameKey: string }>();
@@ -210,8 +211,9 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const copyObs = async () => {
     if (!room) return;
     try {
-      await navigator.clipboard.writeText(room.obsUrl);
-      success('OBS bağlantısı kopyalandı');
+      const ok = await copyText(room.obsUrl);
+      if (ok) success('OBS bağlantısı kopyalandı');
+      else toastError('Kopyalanamadı', 'Bağlantıyı manuel seçebilirsin.');
     } catch {
       toastError('Kopyalanamadı', 'Bağlantıyı manuel seçebilirsin.');
     }
@@ -220,8 +222,9 @@ function ArcadeGamePanel({ game }: { game: NonNullable<ReturnType<typeof findArc
   const copyOverlay = async () => {
     if (!room) return;
     try {
-      await navigator.clipboard.writeText(room.overlayUrl);
-      success('Overlay bağlantısı kopyalandı');
+      const ok = await copyText(room.overlayUrl);
+      if (ok) success('Overlay bağlantısı kopyalandı');
+      else toastError('Kopyalanamadı', 'Bağlantıyı manuel seçebilirsin.');
     } catch {
       toastError('Kopyalanamadı', 'Bağlantıyı manuel seçebilirsin.');
     }
