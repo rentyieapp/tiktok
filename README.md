@@ -915,3 +915,8 @@ Bu projedeki takım isimleri, renkler ve semboller örnektir; oyun motoruna göm
 değildir. Yayıncılar kendi takımlarını oluşturur. Kullanıcıların yüklediği görsellerin
 kullanım hakkı kendilerine aittir. Kulüp/marka armaları gibi lisans gerektiren resmî
 varlıklar için gerekli izinlerin alınması yayıncının sorumluluğundadır.
+
+
+## PostgreSQL production
+
+Production ortamı Coolify üzerinde PostgreSQL 18 ile çalışır. Kurulum, ortam değişkenleri ve yedekleme için [docs/POSTGRES.md](docs/POSTGRES.md) dosyasına bak.
