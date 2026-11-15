@@ -1,4 +1,4 @@
-const CACHE = 'meydan-shell-v1';
+const CACHE = 'meydan-shell-v2';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/favicon.svg'];
 
 self.addEventListener('install', (event) => {
