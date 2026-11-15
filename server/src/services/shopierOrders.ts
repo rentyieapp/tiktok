@@ -172,7 +172,7 @@ function activateForUser(
   return { ok: true, message: 'Shopier ödemesi doğrulandı ve lisans açıldı.' };
 }
 
-function handleOrder(db: DB, apiOrder: ShopierApiOrder): { inserted: boolean; status: string } {
+export function handleShopierOrder(db: DB, apiOrder: ShopierApiOrder): { inserted: boolean; status: string } {
   const orderId = typeof apiOrder.id === 'string' ? apiOrder.id : '';
   if (!orderId) return { inserted: false, status: 'ignored' };
   const email = normalizeEmail(apiOrder);
@@ -280,7 +280,7 @@ export async function syncShopierOrders(db: DB, config: AppConfig): Promise<Shop
     let activated = 0;
     let needsMapping = 0;
     for (const order of orders) {
-      const result = handleOrder(db, order);
+      const result = handleShopierOrder(db, order);
       if (result.inserted) inserted += 1;
       if (result.status === 'activated') activated += 1;
       if (result.status === 'needs_mapping') needsMapping += 1;

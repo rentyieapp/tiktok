@@ -1,8 +1,10 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { AppContext } from '../context.js';
 import { badRequest, notFound } from '../lib/errors.js';
 import { processPaymentWebhook } from '../services/billing.js';
 import { findPlatformConnectionByToken } from '../db/repo.js';
+import { handleShopierOrder } from '../services/shopierOrders.js';
 
 export async function paymentWebhookRoutes(app: FastifyInstance, ctx: AppContext): Promise<void> {
   app.post(
@@ -18,6 +20,38 @@ export async function paymentWebhookRoutes(app: FastifyInstance, ctx: AppContext
       return reply.send({ received: true, ...result });
     },
   );
+
+  app.post('/api/webhooks/payments/shopier', async (request, reply) => {
+    const rawBody = (request as typeof request & { rawBody?: string }).rawBody;
+    const signatureHeader = request.headers['shopier-signature'];
+    const signature = Array.isArray(signatureHeader) ? signatureHeader[0] : signatureHeader;
+    if (!ctx.config.shopierWebhookToken) {
+      return reply.code(503).send({ error: 'SHOPIER_WEBHOOK_NOT_CONFIGURED', message: 'Shopier webhook anahtarı tanımlı değil.' });
+    }
+    if (typeof rawBody !== 'string' || !signature) {
+      return reply.code(400).send({ error: 'INVALID_SIGNATURE', message: 'Shopier imzası eksik.' });
+    }
+    const expected = createHmac('sha256', ctx.config.shopierWebhookToken).update(rawBody).digest();
+    let provided: Buffer;
+    try {
+      provided = Buffer.from(signature, 'hex');
+    } catch {
+      return reply.code(400).send({ error: 'INVALID_SIGNATURE', message: 'Shopier imzası geçersiz.' });
+    }
+    if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
+      return reply.code(400).send({ error: 'INVALID_SIGNATURE', message: 'Shopier imzası doğrulanamadı.' });
+    }
+    let payload: unknown;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      return reply.code(400).send({ error: 'INVALID_PAYLOAD', message: 'Shopier gövdesi JSON değil.' });
+    }
+    const record = payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
+    const order = (record.data && typeof record.data === 'object' ? record.data : record) as Parameters<typeof handleShopierOrder>[1];
+    const result = handleShopierOrder(ctx.db, order);
+    return reply.send({ received: true, inserted: result.inserted, status: result.status });
+  });
 
   app.post('/api/webhooks/payments/:providerId', async (request, reply) => {
     const { providerId } = request.params as { providerId: string };
