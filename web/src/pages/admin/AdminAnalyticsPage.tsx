@@ -112,7 +112,7 @@ export function AdminAnalyticsPage() {
 
             <SectionCard title="Retention" icon={<TrendingUp size={16} />} description="Kayıt gününe göre D1 / D7 / D30 dönüş oranı." bodyClassName="p-0">
               <div className="table-wrap border-0 shadow-none">
-                <table className="table-base">
+                <table className="table-base" style={{ minWidth: 0 }}>
                   <thead><tr><th>Kohort</th><th>Boyut</th><th>D1</th><th>D7</th><th>D30</th></tr></thead>
                   <tbody>
                     {data.retention.length === 0 ? <tr><td colSpan={5}>Henüz kohort yok.</td></tr> : data.retention.slice(-8).map((row) => (
