@@ -1624,6 +1624,44 @@ export function listGameLicenses(db: DB, userId: string): GameLicenseRow[] {
     .all(userId) as GameLicenseRow[];
 }
 
+
+export interface AdminGameLicenseRow extends GameLicenseRow {
+  email: string;
+  display_name: string;
+  package_name: string | null;
+}
+
+export function listAllGameLicenses(db: DB): AdminGameLicenseRow[] {
+  return db
+    .prepare(
+      `SELECT gl.*, u.email, u.display_name, p.name AS package_name
+       FROM game_licenses gl
+       JOIN users u ON u.id = gl.user_id
+       LEFT JOIN packages p ON p.id = gl.package_id
+       ORDER BY gl.expires_at DESC, gl.created_at DESC`,
+    )
+    .all() as AdminGameLicenseRow[];
+}
+
+export function findGameLicenseById(db: DB, id: string): GameLicenseRow | undefined {
+  return db.prepare('SELECT * FROM game_licenses WHERE id = ?').get(id) as
+    | GameLicenseRow
+    | undefined;
+}
+
+export function updateGameLicense(
+  db: DB,
+  id: string,
+  patch: { expiresAt?: string; status?: 'active' | 'expired' | 'revoked' },
+  now: string,
+): void {
+  const current = findGameLicenseById(db, id);
+  if (!current) return;
+  db.prepare(
+    'UPDATE game_licenses SET expires_at = ?, status = ?, updated_at = ? WHERE id = ?',
+  ).run(patch.expiresAt ?? current.expires_at, patch.status ?? current.status, now, id);
+}
+
 export function countActiveGameLicenses(db: DB, nowIsoValue: string): number {
   const row = db
     .prepare(

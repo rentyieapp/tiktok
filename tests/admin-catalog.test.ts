@@ -291,6 +291,60 @@ describe('manuel lisans ve Shopier hazırlığı', () => {
     expect(payments.json().payments.some((payment: any) => payment.provider === 'manual')).toBe(true);
   });
 
+  it('admin oyun lisansını oluşturur, süre ekler ve iptal eder', async () => {
+    const { app: server } = await app();
+    const admin = await adminCookie(server);
+    const buyerEmail = uniqueEmail('license');
+    const buyer = await registerUser(server, buyerEmail);
+
+    const created = await server.inject({
+      method: 'POST',
+      url: '/api/admin/game-licenses',
+      headers: { cookie: admin },
+      payload: { email: buyerEmail, gameKey: 'dance', durationDays: 30, note: 'Shopier #CRUD-1' },
+    });
+    expect(created.statusCode).toBe(201);
+    const license = created.json().license;
+    expect(license.gameKey).toBe('dance');
+    expect(license.status).toBe('active');
+
+    const access = await server.inject({
+      method: 'GET',
+      url: '/api/arcade/access',
+      headers: { cookie: buyer.cookie },
+    });
+    expect(access.json().licenses.some((row: any) => row.gameKey === 'dance')).toBe(true);
+
+    const listed = await server.inject({
+      method: 'GET',
+      url: '/api/admin/game-licenses',
+      headers: { cookie: admin },
+    });
+    expect(listed.json().licenses.some((row: any) => row.id === license.id)).toBe(true);
+
+    const updated = await server.inject({
+      method: 'PUT',
+      url: `/api/admin/game-licenses/${license.id}`,
+      headers: { cookie: admin },
+      payload: { durationDays: 1 },
+    });
+    expect(updated.statusCode).toBe(200);
+    expect(Date.parse(updated.json().license.expiresAt)).toBeGreaterThan(Date.parse(license.expiresAt));
+
+    const revoked = await server.inject({
+      method: 'DELETE',
+      url: `/api/admin/game-licenses/${license.id}`,
+      headers: { cookie: admin },
+    });
+    expect(revoked.statusCode).toBe(200);
+    const after = await server.inject({
+      method: 'GET',
+      url: '/api/admin/game-licenses',
+      headers: { cookie: admin },
+    });
+    expect(after.json().licenses.find((row: any) => row.id === license.id)?.status).toBe('revoked');
+  });
+
   it('Shopier mağaza adresi yalnızca admin tarafından kaydedilir', async () => {
     const { app: server } = await app();
     const admin = await adminCookie(server);

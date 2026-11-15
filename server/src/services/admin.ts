@@ -5,18 +5,23 @@ import {
   countGameProducts,
   countGames,
   countUsers,
+  createGameLicense,
   createPackage,
   createPayment,
   createSubscription,
+  findActiveGameLicense,
   findActiveSubscription,
+  findGameLicenseById,
   findPackageById,
   findUserByEmail,
+  listAllGameLicenses,
   listAllPayments,
   listGameProducts,
   listPackageSales,
   listPackages,
   listPublishers,
   sumSucceededRevenue,
+  updateGameLicense,
   type PackageRow,
   type UserRow,
 } from '../db/repo.js';
@@ -128,6 +133,118 @@ export interface ManualLicenseInput {
 }
 
 /** Shopier/manuel satışlar için admin tarafından lisans tanımlama. */
+
+export interface AdminGameLicenseDTO {
+  id: string;
+  email: string;
+  displayName: string;
+  gameKey: string;
+  gameName: string;
+  packageName: string | null;
+  startsAt: string;
+  expiresAt: string;
+  status: 'active' | 'expired' | 'revoked';
+}
+
+function toAdminGameLicense(row: ReturnType<typeof listAllGameLicenses>[number]): AdminGameLicenseDTO {
+  const game = ARCADE_GAME_LIST.find((entry) => entry.key === row.game_key);
+  return {
+    id: row.id,
+    email: row.email,
+    displayName: row.display_name,
+    gameKey: row.game_key,
+    gameName: game?.name ?? row.game_key,
+    packageName: row.package_name ?? null,
+    startsAt: row.starts_at,
+    expiresAt: row.expires_at,
+    status: row.status,
+  };
+}
+
+export function listAdminGameLicenses(db: DB): AdminGameLicenseDTO[] {
+  return listAllGameLicenses(db).map(toAdminGameLicense);
+}
+
+export interface AdminGameLicenseInput {
+  email: string;
+  gameKey: string;
+  durationDays: number;
+  note?: string;
+}
+
+export function grantAdminGameLicense(
+  db: DB,
+  input: AdminGameLicenseInput,
+  admin: UserRow,
+): AdminGameLicenseDTO {
+  const user = findUserByEmail(db, input.email.trim().toLowerCase());
+  if (!user) throw notFound('Bu e-posta ile kayıtlı yayıncı bulunamadı.');
+  if (user.role !== 'publisher') throw badRequest('Admin hesaplarına oyun lisansı tanımlanamaz.');
+  const game = ARCADE_GAME_LIST.find((entry) => entry.key === input.gameKey);
+  if (!game) throw notFound('Oyun bulunamadı.');
+  const pkg = listPackages(db, true).find(
+    (entry) => entry.game_key === input.gameKey && entry.duration_days === input.durationDays,
+  );
+  if (!pkg) {
+    throw notFound(`${game.name} için ${input.durationDays} günlük aktif paket bulunamadı.`);
+  }
+  const now = nowIso();
+  const current = findActiveGameLicense(db, user.id, game.key, now);
+  const base = current ? Math.max(Date.now(), Date.parse(current.expires_at) || 0) : Date.now();
+  const expiresAt = isoPlusDays(input.durationDays, new Date(base));
+  const licenseId = randomId('lic');
+  createGameLicense(db, {
+    id: licenseId,
+    userId: user.id,
+    gameKey: game.key,
+    packageId: pkg.id,
+    paymentId: null,
+    startsAt: now,
+    expiresAt,
+    now,
+  });
+  return {
+    id: licenseId,
+    email: user.email,
+    displayName: user.display_name,
+    gameKey: game.key,
+    gameName: game.name,
+    packageName: pkg.name,
+    startsAt: now,
+    expiresAt,
+    status: 'active',
+  };
+}
+
+export function updateAdminGameLicense(
+  db: DB,
+  id: string,
+  input: { durationDays?: number; expiresAt?: string; status?: 'active' | 'expired' | 'revoked' },
+): AdminGameLicenseDTO {
+  const existing = findGameLicenseById(db, id);
+  if (!existing) throw notFound('Lisans bulunamadı.');
+  const now = nowIso();
+  let expiresAt = existing.expires_at;
+  if (input.durationDays) {
+    const base = Math.max(Date.now(), Date.parse(existing.expires_at) || 0);
+    expiresAt = isoPlusDays(input.durationDays, new Date(base));
+  } else if (input.expiresAt) {
+    const parsed = Date.parse(input.expiresAt);
+    if (Number.isNaN(parsed)) throw badRequest('Geçersiz bitiş tarihi.');
+    expiresAt = new Date(parsed).toISOString();
+  }
+  updateGameLicense(db, id, { expiresAt, status: input.status ?? (input.durationDays ? 'active' : undefined) }, now);
+  const row = listAllGameLicenses(db).find((entry) => entry.id === id);
+  if (!row) throw notFound('Lisans bulunamadı.');
+  return toAdminGameLicense(row);
+}
+
+export function revokeAdminGameLicense(db: DB, id: string): void {
+  const existing = findGameLicenseById(db, id);
+  if (!existing) throw notFound('Lisans bulunamadı.');
+  updateGameLicense(db, id, { status: 'revoked' }, nowIso());
+}
+
 export function grantManualLicense(
   db: DB,
   input: ManualLicenseInput,

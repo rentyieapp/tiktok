@@ -3,7 +3,7 @@
 Tarih: 2026-11-14 · Sürüm: MVP 1.0
 
 Bu belge, proje brief'indeki 17 kabul senaryosunu ve 12 fazın durumunu özetler.
-Tüm otomatik testler `npm test` ile çalışır; son sonuç **88/88 geçti**.
+Tüm otomatik testler `npm test` ile çalışır; son sonuç **89/89 geçti**.
 
 ## Faz durumu
 
@@ -27,6 +27,7 @@ Tüm otomatik testler `npm test` ile çalışır; son sonuç **88/88 geçti**.
 | 17 | Bilgi Arenası 24 hazır soru + yayıncı soru editörü + karıştırma | ✅ Tamam | `arcade.test.ts`, `arcade-rooms.test.ts` |
 | 18 | Arcade 5 dil, özel katılım/ayrılma/takım komutları ve OBS HUD çevirisi | ✅ Tamam | `arcade-rooms.test.ts`, oyun paneli |
 | 19 | Tüm arayüz için TR/EN dil değiştirici ve İngilizce vitrin/panel | ✅ Tamam | Tarayıcı görsel kontrolü |
+| 20 | Admin oyun lisansı CRUD: oluştur, listele, süre ekle, iptal et | ✅ Tamam | `admin-catalog.test.ts` |
 
 Her faz sonunda tip kontrolü, testler ve tarayıcı görsel kontrolü yapıldı. Mevcut
 özellikler sonraki fazlarda bozulmadı; test paketi bunu doğrular.

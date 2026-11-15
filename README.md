@@ -61,7 +61,7 @@ npm run dev          # sunucu + Vite birlikte
 npm run dev:server   # yalnız Fastify + WebSocket (:8787)
 npm run dev:web      # yalnız Vite (:5173, /api ve /ws proxy)
 npm run seed:demo    # demo yayıncı/oyun/geçmiş verisi
-npm test             # 88 entegrasyon + birim testi
+npm test             # 89 entegrasyon + birim testi
 npm run typecheck    # tüm TS projesi
 npm run build        # web production build (web/dist)
 npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
@@ -172,7 +172,7 @@ npm start            # web/dist varsa :8787 üzerinden uygulamayı servis eder
 │   ├── src/game/           # Taraftar Savaşı Three.js renderer + OBS overlay
 │   ├── src/arcade/         # 30 oyunun Three.js sahne renderer'ı
 │   ├── src/components/     # Arcade3DStage, 2D fallback, GameArt, panel layout
-├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (88)
+├── tests/                  # API + WebSocket + motor + admin + arcade + platform testleri (89)
 └── scripts/seed-demo.ts
 ```
 
@@ -464,7 +464,7 @@ Tüm sorgular `game_id` ile sınırlıdır. İki yayıncının verisi birbirine 
 npm test
 ```
 
-**88 test**, 8 dosya:
+**89 test**, 8 dosya:
 
 | Dosya | Kapsam |
 | --- | --- |
@@ -769,6 +769,13 @@ stüdyosu (3D Taraftar Savaşı, takımlar, komutlar, istatistikler) çalışmay
 - **WhatsApp destek:** `VITE_SUPPORT_WHATSAPP` tanımlanınca site genelinde canlı destek butonu.
 - **Moderasyon:** canlı oyuncu listesi, odadan çıkarma ve **kalıcı ban/blocklist**;
   platform avatarları (YouTube/TikTok) varsa moderasyon ve top-3 HUD’ta gösterilir.
+
+### Admin oyun lisansı CRUD
+
+- Yayıncıya oyun bazlı manuel lisans verme.
+- Lisansları listeleme, süre ekleme ve iptal etme.
+- Paket aboneliği ile oyun lisansını aynı modalda ayırma.
+- Tüm işlemler admin API’si ve testlerle doğrulanır.
 
 ### Oyun sayfası içerikleri
 

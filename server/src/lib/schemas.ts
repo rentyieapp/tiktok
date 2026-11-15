@@ -274,3 +274,23 @@ export const manualLicenseSchema = z
     note: z.string().trim().max(200).optional(),
   })
   .strict();
+
+export const adminGameLicenseCreateSchema = z
+  .object({
+    email: emailSchema,
+    gameKey: z.string().trim().min(1).max(64),
+    durationDays: z.number().int().min(1).max(3650),
+    note: z.string().trim().max(200).optional(),
+  })
+  .strict();
+
+export const adminGameLicenseUpdateSchema = z
+  .object({
+    durationDays: z.number().int().min(1).max(3650).optional(),
+    expiresAt: z.string().datetime({ offset: true }).optional(),
+    status: z.enum(['active', 'expired', 'revoked']).optional(),
+  })
+  .strict()
+  .refine((value) => value.durationDays !== undefined || value.expiresAt !== undefined || value.status !== undefined, {
+    message: 'Güncelleme için en az bir alan gerekli.',
+  });

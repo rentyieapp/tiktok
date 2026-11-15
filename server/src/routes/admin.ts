@@ -26,6 +26,8 @@ import {
   adminPackageSchema,
   adminSettingsSchema,
   manualLicenseSchema,
+  adminGameLicenseCreateSchema,
+  adminGameLicenseUpdateSchema,
   parseBody,
 } from '../lib/schemas.js';
 import { rowToGameProduct, rowToPackage } from '../game/mappers.js';
@@ -33,6 +35,10 @@ import { requireUser } from '../services/session.js';
 import {
   getAdminOverview,
   grantManualLicense,
+  grantAdminGameLicense,
+  listAdminGameLicenses,
+  revokeAdminGameLicense,
+  updateAdminGameLicense,
   listAdminPayments,
   listAdminPublishers,
   requireAdmin,
@@ -216,6 +222,32 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
     if (!user) throw notFound('Bu e-posta ile kayıtlı yayıncı bulunamadı.');
     const result = grantManualLicense(db, body, admin);
     return reply.code(201).send(result);
+  });
+
+  app.get('/api/admin/game-licenses', async (request, reply) => {
+    adminUser(request);
+    return reply.send({ licenses: listAdminGameLicenses(db) });
+  });
+
+  app.post('/api/admin/game-licenses', async (request, reply) => {
+    const admin = adminUser(request);
+    const body = parseBody(adminGameLicenseCreateSchema, request.body);
+    const license = grantAdminGameLicense(db, body, admin);
+    return reply.code(201).send({ license });
+  });
+
+  app.put('/api/admin/game-licenses/:id', async (request, reply) => {
+    adminUser(request);
+    const { id } = request.params as { id: string };
+    const body = parseBody(adminGameLicenseUpdateSchema, request.body);
+    return reply.send({ license: updateAdminGameLicense(db, id, body) });
+  });
+
+  app.delete('/api/admin/game-licenses/:id', async (request, reply) => {
+    adminUser(request);
+    const { id } = request.params as { id: string };
+    revokeAdminGameLicense(db, id);
+    return reply.send({ ok: true, revoked: true });
   });
 
   /* ------------------------------- Ayarlar ------------------------------ */
