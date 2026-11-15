@@ -1,9 +1,9 @@
 import { createRequire } from 'node:module';
-import type { PoolClient, QueryResult } from 'pg';
+import type { Client, QueryResult } from 'pg';
 
 const require = createRequire(import.meta.url);
 const pg = require('pg') as typeof import('pg');
-const Pool = pg.Pool;
+const ClientCtor = pg.Client;
 const deasync = require('deasync') as { loopWhile: (predicate: () => boolean) => void };
 
 export interface Statement<Row = Record<string, unknown>> {
@@ -71,41 +71,39 @@ function waitForCallback<T>(
 }
 
 export class PostgresDatabase implements SyncDatabase {
-  private pool: import('pg').Pool;
-  private txClient: PoolClient | null = null;
+  private client: Client;
   private txDepth = 0;
 
   constructor(connectionString: string) {
-    this.pool = new Pool({
+    this.client = new ClientCtor({
       connectionString,
-      max: Number(process.env.PG_POOL_MAX || 5),
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 15_000,
       ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : undefined,
     });
-    waitForCallback<QueryResult>((callback) => this.pool.query('CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)', callback));
+    waitForCallback<void>((callback) => {
+      this.client.connect((error: Error | undefined) => callback(error ?? null, undefined));
+    });
+    waitForCallback<QueryResult>((callback) =>
+      this.client.query(
+        'CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)',
+        callback,
+      ),
+    );
   }
 
   private query(sql: string, params: unknown[]): QueryResult {
     const text = convertSql(sql);
-    if (this.txClient) return waitForCallback<QueryResult>((callback) => this.txClient!.query(text, params, callback));
-    return waitForCallback<QueryResult>((callback) => this.pool.query(text, params, callback));
+    return waitForCallback<QueryResult>((callback) => this.client.query(text, params, callback));
   }
 
-  prepare<Row = Record<string, unknown>>(sql: string): Statement<Row> {
+  prepare<Row = any>(sql: string): Statement<Row> {
     return {
       run: (...params: unknown[]) => {
         const result = this.query(sql, params);
         return { changes: result.rowCount ?? 0, lastInsertRowid: 0 };
       },
-      get: (...params: unknown[]) => {
-        const result = this.query(sql, params);
-        return result.rows[0] as Row | undefined;
-      },
-      all: (...params: unknown[]) => {
-        const result = this.query(sql, params);
-        return result.rows as Row[];
-      },
+      get: (...params: unknown[]) => this.query(sql, params).rows[0] as Row | undefined,
+      all: (...params: unknown[]) => this.query(sql, params).rows as Row[],
     };
   }
 
@@ -119,31 +117,22 @@ export class PostgresDatabase implements SyncDatabase {
 
   transaction<T>(fn: () => T): () => T {
     return () => {
-      if (!this.txClient) {
-        const client = waitForCallback<PoolClient>((callback) => this.pool.connect((error: Error | undefined, connected: PoolClient | undefined) => callback(error ?? null, connected as PoolClient)));
-        this.txClient = client;
-        this.txDepth = 0;
-        waitForCallback<QueryResult>((callback) => client.query('BEGIN', callback));
-      }
+      const outer = this.txDepth === 0;
+      const savepoint = `sp_${this.txDepth + 1}`;
+      if (outer) this.query('BEGIN', []);
+      else this.query(`SAVEPOINT ${savepoint}`, []);
       this.txDepth += 1;
-      const savepoint = `sp_${this.txDepth}`;
-      waitForCallback<QueryResult>((callback) => this.txClient!.query(`SAVEPOINT ${savepoint}`, callback));
       try {
         const result = fn();
-        waitForCallback<QueryResult>((callback) => this.txClient!.query(`RELEASE SAVEPOINT ${savepoint}`, callback));
         this.txDepth -= 1;
-        if (this.txDepth === 0) waitForCallback<QueryResult>((callback) => this.txClient!.query('COMMIT', callback));
+        if (outer) this.query('COMMIT', []);
+        else this.query(`RELEASE SAVEPOINT ${savepoint}`, []);
         return result;
       } catch (error) {
-        waitForCallback<QueryResult>((callback) => this.txClient!.query(`ROLLBACK TO SAVEPOINT ${savepoint}`, callback));
-        this.txDepth -= 1;
-        if (this.txDepth === 0) waitForCallback<QueryResult>((callback) => this.txClient!.query('ROLLBACK', callback));
+        this.txDepth = Math.max(0, this.txDepth - 1);
+        if (outer) this.query('ROLLBACK', []);
+        else this.query(`ROLLBACK TO SAVEPOINT ${savepoint}`, []);
         throw error;
-      } finally {
-        if (this.txDepth === 0 && this.txClient) {
-          this.txClient.release();
-          this.txClient = null;
-        }
       }
     };
   }
@@ -167,6 +156,10 @@ export class PostgresDatabase implements SyncDatabase {
   }
 
   close(): void {
-    try { waitForCallback<void>((callback) => this.pool.end(() => callback(null, undefined as void))); } catch { /* yoksay */ }
+    try {
+      waitForCallback<void>((callback) => this.client.end(() => callback(null, undefined as void)));
+    } catch {
+      /* yoksay */
+    }
   }
 }
