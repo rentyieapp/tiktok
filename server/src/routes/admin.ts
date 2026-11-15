@@ -14,6 +14,7 @@ import {
   listGameProducts,
   listPackages,
   setAppSetting,
+  setPackageShopierProductId,
   updateGameProduct,
   updatePackage,
   type GameProductRow,
@@ -28,6 +29,7 @@ import {
   manualLicenseSchema,
   adminGameLicenseCreateSchema,
   adminGameLicenseUpdateSchema,
+  shopierProductMapSchema,
   parseBody,
 } from '../lib/schemas.js';
 import { rowToGameProduct, rowToPackage } from '../game/mappers.js';
@@ -309,6 +311,16 @@ export async function adminRoutes(app: FastifyInstance, ctx: AppContext): Promis
   app.post('/api/admin/shopier/sync', async (request, reply) => {
     adminUser(request);
     return reply.send(await syncShopierOrders(db, config));
+  });
+
+  app.put('/api/admin/shopier/map', async (request, reply) => {
+    adminUser(request);
+    const body = parseBody(shopierProductMapSchema, request.body);
+    const pkg = findPackageById(db, body.packageId);
+    if (!pkg) throw notFound('Paket bulunamadı.');
+    const productId = (body.shopierProductId.match(/(\d{4,})/)?.[1] ?? body.shopierProductId).trim();
+    setPackageShopierProductId(db, pkg.id, productId);
+    return reply.send({ ok: true, packageId: pkg.id, shopierProductId: productId });
   });
 
   app.get('/api/admin/health', async (request, reply) => {

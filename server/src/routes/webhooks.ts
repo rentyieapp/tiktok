@@ -4,7 +4,7 @@ import type { AppContext } from '../context.js';
 import { badRequest, notFound } from '../lib/errors.js';
 import { processPaymentWebhook } from '../services/billing.js';
 import { findPlatformConnectionByToken } from '../db/repo.js';
-import { handleShopierOrder } from '../services/shopierOrders.js';
+import { fetchShopierOrder, handleShopierOrder } from '../services/shopierOrders.js';
 
 export async function paymentWebhookRoutes(app: FastifyInstance, ctx: AppContext): Promise<void> {
   app.post(
@@ -48,9 +48,19 @@ export async function paymentWebhookRoutes(app: FastifyInstance, ctx: AppContext
       return reply.code(400).send({ error: 'INVALID_PAYLOAD', message: 'Shopier gövdesi JSON değil.' });
     }
     const record = payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
-    const order = (record.data && typeof record.data === 'object' ? record.data : record) as Parameters<typeof handleShopierOrder>[1];
-    const result = handleShopierOrder(ctx.db, order);
-    return reply.send({ received: true, inserted: result.inserted, status: result.status });
+    const bodyOrder = (record.data && typeof record.data === 'object' ? record.data : record) as Record<string, unknown>;
+    const orderId = typeof bodyOrder.id === 'string' ? bodyOrder.id : '';
+    if (!orderId) {
+      return reply.code(400).send({ error: 'INVALID_PAYLOAD', message: 'Shopier sipariş ID’si eksik.' });
+    }
+    // order.created yalnızca bir bildirimdir; ödeme durumu Shopier API’sinden
+    // yetkili sipariş kaydı okunarak doğrulanır. Body’deki paymentStatus’a güvenilmez.
+    const verifiedOrder = await fetchShopierOrder(ctx.config.shopierPat, orderId);
+    if (!verifiedOrder) {
+      return reply.send({ received: true, verified: false, status: 'verification_pending' });
+    }
+    const result = handleShopierOrder(ctx.db, verifiedOrder);
+    return reply.send({ received: true, verified: true, inserted: result.inserted, status: result.status });
   });
 
   app.post('/api/webhooks/payments/:providerId', async (request, reply) => {

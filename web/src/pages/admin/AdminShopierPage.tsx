@@ -50,6 +50,9 @@ export function AdminShopierPage() {
   const [apiStatus, setApiStatus] = useState<{ configured: boolean; connected: boolean; orderCount: number; message: string } | null>(null);
   const [orders, setOrders] = useState<ShopierOrder[]>([]);
   const [syncing, setSyncing] = useState(false);
+  const [mapPackageId, setMapPackageId] = useState('');
+  const [mapProductId, setMapProductId] = useState('');
+  const [mapping, setMapping] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -91,6 +94,25 @@ export function AdminShopierPage() {
       toastError('Shopier kontrol edilemedi', caught instanceof ApiError ? caught.message : 'Tekrar dene.');
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const mapProduct = async () => {
+    const productId = mapProductId.match(/(\d{4,})/)?.[1] ?? mapProductId.trim();
+    if (!mapPackageId || !productId) {
+      toastError('Eksik bilgi', 'Paket ve Shopier ürün ID/link gerekli.');
+      return;
+    }
+    setMapping(true);
+    try {
+      await api.put('/api/admin/shopier/map', { packageId: mapPackageId, shopierProductId: productId });
+      success('Ürün eşleştirildi', `Shopier ürün ID: ${productId}`);
+      setMapProductId('');
+      await load();
+    } catch (caught) {
+      toastError('Eşleştirilemedi', caught instanceof ApiError ? caught.firstDetail() ?? caught.message : 'Tekrar dene.');
+    } finally {
+      setMapping(false);
     }
   };
 
@@ -139,6 +161,27 @@ export function AdminShopierPage() {
           </Link>
           ile aktive edebilirsin. Mağazayı açman sorun değil; bu ekran yalnızca hazırlık içindir.
         </span>
+      </div>
+
+      <div className="mb-5">
+        <SectionCard
+          title="Manuel ürün eşleştirme"
+          description="Shopier ürün API’si 403 verdiği için ürün ID’sini panelden bir kez eşleştir. Siparişler bu ID ile otomatik eşleşir."
+          icon={<Link2 size={16} />}
+        >
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <Field label="Rook Works paketi">
+              <select className="input text-xs" value={mapPackageId} onChange={(event) => setMapPackageId(event.target.value)}>
+                <option value="">Paket seç</option>
+                {packages.map((pkg) => <option key={pkg.id} value={pkg.id}>{pkg.name} · {formatPrice(pkg.priceCents, pkg.currency)}</option>)}
+              </select>
+            </Field>
+            <Field label="Shopier ürün ID veya link" hint="Örn. 52979758 veya https://www.shopier.com/rookworks/52979758">
+              <input className="input text-xs" value={mapProductId} onChange={(event) => setMapProductId(event.target.value)} placeholder="52979758" />
+            </Field>
+            <Button variant="brand" icon={<Link2 size={14} />} loading={mapping} onClick={() => void mapProduct()}>Eşleştir</Button>
+          </div>
+        </SectionCard>
       </div>
 
       <div className="mb-5">
@@ -254,6 +297,7 @@ export function AdminShopierPage() {
                     <th>Paket</th>
                     <th>Süre</th>
                     <th>Fiyat</th>
+                    <th>Ürün ID</th>
                     <th>Shopier</th>
                   </tr>
                 </thead>
@@ -268,6 +312,7 @@ export function AdminShopierPage() {
                       <td className="text-[10px] font-medium text-ink-700">
                         {formatPrice(pkg.priceCents, pkg.currency)}
                       </td>
+                      <td className="font-mono text-[10px] text-ink-500">{pkg.shopierProductId || '—'}</td>
                       <td>
                         {pkg.shopierUrl ? (
                           <a

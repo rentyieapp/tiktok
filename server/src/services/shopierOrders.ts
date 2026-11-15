@@ -33,7 +33,7 @@ interface ShopierAddress {
   lastName?: string;
 }
 
-interface ShopierApiOrder {
+export interface ShopierApiOrder {
   id?: string;
   status?: string;
   paymentStatus?: string;
@@ -170,6 +170,24 @@ function activateForUser(
     }
   })();
   return { ok: true, message: 'Shopier ödemesi doğrulandı ve lisans açıldı.' };
+}
+
+export async function fetchShopierOrder(pat: string, orderId: string): Promise<ShopierApiOrder | null> {
+  if (!pat || !orderId) return null;
+  try {
+    const response = await fetch(`https://api.shopier.com/v1/orders/${encodeURIComponent(orderId)}`, {
+      headers: {
+        Authorization: `Bearer ${pat}`,
+        Accept: 'application/json',
+        'User-Agent': 'RookWorks/1.0',
+      },
+      signal: AbortSignal.timeout(12_000),
+    });
+    if (!response.ok) return null;
+    return (await response.json()) as ShopierApiOrder;
+  } catch {
+    return null;
+  }
 }
 
 export function handleShopierOrder(db: DB, apiOrder: ShopierApiOrder): { inserted: boolean; status: string } {
