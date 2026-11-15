@@ -290,3 +290,26 @@ describe('arcade API ve WebSocket', () => {
     expect(['notice', 'state']).toContain(noticed.type);
   });
 });
+
+describe('Gece Yarısı komutları', () => {
+  it('saklanma, tamir ve kurtarma komutlarını uygular', () => {
+    const now = 10_000;
+    const state = createArcadeState('manor', now);
+    addArcadePlayer(state, { id: 'p1', name: 'Onur', now });
+    state.phase = 'running';
+    const player = state.players[0]!;
+    player.hp = 50;
+
+    expect(arcadeAction(state, 'p1', 'comment', '!saklan', now + 100).ok).toBe(true);
+    expect(player.shieldUntil).toBeGreaterThan(now + 1_000);
+
+    player.hp = 40;
+    expect(arcadeAction(state, 'p1', 'comment', '!tamir', now + 1_000).ok).toBe(true);
+    expect(player.hp).toBeGreaterThan(40);
+
+    player.eliminated = true;
+    expect(arcadeAction(state, 'p1', 'comment', '!kurtar', now + 2_000).ok).toBe(true);
+    expect(player.eliminated).toBe(false);
+    expect(player.hp).toBeGreaterThanOrEqual(40);
+  });
+});
