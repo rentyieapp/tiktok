@@ -1,4 +1,3 @@
-import { Bird } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LogoProps {
@@ -10,10 +9,11 @@ interface LogoProps {
 export function Logo({ to = '/', theme = 'light', compact = false }: LogoProps) {
   const content = (
     <span className="flex items-center gap-2.5">
-      <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-[13px] bg-gradient-to-br from-violet-400 via-violet-600 to-indigo-800 shadow-[0_8px_24px_-8px_rgba(109,90,230,0.85)]">
-        <Bird size={22} strokeWidth={2.4} className="relative z-10 text-amber-300" />
-        <span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.45),transparent_55%)]" />
-      </span>
+      <img
+        src="/rook-bird.png"
+        alt="Rook Works"
+        className="h-10 w-10 shrink-0 object-contain drop-shadow-[0_6px_12px_rgba(109,90,230,0.25)]"
+      />
       {!compact ? (
         <span className="min-w-0 leading-none">
           <span

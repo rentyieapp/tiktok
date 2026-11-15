@@ -1,4 +1,4 @@
-const CACHE = 'rookworks-shell-v3';
+const CACHE = 'rookworks-shell-v4';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/favicon.svg'];
 
 self.addEventListener('install', (event) => {
