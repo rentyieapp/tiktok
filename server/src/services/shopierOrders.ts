@@ -256,9 +256,10 @@ export async function syncShopierOrders(db: DB, config: AppConfig): Promise<Shop
   syncInFlight = true;
   try {
     const stored = getAppSetting(db, 'shopier_last_sync');
-    const since = stored && Date.parse(stored) > Date.now() - 3_600_000
+    const sinceCandidate = stored && Date.parse(stored) > Date.now() - 3_600_000
       ? stored
-      : new Date(Date.now() - 3_600_000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+      : new Date(Date.now() - 3_600_000).toISOString();
+    const since = sinceCandidate.replace(/\.\d{3}Z$/, 'Z');
     const response = await fetch(
       `https://api.shopier.com/v1/orders?dateStart=${encodeURIComponent(since)}&limit=50`,
       {
