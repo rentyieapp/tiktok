@@ -1,0 +1,49 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:rookworks-tr:home",
+      "displayName": "Rook Works",
+      "type": "text/html",
+      "url": "https://rookworks.tr",
+      "representativeQueries": [
+        "TikTok LIVE için etkileşimli oyunlar",
+        "OBS ile yayıncı oyunu nasıl oynatılır",
+        "Rook Works oyun lisansları"
+      ]
+    },
+    {
+      "identifier": "urn:air:rookworks-tr:games",
+      "displayName": "Rook Works Oyunlar",
+      "type": "text/html",
+      "url": "https://rookworks.tr/oyunlar",
+      "representativeQueries": [
+        "Rook Works oyun listesi",
+        "TikTok canlı yayın oyunları",
+        "Halay Kına Gecesi Tavaf oyunu"
+      ]
+    },
+    {
+      "identifier": "urn:air:rookworks-tr:pricing",
+      "displayName": "Rook Works Fiyatlar",
+      "type": "text/html",
+      "url": "https://rookworks.tr/satin-al",
+      "representativeQueries": [
+        "Rook Works fiyatları",
+        "oyun lisansı satın al",
+        "tüm oyunlar paketi"
+      ]
+    },
+    {
+      "identifier": "urn:air:rookworks-tr:setup",
+      "displayName": "Rook Works OBS Kurulum",
+      "type": "text/html",
+      "url": "https://rookworks.tr/kurulum",
+      "representativeQueries": [
+        "OBS browser source TikTok canlı oyun",
+        "Rook Works OBS bağlantısı",
+        "TikTok LIVE Studio oyun ekleme"
+      ]
+    }
+  ]
+}

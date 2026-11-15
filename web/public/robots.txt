@@ -1,0 +1,35 @@
+# Rook Works — herkese açık ürün sayfaları
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /panel/
+Disallow: /admin/
+Disallow: /odeme/
+Disallow: /giris
+Disallow: /kayit
+Disallow: /sifremi-unuttum
+Disallow: /sifre-sifirla
+Disallow: /eposta-dogrula
+Sitemap: https://rookworks.tr/sitemap.xml
+
+# Arama ve AI ajanlarına açık erişim
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Bytespider
+Allow: /

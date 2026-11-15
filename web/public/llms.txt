@@ -1,0 +1,66 @@
+# Rook Works
+
+> Rook Works, yayıncıların TikTok LIVE, OBS ve tarayıcı kaynağı üzerinden izleyicileriyle oynadığı 33 etkileşimli canlı oyun sunan bir platformdur. İzleyiciler yorum, beğeni ve hediyelerle oyuna katılır; yayıncılar oyun lisanslarını satın alır ve sabit bir OBS bağlantısıyla yayına alır.
+
+## Temel sayfalar
+
+- [Ana sayfa](https://rookworks.tr/): 33 oyun, canlı yayıncı vitrini ve fiyatlandırma.
+- [Oyunlar](https://rookworks.tr/oyunlar): Tüm oyunlar, kategoriler ve süre bazlı lisans seçenekleri.
+- [Satın al](https://rookworks.tr/satin-al): Oyun lisansları ve tüm oyunlar paketleri.
+- [Kurulum](https://rookworks.tr/kurulum): OBS/TikTok LIVE Studio kurulumu ve bağlantı adımları.
+- [Uyarılar](https://rookworks.tr/uyarilar): Yayıncılar için güvenli kullanım ve platform kuralları.
+- [Temalar](https://rookworks.tr/temalar): Yayın sahneleri ve overlay temaları.
+- [Liderlik](https://rookworks.tr/liderlik): Haftalık yayıncı liderlik tablosu.
+- [Uygulama](https://rookworks.tr/uygulama): Rook Works PWA kurulumu.
+
+## Oyunlar
+
+- [Tüm oyunlar](https://rookworks.tr/oyunlar)
+
+- [Sahne 90](https://rookworks.tr/oyun/sahne-90)
+- [Profil Matbaası](https://rookworks.tr/oyun/profil-matbaasi)
+- [Halka](https://rookworks.tr/oyun/halka)
+- [Bilgi Arenası](https://rookworks.tr/oyun/bilgi-arenasi)
+- [Harf Şehir](https://rookworks.tr/oyun/harf-sehir)
+- [Arena Ustaları](https://rookworks.tr/oyun/arena-ustalari)
+- [Çubuk Hayatta Kalma](https://rookworks.tr/oyun/cubuk-hayatta-kalma)
+- [Piksel Yarış](https://rookworks.tr/oyun/piksel-yaris)
+- [Çarkıfelek](https://rookworks.tr/oyun/carkifelek)
+- [Halat Çekme](https://rookworks.tr/oyun/halat-cekme)
+- [Kızlar vs Erkekler](https://rookworks.tr/oyun/kizlar-vs-erkekler)
+- [At Yarışı](https://rookworks.tr/oyun/at-yarisi)
+- [Horon & Halay](https://rookworks.tr/oyun/horon-halay)
+- [Sıra Gecesi](https://rookworks.tr/oyun/sira-gecesi)
+- [Noche Latina](https://rookworks.tr/oyun/noche-latina)
+- [Live Concert](https://rookworks.tr/oyun/live-concert)
+- [Ramwong Fair](https://rookworks.tr/oyun/ramwong-fair)
+- [Tepe Fırlaması](https://rookworks.tr/oyun/tepe-firlamasi)
+- [Grand Prix](https://rookworks.tr/oyun/grand-prix)
+- [İzleyici Kasabası](https://rookworks.tr/oyun/izleyici-kasabasi)
+- [Karpuz Patlatma](https://rookworks.tr/oyun/karpuz-patlatma)
+- [Altın Mıknatısı](https://rookworks.tr/oyun/altin-miknatisi)
+- [Animal Run](https://rookworks.tr/oyun/animal-run)
+- [Team Clash](https://rookworks.tr/oyun/team-clash)
+- [Kalabalık Koşusu](https://rookworks.tr/oyun/kalabalik-kosusu)
+- [Balon Savaşı](https://rookworks.tr/oyun/balon-savasi)
+- [Brick Box](https://rookworks.tr/oyun/tugla-kutusu)
+- [Chest Cove](https://rookworks.tr/oyun/sandik-koyu)
+- [Gece Yarısı](https://rookworks.tr/oyun/gece-konagi)
+- [Egg Smash](https://rookworks.tr/oyun/yumurta-kirma)
+- [Halay](https://rookworks.tr/oyun/halay)
+- [Kına Gecesi](https://rookworks.tr/oyun/kina-gecesi)
+- [Tavaf](https://rookworks.tr/oyun/tavaf)
+
+## Ürün ve fiyatlandırma
+
+Oyun lisansları 1 gün, 30 gün ve 365 gün olarak satılır. Tüm oyunlar paketi günlük, aylık ve yıllık seçeneklerle sunulur. Ödeme Shopier üzerinden alınır; lisans ödeme doğrulandıktan sonra Rook Works hesabına tanımlanır.
+
+## İletişim
+
+- Web: https://rookworks.tr
+- Destek: https://rookworks.tr/uyarilar
+- Marka: Rook Works — Interactive Live Games
+
+## AI kullanım notu
+
+Bu site, arama ve AI ajanlarının herkese açık sayfaları taramasına izin verir. Panel, ödeme ve API uç noktaları herkese açık değildir.

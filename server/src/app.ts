@@ -238,6 +238,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
       root: webDist,
       prefix: '/',
       wildcard: true,
+      dotfiles: 'allow',
       cacheControl: true,
       maxAge: '1h',
       setHeaders: (response, path) => {
@@ -246,15 +247,34 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
     });
   }
 
+  // AI crawlers and non-JS fetchers get a server-rendered marketing page.
+  const botUserAgent = /bot|crawler|spider|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-searchbot|perplexitybot|google-extended|python-requests|curl\/|wget|headless/i;
+  app.get('/', async (request, reply) => {
+    const ua = String(request.headers['user-agent'] ?? '');
+    if (botUserAgent.test(ua)) {
+      return reply.type('text/html; charset=utf-8').sendFile('seo-home.html');
+    }
+    return reply.sendFile('index.html');
+  });
+
   app.setNotFoundHandler(async (request, reply) => {
     const path = (request.raw.url ?? '').split('?')[0];
     if (path.startsWith('/api/')) {
       return reply.code(404).send({ error: 'NOT_FOUND', message: 'İstenen uç nokta bulunamadı.' });
     }
-    if (hasWebBuild && request.method === 'GET') {
+    // SPA rotalarını index.html'e bırak; bilinmeyen URL'ler gerçek 404 dönsün.
+    const spaRoute =
+      path === '/' ||
+      /^\/(oyunlar|satin-al|uyarilar|kurulum|temalar|liderlik|uygulama|giris|kayit|sifremi-unuttum|sifre-sifirla|eposta-dogrula)(\/|$)/.test(path) ||
+      /^\/(oyun|canli)\/[^/]+\/?$/.test(path) ||
+      /^\/(panel|admin)(\/|$)/.test(path) ||
+      /^\/odeme(\/|$)/.test(path);
+    if (hasWebBuild && request.method === 'GET' && spaRoute) {
       return reply.sendFile('index.html');
     }
-    return reply.code(404).send({ error: 'NOT_FOUND', message: 'Sayfa bulunamadı.' });
+    return reply.code(404).type('text/html; charset=utf-8').send(
+      '<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Sayfa bulunamadı — Rook Works</title><meta name="robots" content="noindex"></head><body><h1>Sayfa bulunamadı</h1><p><a href="/">Rook Works ana sayfasına dön</a></p></body></html>',
+    );
   });
 
 

@@ -1,0 +1,57 @@
+# Rook Works
+
+> Rook Works, yayıncıların TikTok LIVE, OBS ve tarayıcı kaynağı üzerinden izleyicileriyle oynadığı 33 etkileşimli canlı oyun sunan bir platformdur. İzleyiciler yorum, beğeni ve hediyelerle oyuna katılır; yayıncılar oyun lisanslarını satın alır ve sabit bir OBS bağlantısıyla yayına alır.
+
+## Temel sayfalar
+
+- [Ana sayfa](https://rookworks.tr/): 33 oyun, canlı yayıncı vitrini ve fiyatlandırma.
+- [Oyunlar](https://rookworks.tr/oyunlar): Tüm oyunlar, kategoriler ve süre bazlı lisans seçenekleri.
+- [Satın al](https://rookworks.tr/satin-al): Oyun lisansları ve tüm oyunlar paketleri.
+- [Kurulum](https://rookworks.tr/kurulum): OBS/TikTok LIVE Studio kurulumu ve bağlantı adımları.
+- [Uyarılar](https://rookworks.tr/uyarilar): Yayıncılar için güvenli kullanım ve platform kuralları.
+- [Temalar](https://rookworks.tr/temalar): Yayın sahneleri ve overlay temaları.
+- [Liderlik](https://rookworks.tr/liderlik): Haftalık yayıncı liderlik tablosu.
+- [Uygulama](https://rookworks.tr/uygulama): Rook Works PWA kurulumu.
+
+## Oyunlar
+
+- [Sahne 90](https://rookworks.tr/oyun/sahne-90)
+- [Profil Matbaası](https://rookworks.tr/oyun/profil-matbasi)
+- [Hedef Halka](https://rookworks.tr/oyun/hedef-halka)
+- [Bilgi Arenası](https://rookworks.tr/oyun/bilgi-arenasi)
+- [Kelime Ustası](https://rookworks.tr/oyun/kelime-ustasi)
+- [Gladyatör](https://rookworks.tr/oyun/gladyator)
+- [Stick Arena](https://rookworks.tr/oyun/stick-arena)
+- [Kart Koleksiyoncusu](https://rookworks.tr/oyun/kart-koleksiyoncusu)
+- [Şans Çarkı](https://rookworks.tr/oyun/sans-carki)
+- [Halat Savaşı](https://rookworks.tr/oyun/halat-savasi)
+- [Kızlar vs Erkekler](https://rookworks.tr/oyun/kizlar-vs-erkekler)
+- [At Yarışı](https://rookworks.tr/oyun/at-yarisi)
+- [Horon & Halay](https://rookworks.tr/oyun/horon-halay)
+- [Sıra Gecesi](https://rookworks.tr/oyun/sira-gecesi)
+- [Noche Latina](https://rookworks.tr/oyun/noche-latina)
+- [Konser](https://rookworks.tr/oyun/konser)
+- [Gece Yarısı](https://rookworks.tr/oyun/gece-konagi)
+- [Halay](https://rookworks.tr/oyun/halay)
+- [Kına Gecesi](https://rookworks.tr/oyun/kina-gecesi)
+- [Tavaf](https://rookworks.tr/oyun/tavaf)
+- [Tüm oyunlar](https://rookworks.tr/oyunlar)
+
+## Ürün ve fiyatlandırma
+
+Oyun lisansları 1 gün, 30 gün ve 365 gün olarak satılır. Tüm oyunlar paketi günlük, aylık ve yıllık seçeneklerle sunulur. Ödeme Shopier üzerinden alınır; lisans ödeme doğrulandıktan sonra Rook Works hesabına tanımlanır.
+
+## İletişim
+
+- Web: https://rookworks.tr
+- Destek: https://rookworks.tr/uyarilar
+- Marka: Rook Works — Interactive Live Games
+
+## AI kullanım notu
+
+Bu site, arama ve AI ajanlarının herkese açık sayfaları taramasına izin verir. Panel, ödeme ve API uç noktaları herkese açık değildir.
+
+
+## Detailed product notes
+
+Rook Works is a multi-tenant live-game platform. Publishers buy a timed license, create one public room per game, connect TikTok LIVE/OBS as a browser source, and let viewers join by comment. Likes and gifts power the game. The platform stores licenses, rooms, sessions, payments and analytics in PostgreSQL in production. The public catalog lists 33 games; each game has daily, monthly and yearly license options. The all-games bundle unlocks every arcade game for the selected period. Shopier is the payment page; Rook Works remains the storefront and account system. Email verification signs the buyer in automatically. AI agents may read public marketing and game pages but must not access authenticated panel, admin, payment or API routes.
