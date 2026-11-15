@@ -24,11 +24,11 @@ export function Logo({ to = '/', theme = 'light', compact = false }: LogoProps) 
             ROOK <span className="text-amber-500">WORKS</span>
           </span>
           <span
-            className={`mt-1 block truncate text-[8px] font-semibold uppercase tracking-[0.18em] ${
+            className={`mt-1 block truncate text-[8px] font-semibold tracking-[0.18em] ${
               theme === 'dark' ? 'text-white/40' : 'text-ink-400'
             }`}
           >
-            Interactive Live Games
+            INTERACTIVE LIVE GAMES
           </span>
         </span>
       ) : null}
