@@ -9,7 +9,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#6d5ae6" />
+    <style>.seo-fallback{max-width:860px;margin:24px auto;padding:0 20px;font-family:system-ui,sans-serif;line-height:1.6;color:#17161d}.seo-fallback h1{font-size:30px;line-height:1.1}</style>
     <link rel="canonical" href="https://rookworks.tr/" />
+    <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Rook Works" />
@@ -63,7 +65,24 @@
     <title>Rook Works — Interactive Live Games</title>
   </head>
   <body class="h-full">
-    <div id="root" class="h-full"></div>
+    <div id="root" class="h-full">
+      <!-- İlk HTML'de anlamlı içerik: JS çalıştırmayan AI/arama botları için.
+           React açılışta bu içeriği uygulama ağacıyla değiştirir. -->
+      <main class="seo-fallback">
+        <h1>Rook Works — TikTok LIVE için etkileşimli oyunlar</h1>
+        <p>Rook Works, yayıncıların TikTok LIVE ve OBS üzerinden izleyicileriyle oynadığı 33 etkileşimli canlı oyun platformudur. İzleyiciler yorum, beğeni ve hediyelerle oyuna katılır; yayıncılar oyun lisansını satın alıp sabit OBS bağlantısıyla yayına alır.</p>
+        <h2>Oyunlar</h2>
+        <ul>
+          <li><a href="/oyun/sahne-90">Sahne 90</a> — kalabalık pistte dans ve enerji yarışı.</li>
+          <li><a href="/oyun/gece-konagi">Gece Yarısı</a> — karanlık konakta hayatta kalma.</li>
+          <li><a href="/oyun/halay">Halay</a> — davul zurna ve halay coşkusu.</li>
+          <li><a href="/oyun/kina-gecesi">Kına Gecesi</a> — mumlar, türküler ve halay.</li>
+          <li><a href="/oyun/tavaf">Tavaf</a> — halka etrafında ritim oyunu.</li>
+          <li><a href="/oyunlar">33 oyunun tamamı</a></li>
+        </ul>
+        <p><a href="/satin-al">Oyun lisansları ve tüm oyunlar paketleri</a> · <a href="/kurulum">OBS kurulumu</a> · <a href="/llms.txt">AI ürün özeti</a></p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
