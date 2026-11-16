@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { ArcadeGameDef } from '@shared/arcade';
 
 /**
@@ -6,6 +7,18 @@ import type { ArcadeGameDef } from '@shared/arcade';
  */
 export function GameArt({ game, className = '' }: { game: ArcadeGameDef; className?: string }) {
   const id = `cover-${game.key}`;
+  const [coverFailed, setCoverFailed] = useState(false);
+  if (!coverFailed) {
+    return (
+      <img
+        src={`/covers/${game.key}.webp`}
+        alt={`${game.name} canlı oyun sahnesi`}
+        loading="lazy"
+        className={`block h-full w-full object-cover ${className}`}
+        onError={() => setCoverFailed(true)}
+      />
+    );
+  }
   return (
     <svg
       viewBox="0 0 640 400"
