@@ -1064,7 +1064,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
   }
 
   private buildTavaf(): void {
-    this.baseCamera.set(0, 7.4, 18.6);
+    this.baseCamera.set(0, 6.8, 16.8);
     this.lookTarget.set(0, 2.0, 0);
     this.scene.background = new THREE.Color('#0b1420');
     this.scene.fog = new THREE.Fog(0x0b1420, 20, 40);
@@ -1154,9 +1154,11 @@ class Arcade3DRenderer implements Arcade3DHandle {
     const archMaterial = mat('#c8b99f', { roughness: 0.8 });
     for (let index = 0; index < 18; index += 1) {
       const angle = (index / 18) * Math.PI * 2;
-      const x = Math.cos(angle) * 9.3;
-      const z = Math.sin(angle) * 9.3;
-      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 3.8, 10), marble);
+      // Ön cepheyi kapatma: avlunun arka ve yan revakları görünsün.
+      if (Math.sin(angle) > 0.45) continue;
+      const x = Math.cos(angle) * 10.8;
+      const z = Math.sin(angle) * 10.8;
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 3.5, 10), marble);
       column.position.set(x, 1.9, z);
       column.castShadow = true;
       this.scene.add(column);
@@ -1171,7 +1173,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       }
     }
     for (let index = 0; index < 4; index += 1) {
-      const angle = (index / 4) * Math.PI * 2;
+      const angle = Math.PI / 4 + (index / 4) * Math.PI * 2;
       const minaret = new THREE.Group();
       const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.5, 5.6, 12), mat('#d8cbb4'));
       shaft.position.y = 2.8;
@@ -1185,7 +1187,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       );
       cap.position.y = 5.9;
       minaret.add(cap);
-      minaret.position.set(Math.cos(angle) * 10.8, 0, Math.sin(angle) * 10.8);
+      minaret.position.set(Math.cos(angle) * 13.2, 0, Math.sin(angle) * 13.2);
       this.scene.add(minaret);
     }
 
