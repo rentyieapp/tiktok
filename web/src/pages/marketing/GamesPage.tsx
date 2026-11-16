@@ -184,9 +184,6 @@ export function GamesPage() {
                 <span className="absolute left-4 top-4 rounded-full bg-brand-500 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white">
                   3D stüdyo
                 </span>
-                <span className="absolute right-4 top-4 rounded-full border border-white/20 bg-black/40 px-2.5 py-1 text-[9px] font-bold text-white/80 backdrop-blur">
-                  Ayrı motor
-                </span>
               </div>
               <div className="flex flex-1 flex-col p-4">
                 <div className="flex items-start justify-between gap-2">
