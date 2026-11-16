@@ -19,6 +19,7 @@ import { startCheckout } from '../../lib/checkout';
 import { formatPrice } from '@shared/defaults';
 import { Button } from '../../components/ui';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
+import { FanBattleDemo } from '../../components/FanBattleDemo';
 
 const PLAN_IDS = ['pkg_starter', 'pkg_pro', 'pkg_legend'];
 
@@ -86,16 +87,7 @@ export function TaraftarSavasiPage() {
             </div>
           </div>
           <div className="relative">
-            <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-2 shadow-2xl">
-              <img
-                src="/hero-arena.webp"
-                alt="Taraftar Savaşı 3D oyun ekranı: takımlar, kaleler ve komut paneli"
-                className="aspect-[9/12] w-full rounded-[1.5rem] object-cover"
-              />
-            </div>
-            <span className="absolute -bottom-3 left-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-ink-900/90 px-3 py-1.5 text-[9px] font-semibold text-white/50 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" /> Gerçek 3D oyun sahnesi
-            </span>
+            <FanBattleDemo />
           </div>
         </div>
       </section>
