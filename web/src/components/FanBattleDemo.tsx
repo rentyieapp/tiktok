@@ -126,6 +126,23 @@ export function FanBattleDemo() {
           <BattleStage view={view} config={config} mode="preview" />
         </div>
       </div>
+      <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-brand-300">Canlı katılımcılar</p>
+          <span className="text-[9px] text-white/35">{view?.players.length ?? 0} izleyici</span>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-1.5">
+          {(view?.players ?? []).slice(0, 8).map((player) => {
+            const team = teams.find((candidate) => candidate.slot === player.teamSlot);
+            return (
+              <div key={player.id} className="flex min-w-0 items-center gap-1.5 rounded-lg bg-white/[0.04] px-2 py-1.5">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: team?.primaryColor ?? '#94a3b8' }} />
+                <span className="truncate text-[10px] font-medium text-white/75">{player.name}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <div className="absolute -bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-ink-900/95 px-3 py-1.5 text-[9px] font-semibold text-white/60 shadow-float backdrop-blur">
         <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-60" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-400" /></span>
         Canlı 3D demo · kendi kendine oynuyor
