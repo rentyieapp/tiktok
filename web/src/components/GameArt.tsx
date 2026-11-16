@@ -72,11 +72,11 @@ export function GameArt({ game, className = '' }: { game: ArcadeGameDef; classNa
 function Scene({ game, id }: { game: ArcadeGameDef; id: string }) {
   switch (game.mode) {
     case 'dance':
-      return game.key === 'horon' ? <Horon game={game} id={id} /> : game.key === 'sira' ? <Sira game={game} id={id} /> : game.key === 'latina' ? <Latina game={game} id={id} /> : game.key === 'concert' ? <Concert game={game} id={id} /> : game.key === 'ramwong' ? <Ramwong game={game} id={id} /> : <Dance game={game} id={id} />;
+      return game.key === 'horon' ? <Horon game={game} id={id} /> : game.key === 'sira' ? <Sira game={game} id={id} /> : game.key === 'latina' ? <Latina game={game} id={id} /> : game.key === 'concert' ? <Concert game={game} id={id} /> : game.key === 'ramwong' ? <Ramwong game={game} id={id} /> : game.key === 'halay' ? <Halay game={game} id={id} /> : game.key === 'kina' ? <Kina game={game} id={id} /> : <Dance game={game} id={id} />;
     case 'press':
       return <Press game={game} id={id} />;
     case 'circle':
-      return <Circle game={game} id={id} />;
+      return game.key === 'tavaf' ? <Tavaf game={game} id={id} /> : <Circle game={game} id={id} />;
     case 'quiz':
       return <Quiz game={game} id={id} />;
     case 'word':
@@ -154,6 +154,65 @@ function Person({
           <circle cx="34" cy="12" r="2.5" fill="#ffffff" opacity="0.7" />
         </g>
       ) : null}
+    </g>
+  );
+}
+
+function Halay({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#3b1114" />
+      <ellipse cx="320" cy="330" rx="290" ry="48" fill="#6b2a1c" />
+      <path d="M0 250 Q320 120 640 250 L640 400 L0 400 Z" fill="#5a1c18" opacity="0.8" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <path key={i} d={`M${130 + i * 95} 0 L${170 + i * 95} 260 L${145 + i * 95} 260 Z`} fill="#fbbf24" opacity="0.08" />
+      ))}
+      <g transform="translate(320 240)">
+        <ellipse cx="0" cy="50" rx="86" ry="22" fill="#2b0d0c" opacity="0.45" />
+        <ellipse cx="0" cy="0" rx="48" ry="54" fill="#8b3a1e" />
+        <ellipse cx="0" cy="-30" rx="48" ry="16" fill="#f4dfb9" />
+        <rect x="-8" y="-30" width="16" height="70" rx="8" fill="#f4dfb9" opacity="0.8" />
+      </g>
+      {[[210, 310], [272, 330], [384, 330], [446, 310], [166, 290], [494, 290]].map(([x, y], i) => (
+        <Person key={i} x={x} y={y} color={i % 2 ? '#fbbf24' : '#dc2626'} scale={0.62} rotate={i % 2 ? 7 : -7} flip={i % 2 === 0} />
+      ))}
+      <g opacity="0.85">
+        {[0, 1, 2, 3, 4, 5].map((i) => <rect key={i} x={120 + i * 72} y="44" width="18" height="42" rx="3" fill={i % 2 ? '#fbbf24' : '#dc2626'} />)}
+      </g>
+      <text x="320" y="30" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="4" fill="#fbbf24" opacity="0.8">HALAY</text>
+    </g>
+  );
+}
+
+function Kina({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#2a1128" />
+      <ellipse cx="320" cy="330" rx="290" ry="48" fill="#4a2542" />
+      <ellipse cx="320" cy="250" rx="210" ry="110" fill="#5b2b4e" opacity="0.45" />
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
+        const x = 90 + i * 52;
+        return (
+          <g key={i}>
+            <rect x={x} y={240 + (i % 3) * 22} width="9" height="44" rx="4" fill="#f5e6d3" />
+            <circle cx={x + 4.5} cy={238 + (i % 3) * 22} r="5" fill="#ffd27a" />
+            <circle cx={x + 4.5} cy={238 + (i % 3) * 22} r="12" fill="#ffb347" opacity="0.12" />
+          </g>
+        );
+      })}
+      <g transform="translate(320 260)">
+        <ellipse cx="0" cy="48" rx="72" ry="18" fill="#2a1128" opacity="0.5" />
+        <ellipse cx="0" cy="20" rx="68" ry="16" fill="#d4a63c" />
+        <ellipse cx="0" cy="14" rx="44" ry="10" fill="#5a2a1e" />
+        <ellipse cx="0" cy="-20" rx="34" ry="40" fill="#e8a0b8" />
+        <circle cx="0" cy="-60" r="18" fill="#dfb08a" />
+        <path d="M-34 -20 Q0 -70 34 -20 L34 -8 Q0 -52 -34 -8 Z" fill="#f0abfc" opacity="0.9" />
+      </g>
+      <Person x="194" y="310" color="#a855f7" scale={0.6} rotate={-7} />
+      <Person x="248" y="330" color="#f0abfc" scale={0.58} rotate={5} flip />
+      <Person x="392" y="330" color="#a855f7" scale={0.6} rotate={-5} />
+      <Person x="446" y="310" color="#f0abfc" scale={0.58} rotate={7} flip />
+      <text x="320" y="30" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="4" fill="#f0abfc" opacity="0.82">KINA GECESİ</text>
     </g>
   );
 }
@@ -595,6 +654,55 @@ function Circle({ game, id }: { game: ArcadeGameDef; id: string }) {
         <ellipse cx="320" cy="235" rx="90" ry="30" fill="none" stroke="#f6ca63" strokeWidth="2" strokeDasharray="5 9" />
       </g>
       <text x="320" y="30" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="3" fill="#4c6a4a" opacity="0.55">HALKA</text>
+    </g>
+  );
+}
+
+function Tavaf({ game, id }: { game: ArcadeGameDef; id: string }) {
+  return (
+    <g>
+      <rect width="640" height="400" fill="#0b1420" />
+      <defs>
+        <radialGradient id={`${id}-tavaf-glow`} cx="50%" cy="45%" r="60%">
+          <stop offset="0%" stopColor="#d4a63c" stopOpacity="0.34" />
+          <stop offset="100%" stopColor="#d4a63c" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="320" cy="230" rx="300" ry="180" fill={`url(#${id}-tavaf-glow)`} />
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+        <circle key={i} cx={45 + ((i * 83) % 550)} cy={25 + ((i * 47) % 130)} r={i % 3 === 0 ? 1.8 : 1} fill="#ffe6ad" opacity="0.75" />
+      ))}
+      <ellipse cx="320" cy="342" rx="275" ry="42" fill="#cbbfa8" opacity="0.7" />
+      <ellipse cx="320" cy="330" rx="220" ry="34" fill="none" stroke="#d6b56a" strokeWidth="2" opacity="0.65" />
+      <ellipse cx="320" cy="330" rx="168" ry="24" fill="none" stroke="#d6b56a" strokeWidth="1.5" opacity="0.5" />
+      {/* minarets */}
+      {[92, 548].map((x) => (
+        <g key={x} opacity="0.9">
+          <rect x={x - 8} y="92" width="16" height="214" rx="7" fill="#d8cbb4" />
+          <rect x={x - 17} y="146" width="34" height="8" rx="4" fill="#d4a63c" />
+          <path d={`M${x - 13} 92 L${x} 62 L${x + 13} 92 Z`} fill="#8a5a1e" />
+        </g>
+      ))}
+      {/* Kâbe */}
+      <g filter={`url(#${id}-shadow)`}>
+        <rect x="255" y="154" width="130" height="164" rx="4" fill="#111111" />
+        <rect x="251" y="216" width="138" height="16" rx="2" fill="#d4a63c" />
+        <rect x="251" y="216" width="138" height="4" fill="#8a5a1e" />
+        <rect x="251" y="154" width="138" height="7" fill="#d4a63c" opacity="0.9" />
+        <rect x="305" y="244" width="30" height="62" rx="2" fill="#d4a63c" />
+        <rect x="311" y="252" width="18" height="46" rx="2" fill="#5c3a16" />
+        <rect x="267" y="182" width="7" height="30" rx="2" fill="#8a5a1e" opacity="0.8" />
+        <rect x="366" y="182" width="7" height="30" rx="2" fill="#8a5a1e" opacity="0.8" />
+      </g>
+      {/* hacılar */}
+      {[232, 274, 320, 366, 408, 448, 196].map((x, i) => (
+        <g key={x} transform={`translate(${x} ${300 + (i % 2) * 16})`}>
+          <ellipse cx="0" cy="4" rx="22" ry="34" fill="#f7f2e8" />
+          <ellipse cx="0" cy="-24" rx="11" ry="13" fill="#dfb08a" />
+          <rect x="-17" y="-12" width="34" height="6" rx="3" fill="#ffffff" opacity="0.9" />
+        </g>
+      ))}
+      <text x="320" y="30" textAnchor="middle" fontFamily="system-ui" fontSize="14" fontWeight="900" letterSpacing="4" fill="#f5d78e" opacity="0.8">TAVAF</text>
     </g>
   );
 }
