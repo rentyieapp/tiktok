@@ -618,7 +618,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
         emissiveIntensity: 0.18,
       }),
     );
-    ball.position.set(0, 6.6, -0.8);
+    ball.position.set(0, 7.5, -1.6);
     this.scene.add(ball);
     const ballLight = new THREE.PointLight(0xffd7f6, 26, 16, 2);
     ballLight.position.copy(ball.position);
