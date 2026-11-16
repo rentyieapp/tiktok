@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { HORSE_RACERS, type ArcadeGameDef, type ArcadePlayer, type ArcadeStateView } from '@shared/arcade';
+import { SCENE_IDENTITIES, type SceneMotif } from './sceneThemes';
 
 interface Actor {
   group: THREE.Group;
@@ -452,7 +453,162 @@ class Arcade3DRenderer implements Arcade3DHandle {
         this.buildGold();
         break;
     }
+    this.buildThemeFrame();
     this.buildAmbientParticles();
+  }
+
+  private buildThemeFrame(): void {
+    const identity = SCENE_IDENTITIES[this.game.key];
+    if (!identity || ['dance', 'halay', 'kina', 'tavaf', 'manor'].includes(this.game.key)) return;
+    const accent = new THREE.Color(identity.glow);
+
+    // Oyuna özel gökyüzü/ufuk paneli.
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+    const sky = ctx.createLinearGradient(0, 0, 0, 512);
+    sky.addColorStop(0, identity.sky);
+    sky.addColorStop(0.62, identity.horizon);
+    sky.addColorStop(1, identity.sky);
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, 1024, 512);
+    const glow = ctx.createRadialGradient(512, 300, 10, 512, 300, 420);
+    glow.addColorStop(0, identity.glow);
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalAlpha = 0.32;
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, 1024, 512);
+    ctx.globalAlpha = 1;
+    for (let index = 0; index < 42; index += 1) {
+      ctx.fillStyle = index % 3 === 0 ? identity.glow : '#ffffff';
+      ctx.globalAlpha = 0.14 + (index % 5) * 0.04;
+      ctx.beginPath();
+      ctx.arc((index * 137) % 1024, 30 + ((index * 71) % 220), index % 4 === 0 ? 2.2 : 1.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const backdrop = new THREE.Mesh(
+      new THREE.PlaneGeometry(34, 18),
+      new THREE.MeshBasicMaterial({ map: texture, fog: false, toneMapped: false }),
+    );
+    backdrop.position.set(0, 7, -9.6);
+    this.scene.add(backdrop);
+
+    // Oyun adı iki yan tabelada; sahneler arasında kimlik taşır.
+    const bannerTexture = makeTextTexture(identity.banner, identity.glow, 640, 96);
+    for (const side of [-1, 1]) {
+      const banner = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: bannerTexture, transparent: true, depthWrite: false }),
+      );
+      banner.position.set(side * 6.9, 3.8, -4.6);
+      banner.scale.set(4.3, 0.65, 1);
+      this.scene.add(banner);
+    }
+
+    // Ufuk çizgisinde oyuna özel geometrik tesis.
+    const arch = new THREE.Mesh(
+      new THREE.TorusGeometry(4.5, 0.045, 8, 72, Math.PI),
+      new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.7 }),
+    );
+    arch.position.set(0, 3.8, -7.1);
+    arch.rotation.z = Math.PI;
+    this.scene.add(arch);
+
+    this.buildMotif(identity.motif, accent);
+  }
+
+  private buildMotif(motif: SceneMotif, accent: THREE.Color): void {
+    const propMat = (color: string, emissive = false) =>
+      new THREE.MeshStandardMaterial({
+        color,
+        emissive: emissive ? color : 0x000000,
+        emissiveIntensity: emissive ? 0.8 : 0,
+        roughness: 0.55,
+        metalness: 0.12,
+      });
+    const add = (mesh: THREE.Mesh, x: number, y: number, z: number) => {
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      this.scene.add(mesh);
+      return mesh;
+    };
+
+    if (motif === 'print') {
+      for (let i = 0; i < 4; i += 1) add(new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.12, 0.65), propMat(i % 2 ? '#f5e6cf' : '#d9bd94')), -4.5 + i * 0.14, 0.4 + i * 0.13, -2.4);
+      add(new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.25, 1.1), propMat('#43302a')), -4.7, 0.65, -3.2);
+      add(new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.72), new THREE.MeshBasicMaterial({ color: accent, toneMapped: false })), -4.7, 1.1, -2.62);
+    } else if (motif === 'rings') {
+      for (let i = 0; i < 3; i += 1) {
+        const ring = add(new THREE.Mesh(new THREE.TorusGeometry(1.2 + i * 0.55, 0.055, 8, 48), propMat(accent.getStyle(), true)), 0, 2.1 + i * 0.9, -6.2);
+        ring.rotation.x = Math.PI / 2;
+      }
+    } else if (motif === 'quiz') {
+      for (const [x, y] of [[-4.8, 2.2], [4.8, 2.2]]) {
+        add(new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.2, 0.15), propMat('#0f2d55')), x, y, -4.9);
+        add(new THREE.Mesh(new THREE.PlaneGeometry(1.45, 0.1), new THREE.MeshBasicMaterial({ color: accent, toneMapped: false })), x, y + 0.25, -4.8);
+      }
+      add(new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.8, 0.8), propMat('#12213d')), 0, 0.9, -4.8);
+    } else if (motif === 'library') {
+      for (let i = 0; i < 6; i += 1) add(new THREE.Mesh(new THREE.BoxGeometry(0.32, 1.1 + (i % 3) * 0.2, 0.5), propMat(i % 2 ? '#6d28d9' : '#c084fc')), -5 + i * 0.38, 0.55, -3.1);
+      add(new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.1, 0.22), propMat('#3b1e5e')), 0, 1.2, -5.0);
+    } else if (motif === 'colosseum' || motif === 'temple') {
+      for (const x of [-4.6, 4.6]) {
+        add(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.32, 3.3, 10), propMat('#d8cbb4')), x, 1.65, -4.3);
+        const cap = add(new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.9, 8), propMat(accent.getStyle(), true)), x, 3.6, -4.3);
+        cap.rotation.y = Math.PI / 4;
+      }
+    } else if (motif === 'dojo') {
+      for (const x of [-4.6, 4.6]) add(new THREE.Mesh(new THREE.BoxGeometry(0.32, 3.2, 0.32), propMat('#5b3a2e')), x, 1.6, -4.4);
+      add(new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.32, 0.32), propMat('#5b3a2e')), 0, 3.2, -4.4);
+    } else if (motif === 'pixels' || motif === 'box' || motif === 'vault') {
+      for (let i = 0; i < 8; i += 1) {
+        const cube = add(new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), propMat(i % 2 ? '#22d3ee' : accent.getStyle(), i % 3 === 0)), -5 + (i % 4) * 1.5, 0.4 + Math.floor(i / 4) * 0.74, -3.1);
+        cube.rotation.y = i * 0.3;
+      }
+    } else if (motif === 'carnival' || motif === 'sky') {
+      for (let i = 0; i < 5; i += 1) {
+        const balloon = add(new THREE.Mesh(new THREE.SphereGeometry(0.42, 14, 10), propMat(i % 2 ? '#f472b6' : '#facc15', true)), -5 + i * 1.8, 4.4 + (i % 3) * 0.5, -4.8);
+        balloon.scale.y = 1.2;
+      }
+      add(new THREE.Mesh(new THREE.ConeGeometry(1.5, 1.8, 10), propMat('#7e22ce')), 0, 1.3, -5.2);
+    } else if (motif === 'rope' || motif === 'split' || motif === 'battle') {
+      add(new THREE.Mesh(new THREE.BoxGeometry(9, 0.18, 0.18), propMat(accent.getStyle(), true)), 0, 1.8, -4.2);
+      for (const x of [-4.8, 4.8]) add(new THREE.Mesh(new THREE.BoxGeometry(0.18, 3.3, 0.18), propMat('#6b3f2a')), x, 1.65, -4.2);
+    } else if (motif === 'track' || motif === 'grandprix') {
+      for (let i = 0; i < 5; i += 1) add(new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.2, 0.16), propMat(i % 2 ? '#f8fafc' : accent.getStyle())), -5 + i * 2.4, 0.6, -4.1);
+      add(new THREE.Mesh(new THREE.BoxGeometry(9, 0.15, 0.15), propMat(accent.getStyle(), true)), 0, 1.2, -4.1);
+    } else if (motif === 'village' || motif === 'courtyard' || motif === 'town') {
+      for (let i = 0; i < 4; i += 1) {
+        add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.2 + (i % 2) * 0.5, 1.2), propMat(i % 2 ? '#c8a27a' : '#e0bd92')), -5 + i * 3.1, 0.6 + (i % 2) * 0.25, -4.8);
+        add(new THREE.Mesh(new THREE.ConeGeometry(0.9, 0.6, 4), propMat('#7c2d12')), -5 + i * 3.1, 1.5 + (i % 2) * 0.5, -4.8);
+      }
+    } else if (motif === 'club' || motif === 'concert') {
+      for (const x of [-4.8, 4.8]) add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.8, 1.1), propMat('#17141f')), x, 1.4, -3.0);
+      for (let i = 0; i < 4; i += 1) add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.12, 8, 8, 1, true), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.22 })), -4 + i * 2.7, 3.6, -4.4);
+    } else if (motif === 'kitchen') {
+      add(new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.75, 1.5), propMat('#d9c6a3')), 0, 0.4, -3.8);
+      for (let i = 0; i < 4; i += 1) add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.36, 0.5, 14), propMat(i % 2 ? '#94a3b8' : '#f8fafc')), -2.1 + i * 1.4, 0.9, -3.6);
+    } else if (motif === 'savanna') {
+      for (let i = 0; i < 3; i += 1) {
+        add(new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 3.4, 8), propMat('#7c5a3a')), -5 + i * 5, 1.7, -4.8);
+        add(new THREE.Mesh(new THREE.SphereGeometry(1.1, 14, 10), propMat('#6b8e4e')), -5 + i * 5, 3.4, -4.8);
+      }
+    } else if (motif === 'city' || motif === 'mountain') {
+      for (let i = 0; i < 6; i += 1) add(new THREE.Mesh(new THREE.BoxGeometry(1.4, 2 + (i % 3) * 1.2, 1.4), propMat(i % 2 ? '#3b4b63' : '#64748b')), -6 + i * 2.4, 1 + (i % 3) * 0.6, -5.2);
+    } else if (motif === 'cove') {
+      for (let i = 0; i < 3; i += 1) {
+        const rock = add(new THREE.Mesh(new THREE.DodecahedronGeometry(1 + i * 0.25, 0), propMat('#6b7280')), -5 + i * 5, 0.8, -4.8);
+        rock.rotation.set(i, i * 0.4, 0);
+      }
+    } else if (motif === 'henna' || motif === 'wedding') {
+      for (let i = 0; i < 8; i += 1) {
+        add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.7, 7), propMat('#f5e6d3')), -4.2 + i * 1.2, 0.35, -3.8);
+        add(new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), propMat('#fbbf24', true)), -4.2 + i * 1.2, 0.78, -3.8);
+      }
+    }
   }
 
   private buildSahne90(): void {
