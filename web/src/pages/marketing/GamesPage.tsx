@@ -7,7 +7,9 @@ import {
   ShieldAlert,
   ShieldCheck,
   Search,
+  Play,
   Sparkles,
+  Swords,
   Star,
   Users,
 } from 'lucide-react';
@@ -121,6 +123,44 @@ export function GamesPage() {
       </section>
 
       <main className="container-page py-12 sm:py-16">
+        <div className="mb-10 overflow-hidden rounded-[2rem] border border-ink-800/10 bg-ink-950 text-white shadow-float">
+          <div className="grid items-center gap-0 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="relative z-10 p-6 sm:p-9 lg:p-11">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-300">
+                <Swords size={12} /> 3D stüdyo · ayrı oyun
+              </span>
+              <h2 className="mt-4 text-balance font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
+                Taraftar Savaşı 3D
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55 sm:text-base">
+                33 arcade oyunundan ayrı, kendi 3D stüdyosu olan takım savaşı. Kaleleri kur,
+                takımlarını yönet, komutları özelleştir ve kalıcı OBS bağlantınla yayına al.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <Link to="/panel/3d">
+                  <Button variant="brand" icon={<Play size={14} />}>3D oyun panelini aç</Button>
+                </Link>
+                <Link to="/satin-al">
+                  <Button variant="secondary" icon={<ArrowRight size={14} />}>3D paketleri gör</Button>
+                </Link>
+              </div>
+              <p className="mt-3 text-[10px] text-white/35">
+                Giriş gerekir · 2 / 4 / 8 takım seçenekleri · kalıcı OBS bağlantısı
+              </p>
+            </div>
+            <div className="relative min-h-[240px] overflow-hidden lg:min-h-[360px]">
+              <img
+                src="/hero-arena.webp"
+                alt="Taraftar Savaşı 3D canlı oyun sahnesi"
+                className="absolute inset-0 h-full w-full object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/20 to-transparent" />
+              <div className="absolute bottom-4 right-4 rounded-full border border-white/15 bg-ink-950/70 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/70 backdrop-blur">
+                Ayrı 3D oyun
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-600">
