@@ -31,6 +31,7 @@ import { PlatformConnectionsPage } from './pages/panel/PlatformConnectionsPage';
 import { LivePage } from './pages/live/LivePage';
 import { GamesPage } from './pages/marketing/GamesPage';
 import { BuyPage } from './pages/marketing/BuyPage';
+import { TaraftarSavasiPage } from './pages/marketing/TaraftarSavasiPage';
 import { WarningsPage } from './pages/marketing/WarningsPage';
 import { SetupGuidePage } from './pages/marketing/SetupGuidePage';
 import { ThemesPage } from './pages/marketing/ThemesPage';
@@ -81,6 +82,7 @@ export default function App() {
               <Route path="/sifre-sifirla" element={<ResetPasswordPage />} />
             <Route path="/kayit" element={<RegisterPage />} />
             <Route path="/oyunlar" element={<GamesPage />} />
+            <Route path="/oyun/taraftar-savasi" element={<TaraftarSavasiPage />} />
             <Route path="/oyun/:slug" element={<ArcadeGamePage />} />
             <Route path="/canli/:slug" element={<ArcadeRoomPage />} />
             <Route path="/satin-al" element={<BuyPage />} />

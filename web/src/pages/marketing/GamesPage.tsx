@@ -170,7 +170,7 @@ export function GamesPage() {
           {(!query || 'taraftar savaşı 3d arena'.includes(query.toLocaleLowerCase('tr'))) &&
           (filter === 'Tümü' || filter === 'Arena' || filter === 'Favoriler') ? (
             <Link
-              to="/panel/3d"
+              to="/oyun/taraftar-savasi"
               className="group relative flex flex-col overflow-hidden rounded-3xl border border-[#2b2438] bg-ink-950 text-white shadow-[0_18px_45px_-24px_rgba(20,10,40,0.75)] transition hover:-translate-y-0.5 hover:border-brand-400/50"
             >
               <div className="relative h-44 overflow-hidden">
@@ -199,7 +199,7 @@ export function GamesPage() {
                 </div>
                 <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-3 text-[10px]">
                   <span className="text-white/40">2 / 4 / 8 takım · OBS</span>
-                  <span className="inline-flex items-center gap-1 font-semibold text-brand-300">Panele git <ArrowRight size={12} /></span>
+                  <span className="inline-flex items-center gap-1 font-semibold text-brand-300">Oyunu incele <ArrowRight size={12} /></span>
                 </div>
               </div>
             </Link>
