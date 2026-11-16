@@ -123,44 +123,6 @@ export function GamesPage() {
       </section>
 
       <main className="container-page py-12 sm:py-16">
-        <div className="mb-10 overflow-hidden rounded-[2rem] border border-ink-800/10 bg-ink-950 text-white shadow-float">
-          <div className="grid items-center gap-0 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="relative z-10 p-6 sm:p-9 lg:p-11">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-300">
-                <Swords size={12} /> 3D stüdyo · ayrı oyun
-              </span>
-              <h2 className="mt-4 text-balance font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
-                Taraftar Savaşı 3D
-              </h2>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55 sm:text-base">
-                33 arcade oyunundan ayrı, kendi 3D stüdyosu olan takım savaşı. Kaleleri kur,
-                takımlarını yönet, komutları özelleştir ve kalıcı OBS bağlantınla yayına al.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-2.5">
-                <Link to="/panel/3d">
-                  <Button variant="brand" icon={<Play size={14} />}>3D oyun panelini aç</Button>
-                </Link>
-                <Link to="/satin-al">
-                  <Button variant="secondary" icon={<ArrowRight size={14} />}>3D paketleri gör</Button>
-                </Link>
-              </div>
-              <p className="mt-3 text-[10px] text-white/35">
-                Giriş gerekir · 2 / 4 / 8 takım seçenekleri · kalıcı OBS bağlantısı
-              </p>
-            </div>
-            <div className="relative min-h-[240px] overflow-hidden lg:min-h-[360px]">
-              <img
-                src="/hero-arena.webp"
-                alt="Taraftar Savaşı 3D canlı oyun sahnesi"
-                className="absolute inset-0 h-full w-full object-cover opacity-80"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/20 to-transparent" />
-              <div className="absolute bottom-4 right-4 rounded-full border border-white/15 bg-ink-950/70 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white/70 backdrop-blur">
-                Ayrı 3D oyun
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-600">
@@ -204,6 +166,47 @@ export function GamesPage() {
         </div>
 
         <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {/* Taraftar Savaşı 3D, arcade oyunlarından ayrı motor kullanan ama katalogda görünen 3D stüdyo oyunu. */}
+          {(!query || 'taraftar savaşı 3d arena'.includes(query.toLocaleLowerCase('tr'))) &&
+          (filter === 'Tümü' || filter === 'Arena' || filter === 'Favoriler') ? (
+            <Link
+              to="/panel/3d"
+              className="group relative flex flex-col overflow-hidden rounded-3xl border border-[#2b2438] bg-ink-950 text-white shadow-[0_18px_45px_-24px_rgba(20,10,40,0.75)] transition hover:-translate-y-0.5 hover:border-brand-400/50"
+            >
+              <div className="relative h-44 overflow-hidden">
+                <img
+                  src="/hero-arena.webp"
+                  alt="Taraftar Savaşı 3D arena"
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent" />
+                <span className="absolute left-4 top-4 rounded-full bg-brand-500 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white">
+                  3D stüdyo
+                </span>
+                <span className="absolute right-4 top-4 rounded-full border border-white/20 bg-black/40 px-2.5 py-1 text-[9px] font-bold text-white/80 backdrop-blur">
+                  Ayrı motor
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-[16px] font-bold text-white">Taraftar Savaşı 3D</h3>
+                    <p className="mt-1 text-[11px] leading-relaxed text-white/50">
+                      4 takım, kaleler, askerler ve komut paneli. Kendi 3D stüdyonu kur.
+                    </p>
+                  </div>
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 text-brand-300">
+                    <Swords size={16} />
+                  </span>
+                </div>
+                <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-3 text-[10px]">
+                  <span className="text-white/40">2 / 4 / 8 takım · OBS</span>
+                  <span className="inline-flex items-center gap-1 font-semibold text-brand-300">Panele git <ArrowRight size={12} /></span>
+                </div>
+              </div>
+            </Link>
+          ) : null}
           {games.map((game) => (
             <div key={game.key} className="relative">
               <ArcadeGameCard game={game} offers={offers.filter((offer) => offer.gameKey === game.key)} />
