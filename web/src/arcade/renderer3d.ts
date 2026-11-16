@@ -407,7 +407,8 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private buildScene(): void {
     switch (this.game.mode) {
       case 'dance':
-        this.buildDance();
+        if (this.game.key === 'dance') this.buildSahne90();
+        else this.buildDance();
         break;
       case 'press':
         this.buildPress();
@@ -452,6 +453,213 @@ class Arcade3DRenderer implements Arcade3DHandle {
         break;
     }
     this.buildAmbientParticles();
+  }
+
+  private buildSahne90(): void {
+    this.baseCamera.set(0, 5.9, 15.7);
+    this.lookTarget.set(0, 2.45, 0);
+    this.scene.background = new THREE.Color('#080711');
+    this.scene.fog = new THREE.Fog(0x080711, 17, 34);
+
+    const back = new THREE.Mesh(
+      new THREE.PlaneGeometry(24, 14),
+      new THREE.MeshStandardMaterial({ color: 0x12101c, roughness: 0.85 }),
+    );
+    back.position.set(0, 5.5, -7.2);
+    this.scene.add(back);
+
+    // Neon çerçeve ve kulüp duvarı.
+    for (let index = 0; index < 5; index += 1) {
+      const arch = new THREE.Mesh(
+        new THREE.TorusGeometry(4.2 + index * 0.18, 0.045, 8, 72, Math.PI),
+        new THREE.MeshStandardMaterial({
+          color: index % 2 === 0 ? 0xe0558f : 0x7c3aed,
+          emissive: index % 2 === 0 ? 0xe0558f : 0x7c3aed,
+          emissiveIntensity: 1.2,
+          transparent: true,
+          opacity: 0.8,
+        }),
+      );
+      arch.position.set(0, 4.1, -6.8 + index * 0.08);
+      arch.rotation.z = Math.PI;
+      this.scene.add(arch);
+    }
+
+    const floor = new THREE.Mesh(
+      new THREE.CylinderGeometry(5.6, 5.85, 0.28, 64),
+      new THREE.MeshStandardMaterial({
+        color: 0x12101a,
+        roughness: 0.2,
+        metalness: 0.75,
+      }),
+    );
+    floor.position.y = -0.14;
+    floor.receiveShadow = true;
+    this.scene.add(floor);
+
+    // LED dans pisti: her karo ayrı renkte yanıp söner.
+    const tiles: THREE.Mesh[] = [];
+    for (let ring = 1; ring <= 2; ring += 1) {
+      for (let index = 0; index < 16; index += 1) {
+        const angle = (index / 16) * Math.PI * 2 + (ring - 1) * 0.12;
+        const radius = 1.7 + ring * 1.55;
+        const tile = new THREE.Mesh(
+          new THREE.BoxGeometry(0.62, 0.045, 0.34),
+          new THREE.MeshStandardMaterial({
+            color: index % 2 ? 0xe0558f : 0x7c3aed,
+            emissive: index % 2 ? 0xe0558f : 0x7c3aed,
+            emissiveIntensity: 0.7,
+            roughness: 0.25,
+            metalness: 0.2,
+          }),
+        );
+        tile.position.set(Math.cos(angle) * radius, 0.04, Math.sin(angle) * radius);
+        tile.rotation.y = -angle;
+        this.scene.add(tile);
+        tiles.push(tile);
+      }
+    }
+    this.dynamic.push((_state, time) => {
+      for (let index = 0; index < tiles.length; index += 1) {
+        const tile = tiles[index]!;
+        const matTile = tile.material as THREE.MeshStandardMaterial;
+        matTile.emissiveIntensity = 0.28 + Math.abs(Math.sin(time * 3.2 + index * 0.45)) * 1.5;
+        tile.position.y = 0.04 + Math.abs(Math.sin(time * 2.1 + index)) * 0.025;
+      }
+    });
+
+    // Büyük neon sahne tabelası.
+    const signCanvas = document.createElement('canvas');
+    signCanvas.width = 1024;
+    signCanvas.height = 256;
+    const signCtx = signCanvas.getContext('2d')!;
+    const grad = signCtx.createLinearGradient(0, 0, 1024, 0);
+    grad.addColorStop(0, '#e0558f');
+    grad.addColorStop(0.5, '#ffffff');
+    grad.addColorStop(1, '#7c3aed');
+    signCtx.fillStyle = '#11101a';
+    signCtx.fillRect(0, 0, 1024, 256);
+    signCtx.strokeStyle = grad;
+    signCtx.lineWidth = 8;
+    signCtx.strokeRect(12, 12, 1000, 232);
+    signCtx.fillStyle = '#ffffff';
+    signCtx.font = '900 112px system-ui, sans-serif';
+    signCtx.textAlign = 'center';
+    signCtx.textBaseline = 'middle';
+    signCtx.fillText('SAHNE 90', 512, 132);
+    signCtx.fillStyle = 'rgba(224,85,143,0.22)';
+    signCtx.fillRect(0, 214, 1024, 4);
+    const signTexture = new THREE.CanvasTexture(signCanvas);
+    signTexture.colorSpace = THREE.SRGBColorSpace;
+    const sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(7.6, 1.9),
+      new THREE.MeshBasicMaterial({ map: signTexture, toneMapped: false }),
+    );
+    sign.position.set(0, 5.7, -6.25);
+    this.scene.add(sign);
+
+    // DJ kabini ve hoparlörler.
+    const booth = new THREE.Group();
+    booth.position.set(0, 0, -3.5);
+    const desk = new THREE.Mesh(
+      new THREE.BoxGeometry(4.8, 1.15, 1.25),
+      new THREE.MeshStandardMaterial({ color: 0x211d2b, roughness: 0.35, metalness: 0.35 }),
+    );
+    desk.position.y = 0.57;
+    desk.castShadow = true;
+    booth.add(desk);
+    const deskLight = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.6, 0.14),
+      new THREE.MeshBasicMaterial({ color: 0xe0558f, toneMapped: false }),
+    );
+    deskLight.position.set(0, 0.57, 0.64);
+    booth.add(deskLight);
+    for (const x of [-1.2, 1.2]) {
+      const deck = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.42, 0.46, 0.1, 24),
+        new THREE.MeshStandardMaterial({ color: 0xeee9f5, roughness: 0.2, metalness: 0.55 }),
+      );
+      deck.position.set(x, 1.17, 0);
+      booth.add(deck);
+      const disc = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.3, 0.3, 0.035, 24),
+        new THREE.MeshStandardMaterial({ color: 0x09080d, roughness: 0.3, metalness: 0.8 }),
+      );
+      disc.position.set(x, 1.23, 0);
+      booth.add(disc);
+    }
+    for (const x of [-4.2, 4.2]) {
+      const speaker = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 2.8, 1.3),
+        new THREE.MeshStandardMaterial({ color: 0x25202f, roughness: 0.5, metalness: 0.2 }),
+      );
+      speaker.position.set(x, 1.4, -0.5);
+      speaker.castShadow = true;
+      booth.add(speaker);
+      for (let index = 0; index < 3; index += 1) {
+        const cone = new THREE.Mesh(
+          new THREE.CircleGeometry(0.3 - index * 0.05, 20),
+          new THREE.MeshStandardMaterial({ color: 0x0d0b12, roughness: 0.4 }),
+        );
+        cone.position.set(x, 1.9 - index * 0.55, 0.66);
+        booth.add(cone);
+      }
+    }
+    this.scene.add(booth);
+
+    // Aynalı küre ve lazer ışıkları.
+    const ball = new THREE.Mesh(
+      new THREE.SphereGeometry(0.78, 24, 16),
+      new THREE.MeshStandardMaterial({
+        color: 0xf8e9ff,
+        metalness: 0.95,
+        roughness: 0.08,
+        emissive: 0x7c3aed,
+        emissiveIntensity: 0.18,
+      }),
+    );
+    ball.position.set(0, 6.6, -0.8);
+    this.scene.add(ball);
+    const ballLight = new THREE.PointLight(0xffd7f6, 26, 16, 2);
+    ballLight.position.copy(ball.position);
+    this.scene.add(ballLight);
+    const lasers: THREE.Mesh[] = [];
+    for (const [x, color] of [[-4, 0xe0558f], [4, 0x7c3aed], [-2.5, 0x22d3ee], [2.5, 0xf6c453]] as const) {
+      const laser = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.12, 12, 8, 1, true),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.2, depthWrite: false }),
+      );
+      laser.position.set(x, 4.2, -2);
+      laser.rotation.z = x < 0 ? -0.55 : 0.55;
+      this.scene.add(laser);
+      lasers.push(laser);
+    }
+    this.dynamic.push((_state, time) => {
+      ball.rotation.y = time * 0.22;
+      ball.rotation.x = Math.sin(time * 0.35) * 0.08;
+      ballLight.intensity = 20 + Math.sin(time * 3.2) * 6;
+      lasers.forEach((laser, index) => {
+        laser.rotation.z = (index % 2 === 0 ? -0.55 : 0.55) + Math.sin(time * 1.1 + index) * 0.25;
+      });
+    });
+
+    for (const [x, color] of [[-4.5, 0xe0558f], [4.5, 0x7c3aed], [0, 0xf6c453]] as const) {
+      const light = new THREE.PointLight(color, 24, 17, 2);
+      light.position.set(x, 4.2, 1.2);
+      this.scene.add(light);
+    }
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(5.55, 0.08, 10, 80),
+      new THREE.MeshStandardMaterial({
+        color: 0xe0558f,
+        emissive: 0xe0558f,
+        emissiveIntensity: 1.1,
+        roughness: 0.25,
+      }),
+    );
+    rim.rotation.x = Math.PI / 2;
+    rim.position.y = 0.08;
+    this.scene.add(rim);
   }
 
   private buildDance(): void {
