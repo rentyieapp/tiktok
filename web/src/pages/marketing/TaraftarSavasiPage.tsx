@@ -21,19 +21,21 @@ import { Button } from '../../components/ui';
 import { MarketingFooter, MarketingHeader } from '../../components/MarketingHeader';
 import { FanBattleDemo } from '../../components/FanBattleDemo';
 
-const PLAN_IDS = ['pkg_starter', 'pkg_pro', 'pkg_legend'];
+const PLAN_PREFIXES = ['pkg_starter', 'pkg_pro', 'pkg_legend'];
+const DURATIONS = [1, 7, 30, 365];
 
 export function TaraftarSavasiPage() {
   const { me } = useAuth();
   const navigate = useNavigate();
   const [packages, setPackages] = useState<PackageDTO[]>([]);
+  const [duration, setDuration] = useState(30);
   const [buying, setBuying] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     api
       .get<{ packages: PackageDTO[] }>('/api/packages')
-      .then((result) => setPackages(result.packages.filter((pkg) => PLAN_IDS.includes(pkg.id))))
+      .then((result) => setPackages(result.packages.filter((pkg) => PLAN_PREFIXES.some((prefix) => pkg.id.startsWith(prefix)))))
       .catch(() => setPackages([]));
   }, []);
 
@@ -126,12 +128,28 @@ export function TaraftarSavasiPage() {
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-600">3D stüdyo paketleri</p>
               <h2 className="mt-1 text-3xl font-bold tracking-tight text-ink-950">Takım sayına göre seç.</h2>
-              <p className="mt-2 max-w-xl text-sm text-ink-500">Tüm paketler 30 günlük yayıncı lisansı içerir. Ödeme Shopier üzerinden alınır.</p>
+              <p className="mt-2 max-w-xl text-sm text-ink-500">Seçtiğin süre kadar yayıncı lisansı içerir. Ödeme Shopier üzerinden alınır.</p>
             </div>
             <span className="inline-flex items-center gap-1.5 text-[10px] text-ink-400"><Shield size={12} /> Güvenli ödeme</span>
           </div>
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
-            {packages.map((pkg, index) => (
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {DURATIONS.map((days) => (
+              <button
+                key={days}
+                type="button"
+                onClick={() => setDuration(days)}
+                className={`rounded-full px-4 py-2 text-[11px] font-semibold transition ${
+                  duration === days
+                    ? 'bg-ink-950 text-white'
+                    : 'border border-[#e4dccf] bg-white text-ink-500 hover:border-[#cfc3b2]'
+                }`}
+              >
+                {days === 365 ? '1 yıl' : `${days} gün`}
+              </button>
+            ))}
+          </div>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {packages.filter((pkg) => pkg.durationDays === duration).map((pkg, index) => (
               <div key={pkg.id} className={`relative flex flex-col rounded-3xl border p-5 ${index === 1 ? 'border-brand-300 bg-brand-50/40 shadow-card' : 'border-[#e9e1d5] bg-[#fffaf4]'}`}>
                 {index === 1 ? <span className="absolute right-4 top-4 rounded-full bg-brand-600 px-2.5 py-1 text-[9px] font-bold text-white">POPÜLER</span> : null}
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-brand-700"><Crown size={18} /></span>
@@ -154,6 +172,11 @@ export function TaraftarSavasiPage() {
             {packages.length === 0 ? (
               <div className="rounded-2xl border border-[#e9e1d5] bg-[#fffaf4] p-6 text-sm text-ink-500 md:col-span-3">
                 Paketler yükleniyor… <Link to="/satin-al" className="font-semibold text-brand-700">Mağazaya git</Link>
+              </div>
+            ) : null}
+            {packages.length > 0 && packages.filter((pkg) => pkg.durationDays === duration).length === 0 ? (
+              <div className="rounded-2xl border border-[#e9e1d5] bg-[#fffaf4] p-6 text-sm text-ink-500 md:col-span-3">
+                Bu süre için paket bulunamadı. <Link to="/satin-al" className="font-semibold text-brand-700">Tüm paketlere bak</Link>
               </div>
             ) : null}
           </div>
