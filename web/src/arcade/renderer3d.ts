@@ -413,7 +413,8 @@ class Arcade3DRenderer implements Arcade3DHandle {
         this.buildPress();
         break;
       case 'circle':
-        this.buildCircle();
+        if (this.game.key === 'tavaf') this.buildTavaf();
+        else this.buildCircle();
         break;
       case 'quiz':
         this.buildQuiz();
@@ -422,7 +423,8 @@ class Arcade3DRenderer implements Arcade3DHandle {
         this.buildWord();
         break;
       case 'battle':
-        this.buildBattle();
+        if (this.game.key === 'manor') this.buildManor();
+        else this.buildBattle();
         break;
       case 'race':
         this.buildRace();
@@ -455,21 +457,37 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private buildDance(): void {
     this.baseCamera.set(0, 6.4, 17.0);
     this.lookTarget.set(0, 2.7, 0);
-    const cultural = this.game.key === 'horon' || this.game.key === 'sira' || this.game.key === 'ramwong';
+    const cultural = ['horon', 'sira', 'ramwong', 'halay', 'kina'].includes(this.game.key);
     const darkStage = this.game.key === 'latina' || this.game.key === 'concert';
     const backColor = this.game.key === 'horon'
       ? 0xfff1e6
       : this.game.key === 'sira'
         ? 0xf5e6d3
-        : this.game.key === 'latina'
-          ? 0x1e1b4b
-          : this.game.key === 'concert'
-            ? 0x111827
-            : this.game.key === 'ramwong'
-              ? 0xfff7ed
-              : 0xf7dfe9;
+        : this.game.key === 'halay'
+          ? 0x3b1114
+          : this.game.key === 'kina'
+            ? 0x2a1128
+            : this.game.key === 'latina'
+              ? 0x1e1b4b
+              : this.game.key === 'concert'
+                ? 0x111827
+                : this.game.key === 'ramwong'
+                  ? 0xfff7ed
+                  : 0xf7dfe9;
     const floorColor = cultural ? 0x6b3f2a : darkStage ? 0x251b2e : 0x322635;
-    const archColor = this.game.key === 'horon' ? '#fca5a5' : this.game.key === 'sira' ? '#e7c9a9' : this.game.key === 'ramwong' ? '#fdba74' : darkStage ? '#7c3aed' : '#f3b5cd';
+    const archColor = this.game.key === 'horon'
+      ? '#fca5a5'
+      : this.game.key === 'sira'
+        ? '#e7c9a9'
+        : this.game.key === 'halay'
+          ? '#fbbf24'
+          : this.game.key === 'kina'
+            ? '#f0abfc'
+            : this.game.key === 'ramwong'
+              ? '#fdba74'
+              : darkStage
+                ? '#7c3aed'
+                : '#f3b5cd';
 
     const back = new THREE.Mesh(
       new THREE.PlaneGeometry(24, 15),
@@ -587,6 +605,72 @@ class Arcade3DRenderer implements Arcade3DHandle {
     this.scene.add(booth);
     if (cultural) {
       booth.visible = false;
+    }
+
+    if (this.game.key === 'halay') {
+      const drum = new THREE.Group();
+      drum.position.set(0, 0.45, -2.6);
+      const drumBody = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.75, 0.92, 1.35, 18),
+        new THREE.MeshStandardMaterial({ color: 0x8b3a1e, roughness: 0.55, metalness: 0.1 }),
+      );
+      drum.add(drumBody);
+      const skin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.76, 0.76, 0.055, 18),
+        new THREE.MeshStandardMaterial({ color: 0xf4dfb9, roughness: 0.8 }),
+      );
+      skin.position.y = 0.7;
+      drum.add(skin);
+      for (const x of [-0.85, 0.85]) {
+        const stick = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.035, 0.05, 1.1, 7),
+          mat('#e7c9a9'),
+        );
+        stick.position.set(x, 1.05, 0.2);
+        stick.rotation.z = x < 0 ? 0.45 : -0.45;
+        drum.add(stick);
+      }
+      this.scene.add(drum);
+      for (let index = 0; index < 10; index += 1) {
+        const flag = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.22, 0.45),
+          new THREE.MeshBasicMaterial({ color: index % 2 ? 0xfbbf24 : 0xdc2626, side: THREE.DoubleSide }),
+        );
+        flag.position.set(-4.6 + index * 1.02, 5.6 + (index % 2) * 0.25, -5.7);
+        this.scene.add(flag);
+      }
+    }
+    if (this.game.key === 'kina') {
+      const tray = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.95, 1.1, 0.18, 24),
+        new THREE.MeshStandardMaterial({ color: 0xd4a63c, roughness: 0.3, metalness: 0.7 }),
+      );
+      tray.position.set(0, 0.55, -1.2);
+      this.scene.add(tray);
+      const henna = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.55, 0.55, 0.12, 24),
+        new THREE.MeshStandardMaterial({ color: 0x5a2a1e, roughness: 0.95 }),
+      );
+      henna.position.set(0, 0.68, -1.2);
+      this.scene.add(henna);
+      for (let index = 0; index < 14; index += 1) {
+        const angle = (index / 14) * Math.PI * 2;
+        const candle = new THREE.Group();
+        const stick = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.045, 0.055, 0.55 + (index % 3) * 0.15, 8),
+          new THREE.MeshStandardMaterial({ color: 0xf5e6d3, roughness: 0.7 }),
+        );
+        stick.position.y = 0.3;
+        candle.add(stick);
+        const flame = new THREE.Mesh(
+          new THREE.SphereGeometry(0.075, 8, 6),
+          new THREE.MeshStandardMaterial({ color: 0xffd27a, emissive: 0xff7b00, emissiveIntensity: 1.6 }),
+        );
+        flame.position.y = 0.68 + (index % 3) * 0.15;
+        candle.add(flame);
+        candle.position.set(Math.cos(angle) * 3.3, 0.1, Math.sin(angle) * 3.3 - 1.2);
+        this.scene.add(candle);
+      }
     }
 
     if (this.game.key === 'sira') {
@@ -979,6 +1063,198 @@ class Arcade3DRenderer implements Arcade3DHandle {
     this.scene.add(arch);
   }
 
+  private buildTavaf(): void {
+    this.baseCamera.set(0, 7.4, 18.6);
+    this.lookTarget.set(0, 2.0, 0);
+    this.scene.background = new THREE.Color('#0b1420');
+    this.scene.fog = new THREE.Fog(0x0b1420, 20, 40);
+
+    const court = new THREE.Mesh(
+      new THREE.CylinderGeometry(12, 12.4, 0.3, 64),
+      new THREE.MeshStandardMaterial({ color: 0xcbbfa8, roughness: 0.9 }),
+    );
+    court.position.y = -0.16;
+    court.receiveShadow = true;
+    this.scene.add(court);
+    const outer = new THREE.Mesh(
+      new THREE.PlaneGeometry(60, 60),
+      new THREE.MeshStandardMaterial({ color: 0x17202a, roughness: 0.98 }),
+    );
+    outer.rotation.x = -Math.PI / 2;
+    outer.position.y = -0.2;
+    this.scene.add(outer);
+    for (let ring = 1; ring <= 4; ring += 1) {
+      const line = new THREE.Mesh(
+        new THREE.TorusGeometry(2.6 + ring * 1.22, 0.035, 8, 96),
+        new THREE.MeshStandardMaterial({
+          color: 0xd6b56a,
+          emissive: 0x8a5a1e,
+          emissiveIntensity: 0.3,
+          transparent: true,
+          opacity: 0.7,
+        }),
+      );
+      line.rotation.x = Math.PI / 2;
+      line.position.y = 0.02;
+      this.scene.add(line);
+    }
+
+    // Kâbe: siyah kisve, altın kuşak, kapı ve köşe altınları.
+    const kaaba = new THREE.Group();
+    const blackStone = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.72, metalness: 0.08 });
+    const gold = new THREE.MeshStandardMaterial({ color: 0xd4a63c, roughness: 0.26, metalness: 0.85 });
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(2.45, 3.25, 2.45), blackStone);
+    cube.position.y = 1.62;
+    cube.castShadow = true;
+    cube.receiveShadow = true;
+    kaaba.add(cube);
+    const band = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.22, 2.5), gold);
+    band.position.y = 2.28;
+    kaaba.add(band);
+    const bandPattern = new THREE.Mesh(
+      new THREE.BoxGeometry(2.51, 0.075, 2.51),
+      new THREE.MeshStandardMaterial({ color: 0x8a5a1e, roughness: 0.5, metalness: 0.55 }),
+    );
+    bandPattern.position.y = 2.28;
+    kaaba.add(bandPattern);
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.58, 1.35, 0.045), gold);
+    door.position.set(0, 1.15, 1.235);
+    kaaba.add(door);
+    const doorInset = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 1.1, 0.02),
+      new THREE.MeshStandardMaterial({ color: 0x5c3a16, roughness: 0.4, metalness: 0.4 }),
+    );
+    doorInset.position.set(0, 1.15, 1.262);
+    kaaba.add(doorInset);
+    const topTrim = new THREE.Mesh(new THREE.BoxGeometry(2.52, 0.065, 2.52), gold);
+    topTrim.position.y = 3.26;
+    kaaba.add(topTrim);
+    const kaabaLight = new THREE.PointLight(0xffd27a, 26, 12, 2);
+    kaabaLight.position.set(0, 3.8, 2.4);
+    kaaba.add(kaabaLight);
+    this.scene.add(kaaba);
+
+    const maqam = new THREE.Group();
+    const maqamBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.55, 0.65, 0.5, 16),
+      mat('#d8cbb4'),
+    );
+    maqamBase.position.y = 0.25;
+    maqam.add(maqamBase);
+    const dome = new THREE.Mesh(
+      new THREE.SphereGeometry(0.46, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2),
+      gold,
+    );
+    dome.position.y = 0.62;
+    maqam.add(dome);
+    maqam.position.set(2.7, 0, -2.4);
+    this.scene.add(maqam);
+
+    const marble = mat('#d9cdb9');
+    const archMaterial = mat('#c8b99f', { roughness: 0.8 });
+    for (let index = 0; index < 18; index += 1) {
+      const angle = (index / 18) * Math.PI * 2;
+      const x = Math.cos(angle) * 9.3;
+      const z = Math.sin(angle) * 9.3;
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 3.8, 10), marble);
+      column.position.set(x, 1.9, z);
+      column.castShadow = true;
+      this.scene.add(column);
+      if (index % 2 === 0) {
+        const arch = new THREE.Mesh(
+          new THREE.TorusGeometry(0.72, 0.09, 8, 20, Math.PI),
+          archMaterial,
+        );
+        arch.position.set(x, 3.7, z);
+        arch.rotation.y = -angle;
+        this.scene.add(arch);
+      }
+    }
+    for (let index = 0; index < 4; index += 1) {
+      const angle = (index / 4) * Math.PI * 2;
+      const minaret = new THREE.Group();
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.5, 5.6, 12), mat('#d8cbb4'));
+      shaft.position.y = 2.8;
+      minaret.add(shaft);
+      const balcony = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.16, 16), gold);
+      balcony.position.y = 4.3;
+      minaret.add(balcony);
+      const cap = new THREE.Mesh(
+        new THREE.ConeGeometry(0.55, 1.15, 12),
+        new THREE.MeshStandardMaterial({ color: 0x8a5a1e, roughness: 0.4, metalness: 0.55 }),
+      );
+      cap.position.y = 5.9;
+      minaret.add(cap);
+      minaret.position.set(Math.cos(angle) * 10.8, 0, Math.sin(angle) * 10.8);
+      this.scene.add(minaret);
+    }
+
+    // Tavaf eden ihramlı hacı kalabalığı.
+    const crowd = new THREE.Group();
+    const crowdMembers: Array<{ group: THREE.Group; angle: number; radius: number; speed: number; phase: number }> = [];
+    for (let index = 0; index < 28; index += 1) {
+      const member = new THREE.Group();
+      const robe = new THREE.Mesh(
+        new THREE.ConeGeometry(0.27, 0.85, 8),
+        new THREE.MeshStandardMaterial({ color: index % 5 === 0 ? 0xe8e0cf : 0xf7f2e8, roughness: 0.95 }),
+      );
+      robe.position.y = 0.45;
+      member.add(robe);
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.18, 10, 8),
+        new THREE.MeshStandardMaterial({ color: 0xdfb08a, roughness: 0.8 }),
+      );
+      head.position.y = 1.02;
+      member.add(head);
+      const shoulder = new THREE.Mesh(
+        new THREE.BoxGeometry(0.52, 0.12, 0.25),
+        new THREE.MeshStandardMaterial({ color: 0xfaf6ee, roughness: 0.95 }),
+      );
+      shoulder.position.y = 0.82;
+      member.add(shoulder);
+      member.position.y = 0.02;
+      crowd.add(member);
+      crowdMembers.push({
+        group: member,
+        angle: (index / 28) * Math.PI * 2 + Math.random() * 0.18,
+        radius: 5.4 + (index % 3) * 0.52,
+        speed: 0.13 + (index % 4) * 0.012,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+    this.scene.add(crowd);
+    this.dynamic.push((_state, time, dt) => {
+      for (const person of crowdMembers) {
+        person.angle += person.speed * dt;
+        const bob = Math.abs(Math.sin(time * 2.2 + person.phase)) * 0.035;
+        person.group.position.set(
+          Math.cos(person.angle) * person.radius,
+          bob,
+          Math.sin(person.angle) * person.radius,
+        );
+        person.group.rotation.y = -person.angle + Math.PI / 2;
+      }
+    });
+
+    const starGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(180 * 3);
+    for (let index = 0; index < 180; index += 1) {
+      positions[index * 3] = (Math.random() - 0.5) * 45;
+      positions[index * 3 + 1] = 8 + Math.random() * 16;
+      positions[index * 3 + 2] = -8 - Math.random() * 28;
+    }
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    this.scene.add(new THREE.Points(
+      starGeometry,
+      new THREE.PointsMaterial({ color: 0xffe6ad, size: 0.08, transparent: true, opacity: 0.8 }),
+    ));
+    for (const x of [-6.5, -3.5, 3.5, 6.5]) {
+      const light = new THREE.PointLight(0xffc56b, 22, 14, 2);
+      light.position.set(x, 3.2, -2.2);
+      this.scene.add(light);
+    }
+  }
+
   private buildQuiz(): void {
     this.baseCamera.set(0, 5.4, 15.0);
     this.lookTarget.set(0, 2.2, 0);
@@ -1190,6 +1466,109 @@ class Arcade3DRenderer implements Arcade3DHandle {
     pencil.add(tip);
     pencil.position.set(0.4, 1.15, 2.2);
     this.scene.add(pencil);
+  }
+
+  private buildManor(): void {
+    this.baseCamera.set(0, 5.8, 15.8);
+    this.lookTarget.set(0, 2.15, -0.4);
+    this.scene.background = new THREE.Color('#090a12');
+    this.scene.fog = new THREE.Fog(0x090a12, 15, 36);
+
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(7.2, 48),
+      new THREE.MeshStandardMaterial({ color: 0x1a1718, roughness: 0.95 }),
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.12;
+    ground.receiveShadow = true;
+    this.scene.add(ground);
+    const carpet = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.8, 8.5),
+      new THREE.MeshStandardMaterial({ color: 0x4a1018, roughness: 0.9 }),
+    );
+    carpet.rotation.x = -Math.PI / 2;
+    carpet.position.set(0, 0.0, 0.3);
+    this.scene.add(carpet);
+
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x24212a, roughness: 0.88 });
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(12, 7, 0.4), wallMaterial);
+    backWall.position.set(0, 3.4, -5.2);
+    this.scene.add(backWall);
+    for (const x of [-6.1, 6.1]) {
+      const sideWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 7, 10), wallMaterial);
+      sideWall.position.set(x, 3.4, -0.3);
+      this.scene.add(sideWall);
+    }
+    for (const x of [-5.2, -2.6, 2.6, 5.2]) {
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.36, 5.4, 10), mat('#3a3035'));
+      column.position.set(x, 2.7, -4.65);
+      column.castShadow = true;
+      this.scene.add(column);
+    }
+    const moon = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 24, 16),
+      new THREE.MeshBasicMaterial({ color: 0xdfe6ff }),
+    );
+    moon.position.set(-4.2, 6.1, -5.0);
+    this.scene.add(moon);
+    const moonGlow = new THREE.PointLight(0x9bb8ff, 20, 18, 2);
+    moonGlow.position.copy(moon.position);
+    this.scene.add(moonGlow);
+
+    const door = new THREE.Mesh(
+      new THREE.BoxGeometry(2.4, 4.2, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x3b2418, roughness: 0.6 }),
+    );
+    door.position.set(0, 2.1, -4.95);
+    this.scene.add(door);
+    const doorLight = new THREE.PointLight(0xffb45e, 16, 8, 2);
+    doorLight.position.set(0, 2.7, -4.2);
+    this.scene.add(doorLight);
+
+    for (const x of [-3.8, 3.8]) {
+      const generator = new THREE.Mesh(
+        new THREE.BoxGeometry(1.15, 0.85, 0.8),
+        new THREE.MeshStandardMaterial({ color: 0x384047, roughness: 0.5, metalness: 0.45 }),
+      );
+      generator.position.set(x, 0.4, -3.2);
+      generator.castShadow = true;
+      this.scene.add(generator);
+      const indicator = new THREE.Mesh(
+        new THREE.SphereGeometry(0.07, 8, 6),
+        new THREE.MeshStandardMaterial({ color: 0xff4d4d, emissive: 0xff2222, emissiveIntensity: 1.4 }),
+      );
+      indicator.position.set(x + 0.38, 0.72, -2.78);
+      this.scene.add(indicator);
+    }
+
+    const candelabra = new THREE.Group();
+    candelabra.position.set(0, 0, -2.1);
+    const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.14, 2.2, 8), mat('#b08a48'));
+    stand.position.y = 1.1;
+    candelabra.add(stand);
+    for (let index = 0; index < 5; index += 1) {
+      const angle = (index / 5) * Math.PI * 2;
+      const candle = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.055, 0.38, 7),
+        new THREE.MeshStandardMaterial({ color: 0xf1e4ca, roughness: 0.75 }),
+      );
+      candle.position.set(Math.cos(angle) * 0.42, 1.82, Math.sin(angle) * 0.42);
+      candelabra.add(candle);
+      const flame = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 8, 6),
+        new THREE.MeshStandardMaterial({ color: 0xffd27a, emissive: 0xff7a00, emissiveIntensity: 2 }),
+      );
+      flame.position.copy(candle.position).add(new THREE.Vector3(0, 0.26, 0));
+      candelabra.add(flame);
+    }
+    this.scene.add(candelabra);
+    const warm = new THREE.PointLight(0xff9e4a, 24, 16, 2);
+    warm.position.set(0, 3.3, -0.8);
+    this.scene.add(warm);
+    this.dynamic.push((_state, time) => {
+      warm.intensity = 21 + Math.sin(time * 5.5) * 3;
+      moonGlow.intensity = 16 + Math.sin(time * 1.2) * 2;
+    });
   }
 
   private buildBattle(): void {
@@ -2642,15 +3021,17 @@ class Arcade3DRenderer implements Arcade3DHandle {
   private createActor(player: ArcadePlayer): Actor {
     const group = new THREE.Group();
     const color =
-      this.game.mode === 'tug'
-        ? player.side === 'blue'
-          ? '#2563eb'
-          : '#dc2626'
-        : this.game.mode === 'versus'
-          ? player.side === 'boys'
+      this.game.key === 'tavaf'
+        ? '#f4efe3'
+        : this.game.mode === 'tug'
+          ? player.side === 'blue'
             ? '#2563eb'
-            : '#db2777'
-          : player.color;
+            : '#dc2626'
+          : this.game.mode === 'versus'
+            ? player.side === 'boys'
+              ? '#2563eb'
+              : '#db2777'
+            : player.color;
     const shadow = shadowMesh(0.42);
     group.add(shadow);
 
@@ -3105,7 +3486,7 @@ class Arcade3DRenderer implements Arcade3DHandle {
       const actor = this.actors.get(player.id);
       if (!actor) return;
       if (mode === 'dance') {
-        const culturalDance = ['horon', 'sira', 'latina', 'concert', 'ramwong'].includes(this.game.key);
+        const culturalDance = ['horon', 'sira', 'latina', 'concert', 'ramwong', 'halay', 'kina'].includes(this.game.key);
         let x: number;
         let z: number;
         if (culturalDance) {
@@ -3128,17 +3509,18 @@ class Arcade3DRenderer implements Arcade3DHandle {
       } else if (mode === 'circle') {
         const ring = index % 2;
         const perRing = Math.ceil(players.length / 2);
-        const angle = (index / perRing) * Math.PI * 2 + time * (0.16 - ring * 0.03);
-        const radius = 2.15 + ring * 0.95;
+        const isTavaf = this.game.key === 'tavaf';
+        const angle = (index / perRing) * Math.PI * 2 + time * (isTavaf ? 0.12 : 0.16 - ring * 0.03);
+        const radius = isTavaf ? 3.95 + ring * 0.82 : 2.15 + ring * 0.95;
         actor.group.position.set(
           Math.cos(angle) * radius,
-          0.12,
+          isTavaf ? 0.1 + Math.abs(Math.sin(time * 2 + index)) * 0.03 : 0.12,
           Math.sin(angle) * radius,
         );
         actor.group.rotation.y = -angle + Math.PI / 2;
-        actor.leftArm.rotation.z = 0.3;
-        actor.rightArm.rotation.z = -0.3;
-        actor.body.rotation.z = Math.sin(time * 1.6 + index) * 0.04;
+        actor.leftArm.rotation.z = isTavaf ? 0.18 : 0.3;
+        actor.rightArm.rotation.z = isTavaf ? -0.18 : -0.3;
+        actor.body.rotation.z = isTavaf ? 0 : Math.sin(time * 1.6 + index) * 0.04;
       } else if (mode === 'battle') {
         const angle = (index / players.length) * Math.PI * 2;
         const radius = 3.15 + (index % 2) * 0.28;
